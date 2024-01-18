@@ -1,0 +1,489 @@
+
+
+#' @name evaluate_tidy
+#' @title Evaluate Architecture Metrics in a Tidyverse-Friendly Way
+#' @author Tim Fraser
+#' @description
+#' Let's write an evaluate function that will, for any enumerated tidy data.frame,
+#' join in your metrics and compute them, then return a final dataframe
+#'
+#' @param par architecture(s), either as a vector of integers or a tibble of architectures
+#' @param d data.frame of decision-alternative items
+#' @param vars vector of metric names. Must be columns in `d`.
+#' @param c (Optional) data.frame of constraints.
+#' @param invalid value that an invalid architecture receives.
+#'
+#' @export
+evaluate_tidy = function(par, d, vars = NULL, c = NULL, invalid = 0){
+  # Testing value only
+  #par = c(0,0,0,0,0)
+  #vars = c("m1", "m2")
+  e = par
+  # Check if e is a data.frame
+  if(!is.data.frame(e)){
+    if(is.vector(e)){
+      #e = c(0,1,2,2)
+      # Format as a matrix, convert to tibble, and add variable names
+      e = matrix(e, nrow = 1) %>%
+        as_tibble() %>%
+        setNames(nm = paste0("d", 1:length(e))) %>%
+        bind_rows(.id = "id") %>% mutate(id = as.integer(id))
+    }else{ stop("e must be dataframe or vector.") }
+  }
+
+  if(!is.null(c)){
+    # Here's the decision/alternative values of those to be cut
+    c_cut = c %>%
+      inner_join(by = c("id_prior"),
+                 y = d %>% select(id_prior = id, did_prior = did, altid_prior = altid)) %>%
+      inner_join(by = c("id_cut"),
+                 y = d %>% select(id_cut = id, did_cut = did, altid_cut = altid)) %>%
+      mutate(did_prior = paste0("d", did_prior),
+             did_cut = paste0("d", did_cut))
+
+    # For as many constrains as supplied, let's constrain this table of architectures.
+    for(k in 1:nrow(c)){
+      # k = 1
+      e = e %>%
+        filter(
+          # Give me any rows where the prior alternative did NOT occur for the prior decision
+          #!!sym(c_cut$did_prior[k]) != c_cut$altid_prior[k] ) |
+          if_any(.cols = any_of(c_cut$did_prior[k]), ~.x != c_cut$altid_prior[k] )
+          | # OR
+            # where the cut alternative did NOT occur for the cut decision
+            if_any(.cols = any_of(c_cut$did_cut[k]), ~.x !=  c_cut$altid_cut[k])
+          #(  !!sym(c_cut$did_cut[k]) != c_cut$altid_cut[k])
+          # Both must happen in order to get cut.
+        )
+    }
+
+  }
+
+  if(nrow(e)>0){
+    etidy = e %>%
+      pivot_longer(cols = -c(id), names_to = "did", values_to = "altid") %>%
+      mutate(did = stringr::str_extract(did, "[0-9]+") %>% as.integer()) %>%
+      # Now join in for every architecture did-altid pair their metrics
+      inner_join(by = c("did", "altid"), y = d %>% select(did, altid, any_of(c(vars))))
+
+    # Now compute some total metric for each metric supplied
+    metrics = etidy %>%
+      group_by(id) %>%
+      summarize(
+        across(.cols = any_of(c(vars)), ~sum(.x, na.rm = TRUE))
+      )
+
+  }else{
+    metrics = matrix(data = invalid, nrow = 1, ncol = length(vars),
+                     dimnames = list(c(), vars)) %>%
+      as_tibble() %>%
+      mutate(id = NA_integer_)
+  }
+
+  # If you just want some metrics, return just those
+  if(!is.null(vars)){
+    output = metrics %>% select(any_of(vars)) %>% as.matrix()
+    # print(output)
+  }else{
+    # Join the metrics back into the enumerated tibble
+    output = e %>% left_join(by = "id", y = metrics)
+  }
+  return(output)
+}
+
+#' @name pareto
+#' @author Tim Fraser (adapted from Nozomi Hitomi)
+#' @param matrix an `n`x`m` matrix with `m` objectives and `n` solutions
+#' @description
+#' Generates a `n`x1 logical vector with `TRUE` if the solution lies on the pareto front.
+#' @source Nozomi Hitomi, 11/17/2015
+#' @export
+pareto = function(x = NULL, y = NULL, m = NULL){
+
+  #function [P]=paretofront2(x)
+  #Author Nozomi Hitomi
+  #Created 11/17/2015
+  #This code implements the first part of the fast nondominated sorting from
+  #NSGA-II. Assumes minimization of all objectives
+  #Input: X is a nxm matrix with m objectives and n solutions
+  #Ouput: P is the nx1 logical vector with true if the solution lies in the
+  #Pareto front
+
+  # If m is missing but x and y are provided...
+  if(is.null(m)){
+    if(!is.null(x) & !is.null(y)){
+      # Make m a 2-column matrix of x and y
+      m = matrix(c(x, y), ncol = 2)
+    }else{
+      stop("Must provide either ['m'] or ['x' and 'y'].")
+    }
+  }
+  # Example
+
+  # Get length of input matrix
+  n_arch = nrow(m);
+
+  domination_counter = rep(0, n_arch)
+  # domination_counter=matrix(0, nrow = n_arch, ncol = 1);
+
+  # For each row in the matrix...
+  for(i in 1:n_arch){
+    #i = 1
+    # As long as i is not the last item (can't compare the ith and ith +1 if ith = n)
+    if(i != n_arch){
+      # For every other remaining row in the matrix...
+      for(j in (i+1):n_arch){
+        # j = i + 1
+        # Check does the previous row dominate the second row
+        dom = dominates(s1 = m[i, ], s2 = m[j, ]);
+        # If the second (s2) dominates the first (s1)...
+        if(dom == -1){
+          # Add to the count of times that row was dominant
+          domination_counter[j] = domination_counter[j] + 1;
+          # If the first (s1) dominates the second (s2)...
+        }else if(dom == 1){
+          # Add to the count of times that row was dominant
+          domination_counter[i] = domination_counter[i] + 1;
+        }
+        # If neither were dominant, the counter is unaffected.
+      }
+    }
+  }
+
+  # If any cases remain **non-dominated**
+  p = domination_counter == 0
+  # Find the cases where the domination counter was 0
+  #p = which(domination_counter == 0)
+  #P = domination_counter[domination_counter == 0]
+  #P = which(domination_counter == 0)
+  #P = find(domination_counter==0);
+  return(p)
+}
+# m %>% select(benefit, cost) %>% as.matrix() %>%
+
+
+#' @name dominates
+#' @author Tim Fraser (adapted from Nozomi Hitomi)
+#' @param s1 first matrix of metrics
+#' @param s2 second matrix of metrics
+#' @source Nozomi Hitomi, 11/17/2015
+#'  This function returns -1 if s1 dominates s2, 1 if s2 dominates
+#'  s1, 0 if neither dominates the other. Each solution should be a vector
+#'  of objectives. Assumes minimization in all objectives
+#' @export
+dominates = function(s1, s2){
+
+  ndec = length(s1);
+  # Return
+  #dominate = matrix(0, nrow = ndec, ncol = 1)
+  dominate = rep(0, ndec)
+
+  for(i in 1:ndec){
+    # i = 1
+    if(s1[i] < s2[i]){
+      dominate[i] = -1;
+    }else if(s1[i] > s2[i]){
+      dominate[i] = 1;
+    }
+    # Otherwise, dominate[i] is 0 by default
+  }
+
+  # Get total indices where dominate == 1
+  n_indices_minus = length(which(dominate == -1))
+  n_indices_plus = length(which(dominate == 1))
+
+  # If there are no cases where y dominated x, but there are cases where x dominated y,
+  if(n_indices_minus == 0 & n_indices_plus != 0){
+    dom = 1
+    # If there ARE cases where y dominated x, but there are NO cases where x dominated y,
+  }else if(n_indices_minus != 0 & n_indices_plus == 0){
+    dom = -1
+  }else{
+    dom = 0
+  }
+
+  return(dom)
+
+}
+# #dominates(x = m$benefit, y = m$cost)
+# s1 = matrix(c(27, 82), ncol = 2)
+# s2 = matrix(c(27, 52), ncol = 2)
+# # The previous row s1 does dominate the second row s2
+# dominates(s1,s2)
+# remove(s1,s2)
+
+
+
+#' @name get_arm
+#' @title Get Associational Rule Mining (ARM) Metrics
+#' @author Tim Fraser
+#' @param data
+#' @param p name of binary variable containing pareto front
+#' @description
+#' This function takes a data.frame of binary features
+#' and an integer number p containing the
+#' index of the feature among the ones in the dataset
+#' that we consider the good feature for the purposes of the
+#' analysis and computes...
+#' - support (F),
+#' - confidence (F-> P),
+#' - conf (P -> F) and
+#' - lift (F & P)
+#' for all features in the dataset
+#' @export
+get_arm = function(data, p = "front", .id = "id"){
+  # p = "front"
+  # .id = "id"
+  # data = x
+
+  # Get number of architectures
+  n = nrow(data)
+  # Get number of features
+  nf = data %>% select(-any_of(c(.id, p))) %>% length()
+
+  # Format data
+  data = data %>%
+    select(-any_of(c(.id))) %>%
+    rename(p = p)
+
+  # Make several calculations and bind the data.frames together
+  result = bind_rows(
+    # supp(F) #####################################################
+    # Find P(F), the probability of having adopted feature F
+    #
+    # If High supp(F), then F is naturally present in the tradespace
+    #
+    # Calculation: What percentage of architectures
+    # adopted each feature (decision)?
+    #   First, we're going to calculate the SUM. Later, we'll get the percent.
+    data %>%
+      summarize(across(.cols = -c(p), ~sum(.x == 1) )) %>%
+      mutate(type = "f"),
+    # supp(P) #####################################################
+    # Find P(P), the probability of being in the pareto front P
+    #
+    # Calculation: What percentage of architectures
+    # were in the pareto front?
+    #   First, we're going to calculate the SUM. Later, we'll get the percent.
+    data %>%
+      summarize(across(.cols = -c(p), ~sum(p == 1) )) %>%
+      mutate(type = "p"),
+    # supp(F&P) ###################################################
+    # Find P(F&P), the probability of
+    #     being in pareto front P and having adopted feature F
+    #
+    # Calculation: What percentage of architectures adopted that feature
+    #   AND were in the pareto front?
+    #   First, we're going to calculate the SUM. Later, we'll get the percent.
+    data %>%
+      summarize(across(.cols = -c(p), ~sum(.x == 1 & p == 1) )) %>%
+      mutate(type = "f_p"),
+    # U (Sample size of the tradespace)
+    data %>%
+      summarize(across(.cols = -c(p), ~n())) %>%
+      mutate(type = "u")
+  ) %>%
+    # Pivot into new format
+    pivot_longer(cols = -c(type), names_to = "did", values_to = "value") %>%
+    pivot_wider(id_cols = did, names_from = type, values_from = value) %>%
+    # Calculate probabilities/percentages now
+    mutate(supp_f = f / u,
+           supp_p = p / u,
+           supp_f_p = f_p / u) %>%
+    # Create new probabilities
+    mutate(
+      # conf(F|P), aka conf(P->F) ##################################################
+      # Find P(F|P), the probability of being in the pareto front
+      #    GIVEN that you adopted that feature
+      #
+      # If high conf(F|P), then F is a quasi-necessary condition
+      #    to be in P
+      #
+      # Uses Conditional Probability Formula:
+      # P(A | B) = P(A & B) / P(B)
+      #
+      # Calculation: What percentage of architectures adopted that feature
+      #   AND were in the pareto front?
+      #   GIVEN the percentage that adopted each feature?
+      conf_f_p = supp_f_p / supp_f,
+      # conf(P|F), aka conf(F->P) ##################################################
+      # Find P(P|F), the probability of adopting that feature F
+      #    GIVEN that your architecture is in the pareto front P
+      #
+      # If high conf (P|F), then F is a quasi-sufficient condition
+      # to be in P
+      #
+      # Uses Bayes Rule:
+      # P(A | B) = [ P(B|A) * P(A) ] / P(B)
+      #
+      # P(P | F) = [ P(F|P) * P(F) ] / P(P)             ]
+      # Use Bayes Rule to backtrack and find
+      conf_p_f = conf_f_p * supp_f / supp_p,
+
+      # lift(F|P), a.k.a. lift(P->F) ############################################
+      # Lift is a measure of the performance of a targeting model
+      #
+      # targeting response (Target = Feature given Being Dominant)
+      # divided by the average response (Average = Feature occuring)
+      # Read more here: https://en.wikipedia.org/wiki/Lift_(data_mining)
+      #
+      # lift(F|P) = [P(P&F)/P(P)]  / [P(F)]
+      # by Conditional Probability formula, we can simplify that to...
+      # lift(F|P) =  P(F|P) / P(F)
+      lift_f_p = conf_f_p / supp_f,
+
+      # lift(P|F), a.k.a. lift(F->P) ############################################
+      # lift(P|F) = [P(F&P)/P(F)] / [P(P)]
+      lift_p_f = supp_f_p / supp_f / supp_p,
+
+      # driving ########################################################
+      # Label a feature as 'driving' if these conditions are satisfied.
+      driving = if_else(
+        condition = conf_f_p > 0.9 | conf_p_f > 0.9 & lift_p_f > 1,
+        true = 1, false = 0)
+    )
+
+  # Reorder the result for easier reading
+  result = result %>%
+    select(did, u, f, supp_f, p, supp_p, f_p, supp_f_p,
+           conf_f_p, conf_p_f,
+           lift_f_p, lift_p_f, driving)
+
+  return(result)
+  # Association rule mining:
+  # the architectures with high conf(F|G), conf(G|F), lift(F|G), lift(G|F)
+  # tend to have dominant features
+
+}
+
+#' @name get_arm_old
+#' @title Get Associational Rule Mining (ARM) Metrics
+#' @author Tim Fraser
+#' @param data
+#' @param p name of binary variable containing pareto front
+#' @description
+#' This function takes a data.frame of binary features
+#' and an integer number p containing the
+#' index of the feature among the ones in the dataset
+#' that we consider the good feature for the purposes of the
+#' analysis and computes...
+#' - support (F),
+#' - confidence (F-> P),
+#' - conf (P -> F) and
+#' - lift (F & P)
+#' for all features in the dataset
+get_arm_old = function(data, p = "front", .id = "id"){
+  # p = "front"
+  # .id = "id"
+  # data = x
+
+  # Get number of architectures
+  n = nrow(data)
+  # Get number of features
+  nf = data %>% select(-any_of(c(.id, p))) %>% length()
+
+  # Format data
+  data = data %>%
+    select(-any_of(c(.id))) %>%
+    rename(p = p)
+
+  # Association rule mining:
+  # the architectures with high conf(F|G), conf(G|F), lift(F|G), lift(G|F)
+  # tend to have dominant features
+
+  # OLD METHOD
+  s = tibble(
+    id = 1:nf,
+    supp_f = 0,
+    supp_p = 0,
+    supp_f_p = 0,
+    conf_f_p = 0,
+    conf_p_f = 0,
+    lift_f_p = 0,
+    driving = 0)
+
+  # supp(F) #####################################################
+  # Find P(F), the probability of having adopted feature F
+  #
+  # If High supp(F), then F is naturally present in the tradespace
+  #
+  # Calculation: What percentage of architectures
+  # adopted each feature (decision)?
+  s$supp_f = colSums(data == 1) / n
+
+  # supp(P) #####################################################
+  # Find P(P), the probability of being in the pareto front P
+  #
+  # Calculation: What percentage of architectures
+  # were in the pareto front?
+  s$supp_p = sum(data[, p] == 1) / n
+
+
+  # For each feature...
+  for(i in 1:nf){
+
+    # supp(F&P) ###################################################
+    # Find P(F&P), the probability of
+    #     being in pareto front P and having adopted feature F
+    #
+    # Calculation: What percentage of architectures adopted that feature
+    #   AND were in the pareto front?
+    s$supp_f_p[i] = sum(data[,i] == 1 & data[, p] == 1) / n
+
+    # conf(F|P), aka conf(P->F) ##################################################
+    # Find P(F|P), the probability of being in the pareto front
+    #    GIVEN that you adopted that feature
+    #
+    # If high conf(F|P), then F is a quasi-necessary condition
+    #    to be in P
+    #
+    # Uses Conditional Probability Formula:
+    # P(A | B) = P(A & B) / P(B)
+    #
+    # Calculation: What percentage of architectures adopted that feature
+    #   AND were in the pareto front?
+    #   GIVEN the percentage that adopted each feature?
+    s$conf_f_p[i] = s$supp_f_p[i] /  s$supp_f[i];
+
+
+    # conf(P|F), aka conf(F->P) ##################################################
+    # Find P(P|F), the probability of adopting that feature F
+    #    GIVEN that your architecture is in the pareto front P
+    #
+    # If high conf (P|F), then F is a quasi-sufficient condition
+    # to be in P
+    #
+    # Uses Bayes Rule:
+    # P(A | B) = [ P(B|A) * P(A) ] / P(B)
+    #
+    # P(P | F) = [ P(F|P) * P(F) ] / P(P)             ]
+    # Use Bayes Rule to backtrack and find
+    s$conf_p_f[i] =  s$conf_f_p[i] * s$supp_f[i] / s$supp_p[i];
+
+    # lift(P|F), a.k.a. lift(F->P) ############################################
+    #
+    # If high lift(P|F), then usually F is a dominant feature.
+    #
+    # lift(P|F) = [P(F&P)/P(F)]  / [P(P)]
+    # by Conditional Probability formula, we can simplify that to...
+    # lift(P|F) =  P(P|F) / P(P)
+    #
+    # Lift is a measure of the performance of a targeting model
+    #
+    # targeting response (Target = Pareto = Being Dominant)
+    # divided by the average response (Average = Feature occuring)
+    #
+    # Read more here: https://en.wikipedia.org/wiki/Lift_(data_mining)
+    s$lift_f_p[i] = s$conf_f_p[i] / s$supp_p[i];
+
+  }
+  # Label a feature as 'driving' if these conditions are satisfied.
+  s = s %>%
+    mutate(driving = case_when(
+      conf_f_p > 0.9 | conf_p_f > 0.9 & lift_f_p > 1 ~ 1,
+      TRUE ~ 0
+    ))
+
+  return(s)
+
+}

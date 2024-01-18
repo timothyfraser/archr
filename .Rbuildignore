@@ -1,0 +1,7 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^workflow.R
+^z$
+^docs$
+^workshops$
+^dev_package.R
