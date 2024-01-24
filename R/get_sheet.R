@@ -1,10 +1,15 @@
-# Let's write a quick function for grabbing a specific google sheet using its share link.
 #' @name get_sheet
+#' @title Get Google Sheet Download Link
+#' @description
+#' Let's write a quick function for grabbing a specific google sheet using its share link.
+#' 
 #' @param docid ID for that overall Google document. (Optional. Must supply either `url` or `docid`)
 #' @param gid sheet ID for that specific sheet (1 google sheets contains multiple sheets)
 #' @param url view-allowed Google Sheets share link (Optional. Must supply either `url` or `docid`)
+#' 
 #' @importFrom dplyr `%>%`
 #' @importFrom stringr str_remove
+#' 
 #' @export
 get_sheet = function(url = NULL, docid = NULL, gid = 0){
 

@@ -7,7 +7,11 @@
 get_arm(data, p = "front", .id = "id")
 }
 \arguments{
+\item{data}{enumerated architectures, provided as a data.frame, optionally containing the \code{id} field specified in \code{.id}.}
+
 \item{p}{name of binary variable containing pareto front}
+
+\item{.id}{name of \code{id} variable.}
 }
 \description{
 This function takes a data.frame of binary features

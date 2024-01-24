@@ -12,7 +12,12 @@ get_nodes(edges = NULL, a = NULL)
 \item{a}{Optionally, an adjacency matrix}
 }
 \description{
-Get nodes from edgelist or adjacency matrix
+PART 1 FUNCTIONS
+This script contains a series of functions that allow for stakeholder network analysis and supporting actions.
+}
+\details{
+Some of these are internal functions, while others are functions intended to be used by actual R users.
+If you encounter an issue with any of these functions, please tag it in a Github Issue.
 }
 \author{
 Tim Fraser

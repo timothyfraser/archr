@@ -1,9 +1,19 @@
+#' PART 1 FUNCTIONS
+#' This script contains a series of functions that allow for stakeholder network analysis and supporting actions.
+#' 
+#' Some of these are internal functions, while others are functions intended to be used by actual R users.
+#' If you encounter an issue with any of these functions, please tag it in a Github Issue.
+
+
 #' @name get_nodes
 #' @title Get nodes from edgelist or adjacency matrix
+#' @author Tim Fraser
+#' 
 #' @param edges Optionally, an edgelist where the first column is `from` vertices and the second column is `to` vertices.
 #' @param a Optionally, an adjacency matrix
-#' @author Tim Fraser
+#' 
 #' @importFrom dplyr tibble
+#' 
 #' @export
 get_nodes = function(edges = NULL, a = NULL){
 
@@ -45,10 +55,13 @@ get_nodes = function(edges = NULL, a = NULL){
 
 #' @name get_edges
 #' @title Get edgelist from adjacency matrix
-#' @param a Adjaceny Matrix of n x n values, of `matrix` class in R. Optionally with column and row names.
 #' @author Tim Fraser
+#' 
+#' @param a Adjaceny Matrix of n x n values, of `matrix` class in R. Optionally with column and row names.
+#' 
 #' @importFrom dplyr `%>%` as_tibble mutate filter
 #' @importFrom tidyr pivot_longer
+#' 
 #' @export
 get_edges = function(a = NULL){
 
@@ -139,11 +152,19 @@ get_adjacency = function(edges, matrix = TRUE){
 }
 
 #' @name get_graph
+#' @title Get `igraph` Graph object 
+#' @author Tim Fraser
+#' @description 
+#' Get an `igraph` formatted graph object 
+#' from an adjacency matrix `a`, an `edges` edgelist,
+#' or an `edges` edgelist and a `nodes` nodelist.
+#' 
 #' @param a Adjacency Matrix
 #' @param edges Edgelist Data.frame with columns `from`, `to`, and `value`
 #' @param nodes Nodelist Data.frame with column `name`
+#' 
 #' @importFrom igraph graph_from_adjacency_matrix graph_from_data_frame
-#' @author Tim Fraser
+#' 
 #' @export
 get_graph = function(a = NULL, edges = NULL, nodes = NULL){
 
@@ -179,15 +200,20 @@ get_graph = function(a = NULL, edges = NULL, nodes = NULL){
 }
 
 #' @name get_cycles
-#' @title Get all cycles in a graph starting and ending with a given root
+#' @title Get cycles in a graph
+#' @author Tim Fraser
+#' @description
+#' Function to get all cycles in a graph starting and ending with a given root
+#' 
 #' @param g igraph directed graph object
 #' @param root name of root vertex
 #' @param cutoff Max length of simple paths to compute. Helpful for really big graphs.
 #' @param vars A vector of 1 or more edge weight names from `g`. If `vars = NULL`, then skips edgewise edge weight computing.
-#' @author Tim Fraser
+#' 
 #' @importFrom dplyr `%>%` tibble group_by reframe mutate n inner_join filter select bind_rows arrange ungroup lag lead
 #' @importFrom igraph V is_igraph is_directed all_simple_paths neighbors get.edge.attribute get.edge.ids
 #' @importFrom tidyr pivot_wider
+#' 
 #' @export
 get_cycles = function(g = NULL, root = 1, cutoff = 50, vars = NULL){
 
@@ -506,13 +532,15 @@ get_coords = function(g, layout = "kk", vars = "name"){
 
 
 #' @name get_priority
+#' @title Get Priority Measure for an AHP table
 #' @author Tim Fraser, PhD
 #'
 #' @param data data.frame of pairwise comparisons of alternatives or criteria, formatted like `archr::pairs_alts` or `archr::pairs_criteria`
 #' @param type "criteria" and/or "alt". Describes what kind of pairwise comparisons are provided in `data`. Use `c("criteria", "alt")` to get both.
 #'
-#' @importFrom dplyr `%>%` left_join group_by select summarize mutate rename ungroup
-#'
+#' @importFrom dplyr `%>%` left_join group_by select summarize mutate rename ungroup any_of
+#' @importFrom purrr map_dfr
+#' 
 #' @export
 get_priority = function(data, type = "criteria"){
 
@@ -595,9 +623,14 @@ get_priority = function(data, type = "criteria"){
 
 
 #' @name get_lambda
+#' @title Get Lambda Statistic for an AHP table
+#' @author Tim Fraser
+#' 
 #' @param data data.frame of output from `get_priority()`. Can handle priority statistics from a data.frame of priorities by alternatives, by criteria, or for both.
+#' 
 #' @importFrom tidyr pivot_wider
 #' @importFrom dplyr `%>%` filter mutate left_join any_of group_by n summarize if_else tibble
+#' 
 #' @export
 get_lambda = function(data){
 
@@ -642,10 +675,15 @@ get_lambda = function(data){
 
 
 #' @name get_global
+#' @title Get Global Measures for an AHP table
+#' @author Tim Fraser
+#'
 #' @param data data.frame output from `get_priority()`, containing both alternatives and criteria.
-#' @param format "wide" or "long". Describes output format of data.frame.
+#' @param format "wide" or "long". Describes output format of data.frame. Defaults to `"wide"`.
+#' 
 #' @importFrom dplyr `%>%` mutate select rename left_join bind_rows group_by across any_of ungroup arrange
 #' @importFrom tidyr pivot_wider
+#' 
 #' @export
 get_global = function(data, format = "wide"){
 

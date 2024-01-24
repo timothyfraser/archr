@@ -1,6 +1,12 @@
-# Helper Functions ##############################
+#' PART 5 FUNCTIONS
+#' This script contains a series of functions that support the genetic algorithm for optimization of enumerated architectures.
+#' Still under development. You are welcome to suggest new functions.
+#' 
+#' Some of these are internal functions, while others are functions intended to be used by actual R users.
+#' If you encounter an issue with any of these functions, please tag it in a Github Issue.
 
 #' @name as_bit
+#' @title Convert Integers to Bits as vectors.
 #' @author Tim Fraser
 #' @description
 #' Vectorized version of `decimal2binary()` from `GA` package.

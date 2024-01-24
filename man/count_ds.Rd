@@ -4,18 +4,18 @@
 \alias{count_ds}
 \title{Count N for Downselecting}
 \usage{
-count_ds(k, n)
+count_ds(n, k)
 }
 \arguments{
-\item{k}{number of items to choose}
-
 \item{n}{total number of items available to choose from}
+
+\item{k}{number of items to choose}
 }
 \description{
 Function to count total number of ways you can select \code{k} items from \code{n} items.
 }
 \note{
-count_ds(k = 2, n = 10)
+count_ds(n = 10, k = 2)
 }
 \author{
 Tim Fraser

@@ -1,9 +1,19 @@
-# For each decision
+#' PART 3 FUNCTIONS
+#' This script contains a series of functions that allow for enumeration. 
+#' Some of these are internal functions, while others are functions intended to be used by actual R users.
+#' If you encounter an issue with any of these functions, please tag it in a Github Issue.
+
+
+
+
+
 #' @name enum
 #' @author Tim Fraser
+#' 
 #' @param i ...
 #' @param d data.frame of decision-alternative-ids
 #' @param c data.frame of constraints
+#' 
 #' @importFrom dplyr `%>%` filter select
 #' @importFrom tidyr expand_grid
 enum = function(i = 1, d, c){
@@ -23,12 +33,20 @@ enum = function(i = 1, d, c){
   return(grid)
 }
 
+
+
 #' @name enumerate
 #' @title Enumerate Your Decision Tree
 #' @author Tim Fraser
+#' @description
+#' A function to enumerate a simple decision tree, under very specific formatting. Soon to be deprecated. 
+#' Encouraged to use new functions like `enumerate_binary()`, `enumerate_ds()`, etc. 
+#' 
 #' @param d data.frame of decision-alternative items
 #' @param c data.frame of constraints
-#' @importFrom dplyr `%>%` inner_join mutate n filter select contains
+#' 
+#' @importFrom dplyr `%>%` inner_join mutate n filter select contains if_any any_of
+#' 
 #' @export
 enumerate = function(d = NULL, c = NULL, .id = FALSE){
   no_d = is.null(d)
@@ -161,11 +179,14 @@ count_ds = function(n, k){
 #' @name enumerate_ds
 #' @title Enumerate Downselected Decision
 #' @author Tim Fraser, PhD
+#' 
 #' @param n total number of items available to choose from
 #' @param k number of items to choose
 #' @param .id (logical, optional) add a unique ID column to the end?
 #' @param .did (integer, optional) Decision id. For example, if .did = 1, then columns will be `d1_1`, `d1_2`, `d1_[n]`...
-#' @importFrom dplyr `%>%` filter select mutate n
+#' 
+#' @importFrom dplyr `%>%` filter select mutate n any_of
+#' 
 #' @export
 enumerate_ds = function(n, k, .id = FALSE, .did = 1){
   # Testing Values
@@ -219,13 +240,16 @@ enumerate_ds = function(n, k, .id = FALSE, .did = 1){
 }
 
 #' @name enumerate_assignment
+#' @title Enumerate Assignment Matrix into Architectures
 #' @author Tim Fraser, PhD
+#' 
 #' @param n (integer) total number of groups in part a of the assignment matrix
 #' @param m (integer) total number of groups in part b of the assignment matrix
 #' @param k (integer) total number of items (a-b pairs) that can be selected per assignment matrix. If n_alts = 2, k is be length 1. If n_alts > 2, k must be length n_alts+1. By default `k` is `1`.
 #' @param n_alts (integer, optional) total number of values that can be assigned to each item (eg. 2= c(0,1)). Default is `2`. (Experimental; don't change unless you've thought deeply about what you're doing!)
 #' @param .did unique decision id.
 #' @param .id (logical) Include a unique ID for each row? Defaults to FALSE.
+#' 
 #' @description
 #'
 #' If n_alts = 2, k can have 1 value.
@@ -234,7 +258,7 @@ enumerate_ds = function(n, k, .id = FALSE, .did = 1){
 #'    k[1] corresponds to when alternative = [1]
 #'    k[2] corresponds to when alternative = [2]
 #'
-#' @importFrom dplyr `%>%` select mutate filter n tibble
+#' @importFrom dplyr `%>%` select mutate filter n tibble any_of
 #' @importFrom tidyr expand_grid
 #' @importFrom purrr map2
 #'
@@ -307,13 +331,16 @@ enumerate_assignment = function(n,m, k = 1, n_alts = 2, .did = 1, .id = FALSE){
 
 
 #' @name enumerate_adjacency
+#' @title Enumerate Adjacency Matrix into Architectures
 #' @author Tim Fraser, PhD
+#' 
 #' @param n (integer) total number of nodes of the adjacency matrix
 #' @param k (integer) total number of items (i-j pairs) that can be selected per assignment matrix. If n_alts = 2, k is be length 1. If n_alts > 2, k must be length n_alts+1.
 #' @param n_alts (integer, optional) total number of values that can be assigned to each item (eg. 2= c(0,1)). Default is `2`. (Experimental; don't change unless you've thought deeply about what you're doing!)
 #' @param diag (logical, optional) Allow loops on the diagonal of the adjacency matrix? Eg. can A1 connect to A1? Defaults to FALSE.
 #' @param .did unique decision id.
 #' @param .id (logical) Include a unique ID for each row? Defaults to FALSE.
+#' 
 #' @description
 #'
 #' If n_alts = 2, k can have 1 value.
@@ -322,7 +349,7 @@ enumerate_assignment = function(n,m, k = 1, n_alts = 2, .did = 1, .id = FALSE){
 #'    k[1] corresponds to when alternative = [1]
 #'    k[2] corresponds to when alternative = [2]
 #'
-#' @importFrom dplyr `%>%` select mutate filter n tibble
+#' @importFrom dplyr `%>%` select mutate filter n tibble any_of
 #' @importFrom tidyr expand_grid
 #' @importFrom purrr map2
 #'
@@ -391,13 +418,18 @@ enumerate_adjacency = function(n, k = 1, n_alts = 2, diag = FALSE, .did = 1, .id
 
 }
 #' @name enumerate_permutation
+#' @title Enumerate Permuations into Architectures
+#'
 #' @param n total number of items in the set for permuting
 #' @param k number of items to choose. Must be less than or equal to `n`.
 #' @param .did unique decision id.
 #' @param .id (logical) Include a unique ID for each row? Defaults to FALSE.
-#' @importFrom dplyr `%>%` as_tibble mutate n
-#' @importFrom gtools permutation
+#' 
+#' @importFrom dplyr `%>%` as_tibble mutate n select any_of
+#' @importFrom gtools permutations
+#' 
 #' @source https://stackoverflow.com/questions/11095992/generating-all-distinct-permutations-of-a-list-in-r
+#' 
 #' @examples
 #' enumerate_permutation(n = 2)
 #' enumerate_permutation(n = 3, k = 2, .did = 5)
@@ -429,13 +461,18 @@ enumerate_permutation = function(n, k = NULL, .did = 1, .id = FALSE){
 }
 
 #' @name enumerate_partition
+#' @title Enumerate Partitions into Architectures
+#' @author Tim Fraser
+#'
 #' @param n total number of items to be partitioned
 #' @param k total number of partitions to be made (categories to assign)
 #' @param min_times (integer) a k-length vector of minimum number of times each respective category must be assigned.
 #' @param max_times (integer) a k-length vector of maximum number of times each respective category must be assigned.
 #' @param .did unique decision id.
 #' @param .id (logical) Include a unique ID for each row? Defaults to FALSE.
-#' @importFrom dplyr `%>%` mutate n filter select
+#' 
+#' @importFrom dplyr `%>%` mutate n filter select any_of
+#' 
 #' @examples
 #' enumerate_partition(n = 4, k = 2)
 #' enumerate_partition(n = 4, k = 2, min_times = c(1,3))
@@ -507,9 +544,11 @@ enumerate_partition = function(n, k, min_times = NULL, max_times = NULL, .did = 
 
 
 #' @name enumerate_binary
+#' @title Enumerate Binary Decisions into Architectures
 #' @author Tim Fraser
 #' @description
-#' Wrapper function for enumerating `n` binary decisions, using `enumerate()`.
+#' Function for enumerating `n` binary decisions into a `data.frame` of encoded architectures.
+#' 
 #' @param n number of decisions. Must be at least 1.
 #' @param forbidden ...
 #' @param .did (integer, optional) unique ID of first decision. Used to make column names for sequential decisions. Defaults to 1.
@@ -519,8 +558,10 @@ enumerate_partition = function(n, k, min_times = NULL, max_times = NULL, .did = 
 #' enumerate_binary(n = 2, forbidden = c(NA, 1))
 #' enumerate_binary(n = 4, .did = 3)
 #'
+#' @importFrom purrr map2
+#' @importFrom dplyr `%>%` tibble mutate
 #' @importFrom tidyr expand_grid
-#' @importFrom dplyr `%>%` mutate tibble
+
 #' @export
 enumerate_binary = function(n = 2, forbidden = NULL, .did = 1, .id = FALSE){
 
@@ -621,13 +662,21 @@ enumerate_binary = function(n = 2, forbidden = NULL, .did = 1, .id = FALSE){
 #' @name enumerate_sf
 #' @title Enumerate Standard Form
 #' @author Tim Fraser
+#' 
 #' @param n a vector describing the number of alternatives for each decision, sequentially.
 #' @param .did (integer, optional) unique ID of first decision. Used to make column names for sequential decisions. Defaults to 1.
 #' @param .id (logical, optional) Whether or not to add a unique ID for each row. Defaults to FALSE.
+#' @param forbidden Any forbidden possibilities. Not recommended. Easier to constrain using `dplyr::filter()` after the fact. 
+#' 
 #' @examples
 #' enumerate_sf(n = c(2, 3))
 #' enumerate_sf(n = c(2, 3), forbidden = c(NA,2))
 #' enumerate_sf(n = c(2, 3), .did = 4)
+#' 
+#' @importFrom purrr map2
+#' @importFrom dplyr `%>%` tibble mutate
+#' @importFrom tidyr expand_grid
+#' 
 #' @export
 enumerate_sf = function(n = c(2,3), forbidden = NULL, .did = 1, .id = FALSE){
 
@@ -704,7 +753,48 @@ enumerate_sf = function(n = c(2,3), forbidden = NULL, .did = 1, .id = FALSE){
 
 
 
-
+#' @name one_arch_to_adjacency
+#' @title Convert Architecture to Adjacency Matrix
+#' @author Tim Fraser, PhD
+#' @description Helper function for `arch_to_adjacency()`. Called in a loop.
+#' 
+#' @param data data.frame of edges, containing the fields `from`, `to`, and `value`, where `from` and `to` are `integers`.
+#' 
+#' @importFrom dplyr `%>%` mutate select
+#' @importFrom tidyr pivot_wider
+one_arch_to_adjacency = function(data){
+  
+  # data = edges %>%
+  #  filter(id == 1)
+  
+  # Get the full range of values
+  node_range = data %>% with(c(from, to)) %>% range()
+  nodes = seq(from = node_range[1], to = node_range[2], by = 1)
+  
+  df = data %>%
+    # Convert from and to into factors, with these levels,
+    # so that pivot_wider can use id_expand and names_expand to fill out all levels.
+    mutate(from = factor(from, levels = nodes),
+           to = factor(to, levels = nodes)) %>%
+    # Expand into wide format
+    pivot_wider(
+      id_cols = c(from), names_from = to, values_from = value,
+      # Expand to include every one of the from id-names
+      id_expand = TRUE, names_expand = TRUE,
+      # Sort the names numerically
+      names_sort = TRUE,
+      # Fill in missing cells as 0.
+      # Often diagonal is omitted, and should be zero.
+      values_fill = list(value = 0))
+  
+  m = df %>% select(-from) %>% as.matrix()
+  # Add the 'a' back in
+  mycolnames = paste0("a", colnames(m))
+  # Reassign column names
+  colnames(m) <- mycolnames
+  rownames(m) <- mycolnames
+  return(m)
+}
 
 
 #' @name arch_to_adjacency
@@ -748,45 +838,6 @@ arch_to_adjacency = function(arch, .id = NULL){
     mutate(from = str_extract(from, pattern = "[0-9]+") %>% as.integer(),
            to = str_extract(to, pattern = "[0-9]+") %>% as.integer())
 
-  #' @name one_arch_to_adjacency
-  #' @title Convert Architecture to Adjacency Matrix
-  #' @author Tim Fraser, PhD
-  #' @description Helper function
-  #' @param data data.frame of edges, containing the fields `from`, `to`, and `value`, where `from` and `to` are `integers`.
-  one_arch_to_adjacency = function(data){
-
-    # data = edges %>%
-    #  filter(id == 1)
-
-    # Get the full range of values
-    node_range = data %>% with(c(from, to)) %>% range()
-    nodes = seq(from = node_range[1], to = node_range[2], by = 1)
-
-    df = data %>%
-      # Convert from and to into factors, with these levels,
-      # so that pivot_wider can use id_expand and names_expand to fill out all levels.
-      mutate(from = factor(from, levels = nodes),
-             to = factor(to, levels = nodes)) %>%
-      # Expand into wide format
-      pivot_wider(
-        id_cols = c(from), names_from = to, values_from = value,
-        # Expand to include every one of the from id-names
-        id_expand = TRUE, names_expand = TRUE,
-        # Sort the names numerically
-        names_sort = TRUE,
-        # Fill in missing cells as 0.
-        # Often diagonal is omitted, and should be zero.
-        values_fill = list(value = 0))
-
-    m = df %>% select(-from) %>% as.matrix()
-    # Add the 'a' back in
-    mycolnames = paste0("a", colnames(m))
-    # Reassign column names
-    colnames(m) <- mycolnames
-    rownames(m) <- mycolnames
-    return(m)
-  }
-
   # For every architecture present,
   matrices = edges %>%
     # For the unique id of that architecture
@@ -798,6 +849,57 @@ arch_to_adjacency = function(arch, .id = NULL){
 
 }
 
+#' @name one_arch_to_assignment
+#' @title Convert One Architecture to Assignment Matrix
+#' @author Tim Fraser, PhD
+#' @description Helper function for `arch_to_assignment()`. Called in a loop.
+#' 
+#' @param data data.frame of edges, containing the fields `from`, `to`, and `value`, where `from` and `to` are `integers`.
+#' 
+#' @importFrom dplyr `%>%` mutate select
+#' @importFrom tidyr pivot_wider
+one_arch_to_assignment = function(data){
+  
+  # data = edges %>%
+  #   filter(id == 1)
+   
+  # Get the full range of values for a
+  a_node_range = data %>% with(a) %>% range()
+  a_nodes = seq(from = a_node_range[1], to = a_node_range[2], by = 1)
+  
+  # Get full range of values for b
+  b_node_range = data %>% with(b) %>% range()
+  b_nodes = seq(from = b_node_range[1], to = b_node_range[2], by = 1)
+  
+  
+  df = data %>%
+    # Convert from and to into factors, with these levels,
+    # so that pivot_wider can use id_expand and names_expand to fill out all levels.
+    mutate(a = factor(a, levels = a_nodes),
+           b = factor(b, levels = b_nodes)) %>%
+    # Expand into wide format
+    pivot_wider(
+      id_cols = c(a), names_from = b, values_from = value,
+      # Expand to include every one of the from id-names
+      id_expand = TRUE, names_expand = TRUE,
+      # Sort the names numerically
+      names_sort = TRUE,
+      # Fill in missing cells as 0.
+      # Often diagonal is omitted, and should be zero.
+      values_fill = list(value = 0))
+  
+  
+  m = df %>% select(-a) %>% as.matrix()
+  
+  mycolnames = paste0("b", colnames(m))
+  colnames(m) = mycolnames
+  
+  myrownames = paste0("a", df$a)
+  rownames(m) <- myrownames
+  
+  return(m)
+}
+
 #' @name arch_to_assignment
 #' @title Convert Architecture(s) back to Assignment Matrices
 #' @author Tim Fraser
@@ -807,6 +909,7 @@ arch_to_adjacency = function(arch, .id = NULL){
 #' @importFrom dplyr `%>%` mutate n select any_of tribble
 #' @importFrom tidyr separate pivot_longer pivot_wider
 #' @importFrom stringr str_extract
+#' @importFrom purrr map
 #' @examples
 #' a = tribble(
 #'   ~id, ~d1_a1_b1, ~d1_a2_b1, ~d1_a2_b2, ~d1_a2_b3,
@@ -848,52 +951,9 @@ arch_to_assignment = function(arch, .id = NULL){
     mutate(a = str_extract(a, pattern = "[0-9]+") %>% as.integer(),
            b = str_extract(b, pattern = "[0-9]+") %>% as.integer())
 
-  #' @name one_arch_to_assignment
-  #' @title Convert One Architecture to Assignment Matrix
-  #' @author Tim Fraser, PhD
-  #' @description Helper function
-  #' @param data data.frame of edges, containing the fields `from`, `to`, and `value`, where `from` and `to` are `integers`.
-  one_arch_to_assignment = function(data){
-
-    data = edges %>%
-      filter(id == 1)
-
-    # Get the full range of values for a
-    a_node_range = data %>% with(a) %>% range()
-    a_nodes = seq(from = a_node_range[1], to = a_node_range[2], by = 1)
-
-    # Get full range of values for b
-    b_node_range = data %>% with(b) %>% range()
-    b_nodes = seq(from = b_node_range[1], to = b_node_range[2], by = 1)
-
-
-    df = data %>%
-      # Convert from and to into factors, with these levels,
-      # so that pivot_wider can use id_expand and names_expand to fill out all levels.
-      mutate(a = factor(a, levels = a_nodes),
-             b = factor(b, levels = b_nodes)) %>%
-      # Expand into wide format
-      pivot_wider(
-        id_cols = c(a), names_from = b, values_from = value,
-        # Expand to include every one of the from id-names
-        id_expand = TRUE, names_expand = TRUE,
-        # Sort the names numerically
-        names_sort = TRUE,
-        # Fill in missing cells as 0.
-        # Often diagonal is omitted, and should be zero.
-        values_fill = list(value = 0))
-
-
-    m = df %>% select(-a) %>% as.matrix()
-
-    mycolnames = paste0("b", colnames(m))
-    colnames(m) = mycolnames
-
-    myrownames = paste0("a", df$a)
-    rownames(m) <- myrownames
-
-    return(m)
-  }
+  
+  # See code for `one_arch_to_assignment()`,
+  # which gets looped below using purrr's map() function.
 
   # For every architecture present,
   matrices = edges %>%

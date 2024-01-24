@@ -4,7 +4,7 @@
 \alias{enumerate}
 \title{Enumerate Your Decision Tree}
 \usage{
-enumerate(d = NULL, c = NULL)
+enumerate(d = NULL, c = NULL, .id = FALSE)
 }
 \arguments{
 \item{d}{data.frame of decision-alternative items}
@@ -12,7 +12,8 @@ enumerate(d = NULL, c = NULL)
 \item{c}{data.frame of constraints}
 }
 \description{
-Enumerate Your Decision Tree
+A function to enumerate a simple decision tree, under very specific formatting. Soon to be deprecated.
+Encouraged to use new functions like \code{enumerate_binary()}, \code{enumerate_ds()}, etc.
 }
 \author{
 Tim Fraser

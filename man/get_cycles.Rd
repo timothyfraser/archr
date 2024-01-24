@@ -2,7 +2,7 @@
 % Please edit documentation in R/part1_functions.R
 \name{get_cycles}
 \alias{get_cycles}
-\title{Get all cycles in a graph starting and ending with a given root}
+\title{Get cycles in a graph}
 \usage{
 get_cycles(g = NULL, root = 1, cutoff = 50, vars = NULL)
 }
@@ -16,7 +16,7 @@ get_cycles(g = NULL, root = 1, cutoff = 50, vars = NULL)
 \item{vars}{A vector of 1 or more edge weight names from \code{g}. If \code{vars = NULL}, then skips edgewise edge weight computing.}
 }
 \description{
-Get all cycles in a graph starting and ending with a given root
+Function to get all cycles in a graph starting and ending with a given root
 }
 \author{
 Tim Fraser
