@@ -966,3 +966,33 @@ arch_to_assignment = function(arch, .id = NULL){
 
 }
 
+
+
+
+#' @name get_percentages
+#' @title Tally percentages of each alternative for a decision variable in an architecture.
+#' @param x vector of alternatives for a specific decision. As long as there are rows in the architectural matrix.
+#' @param did string label of decision variable, eg. "d2" for decision 2
+#' @importFrom dplyr mutate select group_by n summarize `%>%` tibble
+#' @export
+get_percentages = function(x, did = "d2"){
+  # Testing values
+  #x = mini$d2
+  
+  # Get the tally per alternative  
+  tally = tibble(altid = x) %>%
+    group_by(altid) %>%
+    summarize(count = n())
+  # Calculate percentages
+  percentages = tally %>% 
+    mutate(total = sum(count)) %>%
+    mutate(percent = count / total) %>%
+    mutate(label = round(percent * 100, 1)) %>%
+    mutate(label = paste0(label, "%"))
+  # Add a decision id and format
+  percentages = percentages %>% 
+    mutate(did = did) %>%
+    select(did, altid, count, total, percent, label)
+  
+  return(percentages)
+}

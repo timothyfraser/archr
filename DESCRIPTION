@@ -1,6 +1,6 @@
 Package: archr
 Title: Tools for Systems Architecting in R
-Version: 1.0
+Version: 2.0
 Authors@R: 
     person("Timothy", "Fraser", , "tmf77@cornell.edu",
            role = c("aut", "cre"),

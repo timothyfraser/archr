@@ -15,7 +15,7 @@ devtools::document()
 devtools::build(pkg = ".", path = getwd(), binary = FALSE, vignettes = FALSE, manual = FALSE)
 
 unloadNamespace("archr"); remove.packages("archr")
-install.packages("archr_1.0.tar.gz", type = "source")
+install.packages("archr_2.0.tar.gz", type = "source")
 
 
 # archr::get_edges()

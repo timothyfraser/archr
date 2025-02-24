@@ -509,3 +509,313 @@ get_arm_old = function(data, p = "front", .id = "id"){
   return(s)
 
 }
+
+
+# # Calculate main effect
+# me = function(data, decision = "d2", value = 1, metric = "m1"){
+#   # Testing values
+#   # decision = "d2"; value = 1; metric = "m1"
+#   data2 = data %>%
+#     # Grab any columns with these character strings as their column names
+#     select(any_of(c(alt = decision, metric = metric))) %>%
+#     # Add a decision column
+#     mutate(decision = decision) %>%
+#     # Reorder them
+#     select(decision, alt, metric)
+#   # Calculate effect
+#   data3 = data2 %>%
+#     summarize(
+#       xhat = mean(metric[alt == value], na.rm = TRUE),
+#       x = mean(metric[alt != value], na.rm = TRUE),
+#       dbar = xhat - x  
+#     )
+#   output = data3$dbar  
+#   
+#   return(output)
+# }
+
+
+#' @name pareto_rank
+#' @title Find Pareto Rank using Nondominated Sorting
+#' @author Tim Fraser (adapted from Nozomi Hitomi)
+#' @param matrix an `n`x`m` matrix with `m` objectives and `n` solutions
+#' @description
+#' Generates a `n`x1 logical vector of parento ranks.
+#' @source Adapted from Matlab implementation by Nozomi Hitomi, 11/17/2015
+#' @export
+pareto_rank = function(x = NULL, y = NULL, m = NULL){
+  
+  #function [P]=paretofront2(x)
+  #Author Nozomi Hitomi
+  #Created 11/17/2015
+  #This code implements the first part of the fast nondominated sorting from
+  #NSGA-II. Assumes minimization of all objectives
+  #Input: X is a nxm matrix with m objectives and n solutions
+  #Ouput: P is the nx1 logical vector with true if the solution lies in the
+  #Pareto front
+  
+  # If m is missing but x and y are provided...
+  if(is.null(m)){
+    if(!is.null(x) & !is.null(y)){
+      # Make m a 2-column matrix of x and y
+      m = matrix(c(x, y), ncol = 2)
+    }else{
+      stop("Must provide either ['m'] or ['x' and 'y'].")
+    }
+  }
+  # Example
+  
+  # Get length of input matrix
+  n_arch = nrow(m);
+  
+  domination_counter = rep(0, n_arch)
+  # domination_counter=matrix(0, nrow = n_arch, ncol = 1);
+  
+  # For each row in the matrix...
+  for(i in 1:n_arch){
+    #i = 1
+    # As long as i is not the last item (can't compare the ith and ith +1 if ith = n)
+    if(i != n_arch){
+      # For every other remaining row in the matrix...
+      for(j in (i+1):n_arch){
+        # j = i + 1
+        # Check does the previous row dominate the second row
+        dom = dominates(s1 = m[i, ], s2 = m[j, ]);
+        # If the second (s2) dominates the first (s1)...
+        if(dom == -1){
+          # Add to the count of times that row was dominant
+          domination_counter[j] = domination_counter[j] + 1;
+          # If the first (s1) dominates the second (s2)...
+        }else if(dom == 1){
+          # Add to the count of times that row was dominant
+          domination_counter[i] = domination_counter[i] + 1;
+        }
+        # If neither were dominant, the counter is unaffected.
+      }
+    }
+  }
+  
+  # If any cases remain **non-dominated**
+  p = domination_counter
+  #p = domination_counter == 0
+  return(p)
+}
+
+
+# functions_sensitivity_and_connectivity.R
+
+# FUNCTIONS ###############################
+#' @name me
+#' @title Calculate main effect
+#' @param data data.frame
+#' @param decision string: name of decision variable i
+#' @param value integer: alternative value for decision variable i
+#' @param metric string: name of performance metric under evaluation
+#' @importFrom tidyr expand_grid
+#' @importFrom dplyr `%>%` select any_of distinct ungroup group_by summarize n mutate filter tibble
+#' @export
+me = function(data, decision = "d2", value = 1, metric = "m1"){
+  # Testing values
+  # decision = "d2"; value = 1; metric = "m1"
+  data2 = data %>%
+    # Grab any columns with these character strings as their column names
+    select(any_of(c(alt = decision, metric = metric))) %>%
+    # Add a decision column
+    mutate(decision = decision) %>%
+    # Reorder them
+    select(decision, alt, metric)
+  # Calculate effect
+  data3 = data2 %>%
+    summarize(
+      xhat = mean(metric[alt == value], na.rm = TRUE),
+      x = mean(metric[alt != value], na.rm = TRUE),
+      dbar = xhat - x  
+    )
+  output = data3$dbar  
+  
+  return(output)
+}
+
+#' @name sensitivity
+#' @title Get sensitivity score
+#' @param data data.frame
+#' @param decision_i string: name of decision variable i
+#' @param metric string: name of performance metric under evaluation
+#' @importFrom tidyr expand_grid
+#' @importFrom dplyr `%>%` select any_of distinct ungroup group_by summarize n mutate filter tibble
+#' @export
+sensitivity = function(data, decision_i = "d2", metric = "m1"){
+  # Let's build a sensitivity function you can use to get 1 sensitivity score.
+  
+  # Beginning attempt at a sensitivity
+  
+  # Testing Values
+  # decision = "d2"; metric = "m1"
+  # Get values for your ith decision
+  values = unlist(unique(data[, decision_i]))
+  
+  
+  # Create a table to hold my results
+  holder = tibble(values = values, me = NA_real_)
+  for(i in 1:length(values)){
+    holder$me[i] = me(data, decision = decision_i, value = values[i], metric = metric)
+  }
+  
+  s = holder %>%
+    summarize(stat = mean(abs(me)))
+  
+  output = s$stat
+  return(output)    
+}
+
+#' @name me_ij
+#' @title Get main effect of decision i given decision j
+#' @param data data.frame
+#' @param decision_i string: name of decision variable i
+#' @param value_i integer: value of decision variable i
+#' @param decision_j string: name of decision variable j
+#' @param value_j integer: value of decision variable j
+#' @param metric string: name of performance metric under evaluation
+#' @param notj logical: if true, assumes that decision j does not equal value_j. If false, assumes that decision j does equal value_j. 
+#' @importFrom tidyr expand_grid
+#' @importFrom dplyr `%>%` select any_of distinct ungroup group_by summarize n mutate filter
+#' @export
+me_ij = function(data, decision_i, value_i, decision_j, value_j, metric = "m1", notj = FALSE){
+  #Testing values
+  # decision_i = "d3"; value_i = 1
+  # decision_j = "d2"; value_j = 1
+  # metric = "m1"; notj = TRUE
+  
+  data1 = data %>%
+    select(any_of(c(di = decision_i, dj = decision_j, m = metric)))
+  
+  if(notj == TRUE){ 
+    # given that dj != j
+    data1 = data1 %>% filter(dj != value_j)   
+  }else if(notj == FALSE){
+    # given that dj == j
+    data1 = data1 %>% filter(dj == value_j)  
+  }
+  
+  output = data1 %>%
+    # Reclassify decision i as does it equal value i or not
+    mutate(di = di == value_i) %>% 
+    # Get mean when di == i vs. when di != i
+    summarize(xhat = mean(m[di == TRUE]),
+              x = mean(m[di == FALSE]),
+              diff = xhat - x) %>%
+    # Return the difference
+    with(diff)
+  
+  return(output)
+}
+
+
+#' @name sensitivity_ij
+#' @title Get total sensitivity of decision i given decision j
+#' @param data data.frame
+#' @param decision_i string: name of decision variable i
+#' @param decision_j string: name of decision variable j
+#' @param metric string: name of performance metric under evaluation
+#' @param notj logical: pipes direct to the `me_ij()` function.
+#' @importFrom tidyr expand_grid
+#' @importFrom dplyr `%>%` select any_of distinct ungroup group_by summarize n mutate
+#' @export
+sensitivity_ij = function(data, decision_i, decision_j, value_j, metric, notj = FALSE){
+  #decision_i = "d3"; decision_j = "d2"; value_j = 1; metric = "m1"; notj = FALSE
+  
+  # Get all values of decision i
+  data %>%
+    select(any_of(c(di = decision_i))) %>%
+    distinct() %>%
+    # For each unique value of decision i
+    group_by(di) %>% 
+    # Get the interaction effect with the constant same value j of decision j
+    summarize(
+      stat = me_ij(data = data, decision_i = decision_i, value_i = di, 
+                   decision_j = decision_j, value_j = value_j, 
+                   metric = metric, notj = notj),
+      .groups = "drop"
+    ) %>%
+    # Get absolute value
+    mutate(stat = abs(stat)) %>%
+    # Take mean
+    summarize(stat = mean(stat, na.rm = TRUE)) %>%
+    # return statistic
+    with(stat)
+}
+
+#' @name connectivity_ij
+#' @title Get total connectivity of decision i given decision j
+#' @param data data.frame
+#' @param decision_i string: name of decision variable i
+#' @param decision_j string: name of decision variable j
+#' @param metric string: name of performance metric under evaluation
+#' @importFrom tidyr expand_grid
+#' @importFrom dplyr `%>%` select any_of distinct ungroup group_by summarize n
+#' @export
+connectivity_ij = function(data, decision_i, decision_j = "d2", metric = "m1"){
+  # decision_i = "d3"; decision_j = "d2"; metric = "m1"
+  data1 = data %>%
+    select(any_of(c(dj = decision_j))) %>%
+    distinct()  %>%
+    # Get every combo of these with TRUE and FALSE
+    expand_grid(notj = c(TRUE, FALSE)) %>%
+    # For each set
+    group_by(dj, notj) %>%
+    # Get the sensitivity of decision i given decision j == or != value j
+    summarize(
+      stat = sensitivity_ij(data, decision_i = decision_i, decision_j = decision_j, value_j = dj, metric = metric, notj = notj),
+      .groups = "drop") %>%
+    ungroup()
+  
+  output = data1 %>%
+    # For each...
+    group_by(dj) %>%
+    # Get the absolute difference
+    summarize(stat = abs(diff(stat)),.groups = "drop") %>%
+    # Now get the mean absolute difference
+    summarize(stat = mean(stat)) %>%
+    # Return the statistic
+    with(stat)
+  
+  return(output)
+}
+
+
+#' @name connectivity
+#' @title Get total connectivity of decision i
+#' @param data data.frame
+#' @param decision_i string: name of decision variable
+#' @param decisions vector: names of decision variables under consideration
+#' @param metric string: name of performance metric under evaluation
+#' @importFrom tidyr expand_grid
+#' @importFrom dplyr `%>%` ungroup group_by summarize n
+#' @export
+connectivity = function(data, decision_i = "d3", decisions = c("d1", "d2", "d3"), metric = "m1"){
+  
+  #decision_i = "d3"; decisions = c("d1","d2","d3"); metric = "m1"
+  
+  # Get the other decisions
+  other_decisions = decisions[!decisions %in% decision_i]
+  # Get a grid of all di-dj pairs
+  output = expand_grid(
+    di = decision_i,
+    dj = other_decisions
+  ) %>%
+    # For each di-dj pair (specifically, for each dj)
+    group_by(di,dj) %>%
+    # Get the connectivity between decisions di and dj
+    summarize(
+      stat = connectivity_ij(data = data, decision_i = di, decision_j = dj, metric = metric),
+      .groups = "drop"
+    ) %>%
+    ungroup() %>%
+    # Now, take the mean of these statistics
+    # You have one for each decision j,
+    # as in each decision that is not i
+    summarize(stat = sum(stat) / n()) %>% 
+    with(stat)
+  
+  return(output)
+}
