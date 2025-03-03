@@ -18,7 +18,7 @@
 #' @param vars vector of metric names. Must be columns in `d`.
 #' @param c (Optional) data.frame of constraints.
 #' @param invalid value that an invalid architecture receives.
-#'
+#' 
 #' @export
 evaluate_tidy = function(par, d, vars = NULL, c = NULL, invalid = 0){
   # Testing value only
