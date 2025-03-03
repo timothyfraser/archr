@@ -4,6 +4,59 @@
 #' Continuing from `tutorial_enumeration_1.R`, let's do some exercises with our other functions.
 
 
+library(archr) # get enumerate_ functions
+library(dplyr) # get pipeline
+library(tidyr) # expand_grid()
+
+
+# which instruments
+enumerate_ds(n = 3, k = 3, .did = 1)
+
+# packaging
+enumerate_sf(n = c(5), .did = 2)
+
+# scheduling
+enumerate_sf(n = c(2), .did = 3)
+
+
+# If no constraints...
+expand_grid(
+  # which instruments
+  enumerate_ds(n = 3, k = 3, .did = 1),
+  # packaging
+  enumerate_sf(n = c(5), .did = 2),
+  # scheduling
+  enumerate_sf(n = c(2), .did = 3)
+)
+
+
+# which instruments
+parta = expand_grid(
+  enumerate_ds(n = 3, k = 3, .did = 1) %>%
+    filter(d1_1 == 1),
+  enumerate_sf(n = c(5), .did = 2) %>%
+    filter(d2 != 4)
+)
+
+
+partb = expand_grid(
+  enumerate_ds(n = 3, k = 3, .did = 1) %>%
+    filter(d1_1 != 1),
+  enumerate_sf(n = c(5), .did = 2)
+)
+
+# constrained architecture
+constrained = bind_rows(parta, partb)
+
+final = expand_grid(
+  constrained,
+  # scheduling
+  enumerate_sf(n = c(2), .did = 3)
+)
+
+final
+remove(final)
+
 
 # 1. TRICKS #################################
 
