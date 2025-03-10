@@ -28,32 +28,38 @@ library(readr)
 # Fortunately, you've estimated, based on data from past studies, 
 # statistics describing the **time** and **cost** distributions of each subsystem!
 
-
-# Import them, then view them with captions!
-# See the spreadsheet here:
-# url = "https://docs.google.com/spreadsheets/d/1fAOp-EF-eBYww33F3oYMAwIfgFJOFUtySZtKuih12aw/edit?usp=sharing"
-# Download link
-link = "https://docs.google.com/spreadsheets/d/1fAOp-EF-eBYww33F3oYMAwIfgFJOFUtySZtKuih12aw/export?format=csv&gid=0"
-# Load table
-t = link %>% read_csv() 
-
-
-
-# Time distribution stats (hours) by subsystem
-t %>% filter(type == "time")
+# Write them up using tribble() from dplyr!
 
 # Cost distribution stats ($1000s) by subsystem
-t %>% filter(type == "cost")
+cost = tribble(
+  ~type, ~system, ~dist,    ~mu, ~sigma,
+  "cost", "app",  "normal", 40,  2,
+  "cost", "mak",  "exponential", 30,  NA,
+  "cost", "dec",  "normal", 60,  4,
+  "cost", "qc",  "poisson", 20,  NA,
+  "cost", "del",  "normal", 80,  5
+)
+
+# Time distribution stats (hours) by subsystem
+time <- tribble(
+  ~type, ~system, ~dist,        ~mu, ~sigma,
+  "time", "app",  "normal",      500,   25,
+  "time", "mak",  "exponential", 1500,  NA,
+  "time", "dec",  "normal",      400,   25,
+  "time", "qc",   "poisson",     1200,  NA,
+  "time", "del",  "normal",      1300,  30
+)
+
 
 
 ## EXAMPLE 1: SIMULATION ###################################################
 
 ## 1.1 We know the stats of the App Subsystem's Time distribution
 # view the app row - it's a normal distribution
-t %>% filter(type == "time", system == "app")
+time
 
 # grab stats 's'
-s = t %>% filter(type == "time", system == "app")
+s = time %>% filter(system == "app")
 
 
 
@@ -83,13 +89,11 @@ pnorm(bench, mean = s$mu, sd = s$sigma)
 
 # Joint probability of failure!
 
-t %>% 
-  filter(type == "time") %>%
+time %>%
   mutate(prob = 1 - pnorm(bench, mean = mu, sd = sigma))
 
 
-p = t %>% 
-  filter(type == "time") %>%
+p = time %>% 
   mutate(prob = case_when(
     # when normal...
     dist == "normal" ~  1 - pnorm(bench, mean = mu, sd = sigma),
