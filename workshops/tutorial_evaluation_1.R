@@ -62,11 +62,8 @@ time
 s = time %>% filter(system == "app")
 
 
-
 s$mu # access the mean ("mu")  
 s$sigma  # access the standard deviation ("sigma")  
-
-
 
 
 ## 1.2 Calculate Quantities of Interest (QIs)
@@ -87,12 +84,10 @@ pnorm(bench, mean = s$mu, sd = s$sigma)
 # What # of cases took MORE than 520 hours?
 1 - pnorm(bench, mean = s$mu, sd = s$sigma)
 
-# Joint probability of failure!
+# Probability of failure (failure = more than 520 hours)!
+time %>% mutate(prob = 1 - pnorm(bench, mean = mu, sd = sigma))
 
-time %>%
-  mutate(prob = 1 - pnorm(bench, mean = mu, sd = sigma))
-
-
+# Joint probability of failure
 p = time %>% 
   mutate(prob = case_when(
     # when normal...
