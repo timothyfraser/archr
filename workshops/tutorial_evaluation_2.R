@@ -9,15 +9,26 @@ library(dplyr)
 library(readr)
 library(ggplot2)
 
-# Import them, then view them with captions!
-# See the spreadsheet here:
-# url = "https://docs.google.com/spreadsheets/d/1fAOp-EF-eBYww33F3oYMAwIfgFJOFUtySZtKuih12aw/edit?usp=sharing"
-# Download link
-link = "https://docs.google.com/spreadsheets/d/1fAOp-EF-eBYww33F3oYMAwIfgFJOFUtySZtKuih12aw/export?format=csv&gid=0"
-# Load table
-t = link %>% read_csv() 
+# Import data!
+# Cost distribution stats ($1000s) by subsystem
+cost = tribble(
+  ~type, ~system, ~dist,    ~mu, ~sigma,
+  "cost", "app",  "normal", 40,  2,
+  "cost", "mak",  "exponential", 30,  NA,
+  "cost", "dec",  "normal", 60,  4,
+  "cost", "qc",  "poisson", 20,  NA,
+  "cost", "del",  "normal", 80,  5
+)
 
-
+# Time distribution stats (hours) by subsystem
+time <- tribble(
+  ~type, ~system, ~dist,        ~mu, ~sigma,
+  "time", "app",  "normal",      500,   25,
+  "time", "mak",  "exponential", 1500,  NA,
+  "time", "dec",  "normal",      400,   25,
+  "time", "qc",   "poisson",     1200,  NA,
+  "time", "del",  "normal",      1300,  30
+)
 
 # EXAMPLE 1: PROBABILISTIC PROJECTIONS ###########################################
 # Set parameters
@@ -66,7 +77,7 @@ rnorm(n = 100, mean = 500, sd = 25)
 
 
 # Quality Control
-t %>% filter(type == "time")
+time
 # -- mu: 1200 hours
 # -- poisson
 # -- 1A. What % of its possible architectures take OVER 600 hours?
@@ -171,7 +182,7 @@ sd(o$sum)
 # Try your best to repeat this process, but this time,
 # simulate the **TOTAL COST** of the system overall,
 # using our table t above!
-t %>% filter(type == "cost")
+cost
 
 
 k = tibble(
@@ -189,8 +200,7 @@ k %>%
 
 
 # If you need to do it without using specific values
-t %>%
-  filter(type == "cost") %>%
+cost %>%
   group_by(system) %>%
   reframe(
     id = 1:n(),
