@@ -34,6 +34,7 @@ time <- tribble(
 
 # pnorm, pexp, ppois, etc. - cumulative distribution
 # rnorm, rexp, rpois, etc. - simulates times
+# dnorm, dexp, dpois, etc - value of pdf 
 # Set parameters
 bench <- 520 # suppose 520 hours is our firm deadline from funders
 
