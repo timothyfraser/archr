@@ -31,6 +31,9 @@ time <- tribble(
 )
 
 # EXAMPLE 1: PROBABILISTIC PROJECTIONS ###########################################
+
+# pnorm, pexp, ppois, etc. - cumulative distribution
+# rnorm, rexp, rpois, etc. - simulates times
 # Set parameters
 bench <- 520 # suppose 520 hours is our firm deadline from funders
 
@@ -40,14 +43,13 @@ bench <- 520 # suppose 520 hours is our firm deadline from funders
 
 # Eg. What % of cases would should we expect take > 520 hours?
 # Assume a normal distribution.
-1 - pnorm(bench, mean = 500, sd = 20)
+1 - pnorm(bench, mean = 500, sd = 25)
 
 
 
 
 # What if an exponential distribution fit this better?
 # The rate (lambda) of an exponential distribution is 1 / mean time
-1 - pexp(bench, rate = 1/500)
 
 
 
@@ -56,15 +58,15 @@ bench <- 520 # suppose 520 hours is our firm deadline from funders
 
 # What if a poisson distribution fit this better?
 # The lambda of a poisson distribution is the **mean** time 
-1 - ppois(bench, lambda = 500)
 
 
 # 100 random draws if normal.......
 rnorm(n = 100, mean = 500, sd = 25)
 
+# simulate 100 random draws if poisson
 
-# pnorm - probabilities
-# rnorm - actual simulated times
+# simulate 100 random draws if exponential 
+
 
 
 # LEARNING CHECK 1: SIMULATION
@@ -77,27 +79,20 @@ rnorm(n = 100, mean = 500, sd = 25)
 
 
 # Quality Control
-time
 # -- mu: 1200 hours
 # -- poisson
 # -- 1A. What % of its possible architectures take OVER 600 hours?
 
-bench = 600
-1 - ppois(bench, lambda = 500)
 
 # -- 1B. Take a 100 random draws from that distribution, and view its histogram!
-rpois(n = 100, lambda = 500)
-
-
-rpois(n = 100, lambda = 500) %>% hist()
 
 
 # Delivery System
 # -- 1A. What % of its possible architectures take OVER 600 hours?
-1 - pnorm(600, mean = 1300, sd = 30)
+
 
 # -- 1B. Take a 100 random draws from that distribution, and view its histogram!
-rnorm(n = 100, mean = 1300, sd = 30) %>% hist()
+
 
 
 
@@ -165,18 +160,12 @@ ggplot(o, aes(x = max)) +
 
 # Compute the median, mean, and standard deviation of this distribution!
 # If simultaneously...
-median(o$max)
-mean(o$max)
-sd(o$max)
 
 # "If sequentially...
-median(o$sum)
-mean(o$sum)
-sd(o$sum)
 
 # Suppose we have an 1800-hour deadline.
+
 # What's the chance it takes >1800 hours if done **simultaneously**?
-1 - ppois(1800, lambda = mean(o$max))
 
 # TASK 2: SIMULATE OVERALL SYSTEM
 # Try your best to repeat this process, but this time,
@@ -231,7 +220,7 @@ pbinom(9, size = n, prob = p)
 # more than 9
 1 - pbinom(9, size = n, prob = p)
 
-# 3.3 What's the expected number of donuts that land safely?
+# 3.3 simulate 100 draws from a binomial distribution to determine the expected number of donuts
 rbinom(100, n, p) %>% mean()
 rbinom(100, n, p) %>% sd()
 
