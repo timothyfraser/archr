@@ -159,9 +159,15 @@ ggplot(o, aes(x = max)) +
   labs(x = "Max Subsystem Completion Time (hours)", y = "Frequency")
 
 # Compute the median, mean, and standard deviation of this distribution!
-# If simultaneously...
+# "If simultaneously...
+median(o$max)
+mean(o$max)
+sd(o$max)
 
 # "If sequentially...
+median(o$sum)
+mean(o$sum)
+sd(o$sum)
 
 # Suppose we have an 1800-hour deadline.
 
