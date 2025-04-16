@@ -22,8 +22,10 @@ binary2decimal(x = c(1, 1) )
 # x = vector of bits (00010101010101)
 # xhat = vector of integers (0,1,2,3)
 
-
-# From integer to binary
+#' @name int2bit
+#' @description 
+#' Converts a vector `xhat` of integers to a vector of binary bits `x`
+#' Also, if one of the values of `xhat` isn't feasible, it randomly generates a feasible value instead.
 int2bit = function(xhat){ 
 
   # testing integers
@@ -79,3 +81,4 @@ int2bit(xhat = c(3, 1, 1))
 
 # From binary to integer
 bit2int = function(x){ }
+
