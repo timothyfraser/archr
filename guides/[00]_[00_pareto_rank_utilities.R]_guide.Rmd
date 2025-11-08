@@ -1,0 +1,136 @@
+---
+title: "[00] Pareto ranking helpers Guide"
+output:
+  md_document:
+    variant: gfm
+output_dir: ../workshops
+knitr:
+  opts_knit:
+    root.dir: ..
+---
+
+This tutorial complements `00_pareto_rank_utilities.R` and unpacks the workshop on pareto ranking helpers. You will see how it advances the Evaluation sequence while building confidence with base R and tidyverse tooling.
+
+## Setup
+
+- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+
+## Skills
+
+- Navigate the script `00_pareto_rank_utilities.R` within the Evaluation module.
+- Connect the topic "Pareto ranking helpers" to systems architecting decisions.
+- Define custom functions to package repeatable logic.
+
+## Application
+
+### Step 1 – Define `pareto_rank()`
+
+Create the helper function `pareto_rank()` so you can reuse it throughout the workshop.
+
+```{r step_01, eval=FALSE}
+pareto_rank = function(x = NULL, y = NULL, m = NULL){
+```
+
+### Step 2 – Run the Code Block
+
+If m is missing but x and y are provided...
+
+```{r step_02, eval=FALSE}
+  if(is.null(m)){
+    if(!is.null(x) & !is.null(y)){
+      # Make m a 2-column matrix of x and y
+      m = matrix(c(x, y), ncol = 2)
+    }else{
+      stop("Must provide either ['m'] or ['x' and 'y'].")
+    }
+  }
+  # Example
+```
+
+### Step 3 – Create `n_arch`
+
+Get length of input matrix.
+
+```{r step_03, eval=FALSE}
+  n_arch = nrow(m);
+```
+
+### Step 4 – Create `domination_counter`
+
+Create the object `domination_counter` so you can reuse it in later steps.
+
+```{r step_04, eval=FALSE}
+  domination_counter = rep(0, n_arch)
+  # domination_counter=matrix(0, nrow = n_arch, ncol = 1);
+```
+
+### Step 5 – Loop Through Values
+
+For each row in the matrix...
+
+```{r step_05, eval=FALSE}
+  for(i in 1:n_arch){
+    #i = 1
+    # As long as i is not the last item (can't compare the ith and ith +1 if ith = n)
+    if(i != n_arch){
+      # For every other remaining row in the matrix...
+      for(j in (i+1):n_arch){
+        # j = i + 1
+        # Check does the previous row dominate the second row
+        dom = dominates(s1 = m[i, ], s2 = m[j, ]);
+        # If the second (s2) dominates the first (s1)...
+        if(dom == -1){
+          # Add to the count of times that row was dominant
+          domination_counter[j] = domination_counter[j] + 1;
+          # If the first (s1) dominates the second (s2)...
+        }else if(dom == 1){
+          # Add to the count of times that row was dominant
+          domination_counter[i] = domination_counter[i] + 1;
+        }
+        # If neither were dominant, the counter is unaffected.
+      }
+    }
+  }
+```
+
+### Step 6 – Create `p`
+
+If any cases remain **non-dominated**.
+
+```{r step_06, eval=FALSE}
+  p = domination_counter
+  #p = domination_counter == 0
+  return(p)
+}
+```
+
+## Learning Checks
+
+**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+<details>
+<summary>Show answer</summary>
+
+Use `source(file.path("workshops", "00_pareto_rank_utilities.R"))` from the Console or press the Source button while the script is active.
+
+</details>
+
+**Learning Check 2.** How can you build confidence that a newly defined function behaves as intended?
+
+<details>
+<summary>Show answer</summary>
+
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+
+</details>
+
+**Learning Check 3.** In your own words, what key idea does the topic "Pareto ranking helpers" reinforce?
+
+<details>
+<summary>Show answer</summary>
+
+It highlights how pareto ranking helpers supports the overall systems architecting process in this course.
+
+</details>

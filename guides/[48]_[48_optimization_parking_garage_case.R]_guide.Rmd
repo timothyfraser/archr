@@ -1,0 +1,282 @@
+---
+title: "[48] Parking garage optimization case Guide"
+output:
+  md_document:
+    variant: gfm
+output_dir: ../workshops
+knitr:
+  opts_knit:
+    root.dir: ..
+---
+
+This tutorial complements `48_optimization_parking_garage_case.R` and unpacks the workshop on parking garage optimization case. You will see how it advances the Optimization sequence while building confidence with base R and tidyverse tooling.
+
+## Setup
+
+- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+
+## Skills
+
+- Navigate the script `48_optimization_parking_garage_case.R` within the Optimization module.
+- Connect the topic "Parking garage optimization case" to systems architecting decisions.
+- Load packages with `library()` and verify they attach without warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Define custom functions to package repeatable logic.
+- Iterate on visualisations built with `ggplot2`.
+- Experiment with optimisation searches powered by the `GA` package.
+
+## Application
+
+### Step 1 – Load Packages
+
+packages #####################################. Attach dplyr to make its functions available.
+
+```{r step_01, eval=FALSE}
+library(dplyr) # for data wrangling
+library(archr) # for enumeration
+library(ggplot2) # for visualization
+library(GA) # for genetic algorithm
+library(rmoo) # for multi-objective genetic algorithms
+```
+
+### Step 2 – Define `get_npv()`
+
+functions ######################################. Create the helper function `get_npv()` so you can reuse it throughout the workshop.
+
+```{r step_02, eval=FALSE}
+get_npv = function(t, r, i){r / (1 + i)^t }
+```
+
+### Step 3 – Define `get_capacity()`
+
+Create the helper function `get_capacity()` so you can reuse it throughout the workshop.
+
+```{r step_03, eval=FALSE}
+get_capacity = function(d1){ d1 * 200 }
+```
+
+### Step 4 – Define `get_usage()`
+
+Create the helper function `get_usage()` so you can reuse it throughout the workshop.
+
+```{r step_04, eval=FALSE}
+get_usage = function(demand, capacity){
+  if_else(demand > capacity, true = capacity, false = demand)
+}
+```
+
+### Step 5 – Define `get_revenue()`
+
+Create the helper function `get_revenue()` so you can reuse it throughout the workshop.
+
+```{r step_05, eval=FALSE}
+get_revenue = function(t, usage){ 10000 * t * usage }
+```
+
+### Step 6 – Define `get_demand()`
+
+Create the helper function `get_demand()` so you can reuse it throughout the workshop.
+
+```{r step_06, eval=FALSE}
+get_demand = function(t){ log(t) * 334.4 + 697.7 }
+```
+
+### Step 7 – Define `get_operating_cost()`
+
+Create the helper function `get_operating_cost()` so you can reuse it throughout the workshop.
+
+```{r step_07, eval=FALSE}
+get_operating_cost = function(capacity){
+  # $2k/year/spaces available
+  2000 * capacity
+}
+```
+
+### Step 8 – Define `get_lease_cost()`
+
+Create the helper function `get_lease_cost()` so you can reuse it throughout the workshop.
+
+```{r step_08, eval=FALSE}
+get_lease_cost = function(){ 3.6 * 1000000 }
+get_construction_cost = function(capacity, levels = 0){
+  base = 16000 * capacity
+  base + 0.10*base*levels
+}
+```
+
+### Step 9 – Create `a`
+
+Let's make our architectures - 1 decision, the number of levels in the garage.
+
+```{r step_09, eval=FALSE}
+a = archr::enumerate_sf(
+  n = 15
+) %>%
+  # repeat over time for 20 years
+  expand_grid(
+    t = 1:20
+  ) %>%
+  # approximate net present value
+  mutate(
+    # first approximate demand for parking spots...
+    demand = get_demand(t = t),
+    # then calculate intermediates...
+    capacity = get_capacity(d1 = d1),
+    usage = get_usage(demand = demand, capacity = capacity),
+    revenue = get_revenue(t = t, usage = usage),
+    operation_cost = get_operating_cost(capacity = capacity),
+    lease_cost = get_lease_cost(),
+    construction_cost = get_construction_cost(capacity = capacity, levels = d1),
+    cash_flow = revenue - (operation_cost + lease_cost + construction_cost),
+    # then calculate net present value at time t with a discount rate of 12%
+    npv = get_npv(t = t, r = cash_flow, i = 0.12) 
+  )
+```
+
+### Step 10 – Start a ggplot
+
+Show expected change in net present value over time, depending on this decision (how many levels you build).
+
+```{r step_10, eval=FALSE}
+ggplot() +
+  geom_point(data = a, mapping = aes(x = t, y = npv, color = factor(d1))) +
+  geom_line(data = a, mapping = aes(x = t, y = npv, group = d1, color = factor(d1) ))
+```
+
+### Step 11 – Start a ggplot
+
+Find the maximum 20-year NPV given number of levels of parking garage (d1).
+
+```{r step_11, eval=FALSE}
+ggplot() +
+  geom_point(
+    data = a %>% filter(t == 20),
+    mapping = aes(x = d1, y = npv))
+```
+
+### Step 12 – Practice the Pipe
+
+Find the peak numerically -- 9 levels.
+
+```{r step_12, eval=FALSE}
+a %>% filter(t == 20) %>%
+  filter(npv == max(npv))
+```
+
+### Step 13 – Create `a2`
+
+simulate ###################################### Let's make our architectures - 1 decision, the number of levels in the garage.
+
+```{r step_13, eval=FALSE}
+a2 = archr::enumerate_sf(
+  n = 15
+) %>%
+  # repeat over time for 20 years
+  expand_grid(
+    t = 1:20
+  ) %>%
+  # approximate net present value
+  mutate(
+    demand = get_demand(t = t),
+    # Estimate volatility as 10% of that year's demand
+    volatility = 0.10*demand
+  ) %>%
+  # Estimate volatility with 1000 draws from a normal distribution,
+  # for each number of levels and year
+  group_by(d1,t) %>%
+  reframe(demand = rnorm(n = 1000, mean = demand, sd = volatility)) %>%
+  # calculate npv for each simulation
+  mutate(
+    capacity = get_capacity(d1 = d1),
+    usage = get_usage(demand = demand, capacity = capacity),
+    revenue = get_revenue(t = t, usage = usage),
+    operation_cost = get_operating_cost(capacity = capacity),
+    lease_cost = get_lease_cost(),
+    construction_cost = get_construction_cost(capacity = capacity, levels = d1),
+    cash_flow = revenue - (operation_cost + lease_cost + construction_cost),
+    npv = get_npv(t = t, r = cash_flow, i = 0.12) 
+  ) %>%
+  # For each number of levels and year,
+  # estimate the confidence interval around net present value
+  # conservative estimate will be lower 95% confidence interval,
+  # eg. the 2.5th percentile of NPV.
+  group_by(d1,t) %>%
+  summarize(
+    mean = mean(npv, na.rm = TRUE),
+    lower = quantile(npv, probs = 0.025),
+    upper = quantile(npv, probs = 0.975)
+  ) %>%
+  ungroup()
+```
+
+### Step 14 – Practice the Pipe
+
+Find the peak. Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_14, eval=FALSE}
+a2 %>% filter(t == 20) %>%
+  filter(lower == max(lower))
+```
+
+### Step 15 – Start a ggplot
+
+Show that the peak occurs at 7 levels not, not 9.
+
+```{r step_15, eval=FALSE}
+ggplot() +
+  geom_line(
+    data = a %>% filter(t == 20),
+    mapping = aes(x = d1, y = npv, color = "No Uncertainty")) +
+  geom_line(
+    data = a2 %>% filter(t == 20),
+    mapping = aes(x = d1, y = lower, color = "Lower 95% Estimate"))
+```
+
+## Learning Checks
+
+**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+<details>
+<summary>Show answer</summary>
+
+Use `source(file.path("workshops", "48_optimization_parking_garage_case.R"))` from the Console or press the Source button while the script is active.
+
+</details>
+
+**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+
+<details>
+<summary>Show answer</summary>
+
+Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+
+</details>
+
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+
+<details>
+<summary>Show answer</summary>
+
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+
+</details>
+
+**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+
+<details>
+<summary>Show answer</summary>
+
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+
+</details>
+
+**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
+
+<details>
+<summary>Show answer</summary>
+
+Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+
+</details>

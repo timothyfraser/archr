@@ -1,0 +1,716 @@
+---
+title: "[32] Evaluation scenario analysis Guide"
+output:
+  md_document:
+    variant: gfm
+output_dir: ../workshops
+knitr:
+  opts_knit:
+    root.dir: ..
+---
+
+This tutorial complements `32_evaluation_scenarios.R` and unpacks the workshop on evaluation scenario analysis. You will see how it advances the Evaluation sequence while building confidence with base R and tidyverse tooling.
+
+## Setup
+
+- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+
+## Skills
+
+- Navigate the script `32_evaluation_scenarios.R` within the Evaluation module.
+- Connect the topic "Evaluation scenario analysis" to systems architecting decisions.
+- Load packages with `library()` and verify they attach without warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Define custom functions to package repeatable logic.
+- Iterate on visualisations built with `ggplot2`.
+
+## Application
+
+### Step 1 – Load Packages
+
+Attach dplyr to make its functions available.
+
+```{r step_01, eval=FALSE}
+library(dplyr)
+library(readr)
+library(tidyr)
+library(archr)
+```
+
+### Step 2 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_02, eval=FALSE}
+data("donuts", package = "archr")
+```
+
+### Step 3 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_03, eval=FALSE}
+donuts
+```
+
+### Step 4 – Create `a`
+
+Let's enumerate!s. Create the object `a` so you can reuse it in later steps.
+
+```{r step_04, eval=FALSE}
+a = enumerate_binary(n = 10)
+```
+
+### Step 5 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_05, eval=FALSE}
+a
+# colSums(t(a)) * donuts$benefit
+```
+
+### Step 6 – Create `a`
+
+MATRIX MULTIPLICATION METHODS ####################################### Let's enumerate!s.
+
+```{r step_06, eval=FALSE}
+a = enumerate_binary(n = 10)
+```
+
+### Step 7 – Build a Data Frame
+
+Construct a small data frame that you can manipulate later.
+
+```{r step_07, eval=FALSE}
+tibble(
+  benefit = colSums(t(a) * donuts$benefit),
+  cost = colSums(t(a) * donuts$cost)
+)
+```
+
+### Step 8 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_08, eval=FALSE}
+a %>%
+  mutate(benefit = as.matrix(a) %*% donuts$benefit)
+```
+
+### Step 9 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_09, eval=FALSE}
+donuts
+donuts$benefit
+```
+
+### Step 10 – Clear Objects
+
+Clear. Remove objects from the environment to prevent name clashes.
+
+```{r step_10, eval=FALSE}
+rm(list = ls())
+```
+
+### Step 11 – Create `a`
+
+Let's enumerate!s. Create the object `a` so you can reuse it in later steps.
+
+```{r step_11, eval=FALSE}
+a = enumerate_binary(n = 10)
+```
+
+### Step 12 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_12, eval=FALSE}
+data("d_donuts", package = "archr")
+d_donuts
+```
+
+### Step 13 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_13, eval=FALSE}
+a %>%
+  select(d1,d2) %>%
+  left_join(
+    by = c("d1" = "altid"),
+    y = d_donuts %>% 
+      filter(did == 1) %>%
+      select(altid,
+             d1_benefit = benefit)) %>%
+  left_join(
+    by = c("d2" = "altid"),
+    y = d_donuts %>% 
+      filter(did == 2) %>%
+      select(altid,
+             d2_benefit = benefit)) %>%
+  mutate(benefit = d1_benefit + d2_benefit)
+```
+
+### Step 14 – Clear Objects
+
+Clear. Remove objects from the environment to prevent name clashes.
+
+```{r step_14, eval=FALSE}
+rm(list = ls())
+```
+
+### Step 15 – Create `a`
+
+Let's enumerate!s. Create the object `a` so you can reuse it in later steps.
+
+```{r step_15, eval=FALSE}
+a = enumerate_binary(n = 10)
+```
+
+### Step 16 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_16, eval=FALSE}
+data("d_donuts", package = "archr")
+```
+
+### Step 17 – Loop Through Values
+
+For each column (decision).
+
+```{r step_17, eval=FALSE}
+for(i in 1:length(a)){
+  # For each row
+  for(j in 1:nrow(a)){
+```
+
+### Step 18 – Create `this_a`
+
+i = 1; j = 1 Get the value from our matrix.
+
+```{r step_18, eval=FALSE}
+    this_a = a[[j,i]]
+    # Grab our stats
+    values = d_donuts %>% filter(did == i) %>% filter(altid == this_a)
+    # Reassign the value to be the benefit
+    a[[j,i]] <- values$benefit  
+  }  
+}
+```
+
+### Step 19 – Practice the Pipe
+
+A data.frame of benefits per decision (column) per architecture (row).
+
+```{r step_19, eval=FALSE}
+a %>%
+  mutate(benefit = d1+d2+d3+d4+d5+d6+d7+d8+d9+d10)
+```
+
+### Step 20 – Clear Objects
+
+Clear. Remove objects from the environment to prevent name clashes.
+
+```{r step_20, eval=FALSE}
+rm(list = ls())
+```
+
+### Step 21 – Create `a`
+
+SUPER FOR LOOP ######################################## Let's enumerate!s.
+
+```{r step_21, eval=FALSE}
+a = enumerate_binary(n = 10)
+```
+
+### Step 22 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_22, eval=FALSE}
+data("d_donuts", package = "archr")
+```
+
+### Step 23 – Practice the Pipe
+
+Benefits (make a blank matrix, then turn it into a tibble).
+
+```{r step_23, eval=FALSE}
+b = matrix(NA, nrow = nrow(a), ncol = ncol(a), dimnames = list(NULL, names(a))) %>% as_tibble()
+# Costs (make a blank matrix, then turn it into a tibble)
+c = matrix(NA, nrow = nrow(a), ncol = ncol(a), dimnames = list(NULL, names(a))) %>% as_tibble()
+```
+
+### Step 24 – Loop Through Values
+
+For each decison. Iterate over values to apply the same logic to each item.
+
+```{r step_24, eval=FALSE}
+for(i in 1:length(a)){
+  # For each row (architecture)
+  for(j in 1:nrow(a)){
+```
+
+### Step 25 – Create `this_a`
+
+i = 1; j = 1 Get the value from our matrix.
+
+```{r step_25, eval=FALSE}
+    this_a = a[[j,i]]
+    # Grab our stats
+    values = d_donuts %>% filter(did == i) %>% filter(altid == this_a)
+```
+
+### Step 26 – Run the Code Block
+
+Reassign the value to be the benefit.
+
+```{r step_26, eval=FALSE}
+    b[[j,i]] <- values$benefit
+```
+
+### Step 27 – Run the Code Block
+
+Reassign the value to be the costs.
+
+```{r step_27, eval=FALSE}
+    c[[j,i]] <- values$cost  
+  }  
+}
+```
+
+### Step 28 – Practice the Pipe
+
+A data.frame of benefits per decision (column) per architecture (row).
+
+```{r step_28, eval=FALSE}
+b %>% mutate(benefit = d1+d2+d3+d4+d5+d6+d7+d8+d9+d10) 
+# A data.frame of costs per decision (column) per architecture (row)
+c %>% mutate(cost = d1+d2+d3+d4+d5+d6+d7+d8+d9+d10) 
+# Our original clean data.frame
+a
+```
+
+### Step 29 – Clear Objects
+
+Clear. Remove objects from the environment to prevent name clashes.
+
+```{r step_29, eval=FALSE}
+rm(list = ls())
+```
+
+### Step 30 – Create `a`
+
+RECODING ############################################## Let's enumerate!s.
+
+```{r step_30, eval=FALSE}
+a = enumerate_binary(n = 10)
+```
+
+### Step 31 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_31, eval=FALSE}
+data("d_donuts", package = "archr")
+```
+
+### Step 32 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_32, eval=FALSE}
+d_donuts
+```
+
+### Step 33 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_33, eval=FALSE}
+a %>%
+  # Recode every single value
+  mutate(
+    d1 = case_when( d1 == 0 ~ 0,   d1 == 1 ~ 3),  
+    d2 = case_when( d2 == 0 ~ 0, d2 == 1 ~ 6)
+    ) %>%
+  # Get total benefit
+  mutate(benefit = d1+d2) %>%
+  # Let's look at just our d1 and d2 columsn...
+  select(d1,d2, benefit) %>%
+  # Look at bottom of the data.frame
+  tail()
+```
+
+### Step 34 – Clear Objects
+
+Clear. Remove objects from the environment to prevent name clashes.
+
+```{r step_34, eval=FALSE}
+rm(list = ls())
+```
+
+### Step 35 – Define `get_plusone()`
+
+EXAMPLE FUNCTION. Create the helper function `get_plusone()` so you can reuse it throughout the workshop.
+
+```{r step_35, eval=FALSE}
+get_plusone = function(a = 1){
+  # Testing values
+  # a = 1
+  # a = c(1,2)
+```
+
+### Step 36 – Create `output`
+
+Process. Create the object `output` so you can reuse it in later steps.
+
+```{r step_36, eval=FALSE}
+  output = a + 1
+```
+
+### Step 37 – Run the Code Block
+
+Output. Execute the block and pay attention to the output it produces.
+
+```{r step_37, eval=FALSE}
+  return(output)
+}
+```
+
+### Step 38 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_38, eval=FALSE}
+get_plusone() # get_plusone(a = 1)
+```
+
+### Step 39 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_39, eval=FALSE}
+get_plusone(a = 2)
+```
+
+### Step 40 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_40, eval=FALSE}
+get_plusone(a = c(1,2,3,4,5))
+```
+
+### Step 41 – Create `a`
+
+Enumerate just 3 DECISIONS.
+
+```{r step_41, eval=FALSE}
+a = enumerate_binary(n = 3)
+# Get benefit/cost data
+data("d_donuts", package = "archr")
+# Let's say we're just looking at the FIRST 3 DECISIONS
+d_donuts %>% filter(did %in% 1:3)
+```
+
+### Step 42 – Define `get_cost()`
+
+Create the helper function `get_cost()` so you can reuse it throughout the workshop.
+
+```{r step_42, eval=FALSE}
+get_cost = function(d1,d2,d3){
+  # Testing values
+  # d1 = 1; d2 = 1; d3 = 1
+```
+
+### Step 43 – Create `m1`
+
+Get the cost statistics Recode decision 1 so that when decision 1 equals, it costs $1.
+
+```{r step_43, eval=FALSE}
+  m1 = case_when(d1 == 1 ~ 1, d1 == 0 ~ 0)
+  # Recode decision 2
+  m2 = case_when(d2 == 1 ~ 5, d2 == 0 ~ 0)
+  # Recode decision 3
+  m3 = case_when(d3 == 1 ~ 70, d3 == 0 ~ 0)
+```
+
+### Step 44 – Create `metric`
+
+Compute our overall metric.
+
+```{r step_44, eval=FALSE}
+  metric = m1 + m2 + m3
+  return(metric)
+}
+```
+
+### Step 45 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_45, eval=FALSE}
+a %>% mutate(cost = get_cost(d1,d2,d3))
+```
+
+### Step 46 – Define `get_benefit()`
+
+Create the helper function `get_benefit()` so you can reuse it throughout the workshop.
+
+```{r step_46, eval=FALSE}
+get_benefit = function(d1, d2, d3){
+  # Let's make some objects JUST for testing - be sure to comment them out when done
+  # d1 = 1; d2 = 1; d3 = 1
+```
+
+### Step 47 – Create `m1`
+
+When d1 is 1, make m1 3; When d1 is 0, make m1 0 and repeat for other problem Or, try using case when.
+
+```{r step_47, eval=FALSE}
+  m1 = case_when(d1 == 1 ~ 3, d1 == 0 ~ 0)
+  m2 = case_when(d2 == 1 ~ 6, d2 == 0 ~ 0)
+  m3 = case_when(d3 == 1 ~ 9, d3 == 0 ~ 0)
+```
+
+### Step 48 – Create `metric`
+
+Compute overall metric. Create the object `metric` so you can reuse it in later steps.
+
+```{r step_48, eval=FALSE}
+  metric = m1+m2+m3
+  return(metric)
+}
+```
+
+### Step 49 – Practice the Pipe
+
+Let's try it. Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_49, eval=FALSE}
+a %>%
+  mutate(benefit = get_benefit(d1,d2,d3))
+```
+
+### Step 50 – Practice the Pipe
+
+Use both. Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_50, eval=FALSE}
+data = a %>%
+  mutate(benefit = get_benefit(d1,d2,d3)) %>%
+  mutate(cost = get_cost(d1,d2,d3))
+```
+
+### Step 51 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_51, eval=FALSE}
+ggplot() +
+  geom_point(data = data, mapping = aes(x = benefit, y = cost))
+```
+
+### Step 52 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_52, eval=FALSE}
+ggplot() +
+  geom_point(data = data, mapping = aes(x = d1, y = benefit))
+```
+
+### Step 53 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_53, eval=FALSE}
+data %>%
+  group_by(d1) %>%
+  summarize(benefit = mean(benefit))
+```
+
+### Step 54 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_54, eval=FALSE}
+data %>%
+  group_by(d1,d2) %>%
+  summarize(benefit = mean(benefit))
+```
+
+### Step 55 – Try Arithmetic
+
+The interaction effect of choosing BOTH d1 = 1 and d2 = 1 is +9 tastiness points.
+
+```{r step_55, eval=FALSE}
+13.5 - 4.5
+```
+
+### Step 56 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_56, eval=FALSE}
+data("donuts", package = "archr")
+donuts
+# Make a table m we'll build
+# Enumerate architectures, including an .id
+m = enumerate_binary(n = nrow(donuts), .id = TRUE)
+```
+
+### Step 57 – Practice the Pipe
+
+Record the architectures as a matrix.
+
+```{r step_57, eval=FALSE}
+a = m %>% select(-id) %>% as.matrix()
+```
+
+### Step 58 – Practice the Pipe
+
+Add in columns for total metrics.
+
+```{r step_58, eval=FALSE}
+m = m %>% 
+  mutate(
+    # Matrix multiple the matrix by the vector of benefits
+    benefit = a %*% donuts$benefit,
+    # Matrix multiple the matrix by the vector of costs
+    cost =   a %*% donuts$cost)
+```
+
+### Step 59 – Practice the Pipe
+
+View last five. Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_59, eval=FALSE}
+m %>% select(id, benefit, cost) %>% tail(5)
+```
+
+### Step 60 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_60, eval=FALSE}
+ggplot() +
+  geom_point(data = m, mapping = aes(x = benefit, y = cost))
+```
+
+### Step 61 – Practice the Pipe
+
+Get the ids of the pareto front with pareto().
+
+```{r step_61, eval=FALSE}
+m = m %>%
+  mutate(front = pareto(x = cost, y = -benefit))
+```
+
+### Step 62 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_62, eval=FALSE}
+m %>% select(id, cost, benefit, front)
+# ?archr::pareto()
+```
+
+### Step 63 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_63, eval=FALSE}
+ggplot() +
+  geom_point(data = m, mapping = aes(x = benefit, y = cost),
+             color = "grey") +
+  geom_line(data = m %>% filter(front == TRUE),
+            mapping = aes(x = benefit, y = cost),
+            color = "red")
+```
+
+### Step 64 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_64, eval=FALSE}
+m %>% 
+  filter(front == TRUE & benefit > 20 & cost < 100)
+```
+
+### Step 65 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_65, eval=FALSE}
+ggplot() +
+  geom_point(data = m, mapping = aes(x = benefit, y = cost),
+             color = "grey") +
+  geom_line(data = m %>% filter(front == TRUE),
+            mapping = aes(x = benefit, y = cost),
+            color = "red") +
+  geom_hline(yintercept = 100, color = "blue") +
+  geom_vline(xintercept = 20, color = "blue")
+```
+
+### Step 66 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_66, eval=FALSE}
+m
+```
+
+## Learning Checks
+
+**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+<details>
+<summary>Show answer</summary>
+
+Use `source(file.path("workshops", "32_evaluation_scenarios.R"))` from the Console or press the Source button while the script is active.
+
+</details>
+
+**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+
+<details>
+<summary>Show answer</summary>
+
+Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+
+</details>
+
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+
+<details>
+<summary>Show answer</summary>
+
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+
+</details>
+
+**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+
+<details>
+<summary>Show answer</summary>
+
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+
+</details>
+
+**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
+
+<details>
+<summary>Show answer</summary>
+
+Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+
+</details>

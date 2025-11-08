@@ -1,0 +1,349 @@
+---
+title: "[44] Exercise equipment optimization case Guide"
+output:
+  md_document:
+    variant: gfm
+output_dir: ../workshops
+knitr:
+  opts_knit:
+    root.dir: ..
+---
+
+This tutorial complements `44_optimization_exercise_equipment_case.R` and unpacks the workshop on exercise equipment optimization case. You will see how it advances the Optimization sequence while building confidence with base R and tidyverse tooling.
+
+## Setup
+
+- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+
+## Skills
+
+- Navigate the script `44_optimization_exercise_equipment_case.R` within the Optimization module.
+- Connect the topic "Exercise equipment optimization case" to systems architecting decisions.
+- Install any required packages highlighted with `install.packages()`.
+- Load packages with `library()` and verify they attach without warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Define custom functions to package repeatable logic.
+
+## Application
+
+### Step 1 – Load Packages
+
+0. SETUP ########################################################## install.packages("tidyr").
+
+```{r step_01, eval=FALSE}
+library(dplyr)
+library(archr)
+library(ggplot2)
+library(tidyr)
+```
+
+### Step 2 – Create `archs`
+
+archs = Hw3_decisions. Create the object `archs` so you can reuse it in later steps.
+
+```{r step_02, eval=FALSE}
+archs <- expand_grid(
+  d1 = enumerate_sf(n = c(2), .did = 1),  # Portability
+  d2 = enumerate_sf(n = c(4), .did = 2),  # Stability
+  d3 = enumerate_sf(n = c(3), .did = 3),  # Mechanism
+  d4 = enumerate_sf(n = c(2), .did = 4),  # Workout tracking
+  d5 = enumerate_sf(n = c(2), .did = 5),  # Noise reduction
+  d6 = enumerate_sf(n = c(2), .did = 6),  # Modularity
+  d7 = enumerate_sf(n = c(4), .did = 7),  # Belt system
+  d8 = enumerate_sf(n = c(2), .did = 8),  # Assembly type
+  d9 = enumerate_sf(n = c(3), .did = 9)   # Sub-assembly structure (or similar)
+)
+```
+
+### Step 3 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_03, eval=FALSE}
+archs <- archs %>% mutate(id = row_number())
+# 1. FUNCTIONS ##################################################
+# Create a full decision grid
+```
+
+### Step 4 – Define `get_cost()`
+
+cost_metrics <- expand_grid( d1 = enumerate_sf(n = c(2), .did = 1), d2 = enumerate_sf(n = c(4), .did = 2), d3 = enumerate_sf(n = c(3), .did = 3), d4 = enumerate_sf(n = c(2), .did = 4), d5 = enumerate_sf(n = c(2), .did = 5), d6 = enumerate_sf(n = c(2), .did = 6), d7 = enumerate_sf(n = c(4), .did = 7), d8 = enumerate_sf(n = c(2), .did = 8), d9 = enumerate_sf(n = c(3), .did = 9) ) Cost metric function.
+
+```{r step_04, eval=FALSE}
+get_cost <- function(d1,d2, d3,d4, d5, d6,d7,d8,d9) {
+  m1 <- case_when(d1 == 0 ~ 15, d1 == 1 ~ 8)
+  m2 <- case_when(d2 == 0 ~ 12, d2 == 1 ~ 6,d2 == 2 ~ 10,d2 == 3 ~ 10)
+  m3 <- case_when(d3 == 0 ~ 10, d3 == 1 ~ 20, d3 == 2 ~ 18)
+  m4 <- case_when(d4 == 0 ~ 2, d4 == 1 ~ 15)
+  m5 <- case_when(d5 == 0 ~ 7, d5 == 1 ~ 9)
+  m6 <- case_when(d6 == 0 ~ 10, d6 == 1 ~ 0)
+  m7 <- case_when(d7 == 0 ~ 10,d7 == 1 ~ 20,d7 == 2 ~ 5 ,d7 == 3 ~ 10)
+  m8 <- case_when(d8 == 0 ~ 8, d8 == 1 ~ 10)
+  m9 <- case_when(
+    d8 == 0 & d9 == 0 ~ 8 + 15,
+    d8 == 0 & d9 == 1 ~ 8 + 10,
+    d8 == 0 & d9 == 2 ~ 8 + 7,
+    d8 == 1 & d9 == 0 ~ 10 + 15,
+    d8 == 1 & d9 == 1 ~ 10 + 10,
+    d8 == 1 & d9 == 2 ~ 10 + 7,
+    TRUE ~ 0
+  )
+  # Total manufacturing cost per unit = Cost-D1 + Cost-D2 + Cost-D3 + Cost-D4 + Cost-D5 + Cost-D6 + Cost-D7 + Cost-D8 
+  output = m1 + m2 + m3 +m4 + m5 + m6+m7+m8+m9
+```
+
+### Step 5 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_05, eval=FALSE}
+  return(output)
+}
+```
+
+### Step 6 – Define `get_versatility()`
+
+Create the helper function `get_versatility()` so you can reuse it throughout the workshop.
+
+```{r step_06, eval=FALSE}
+get_versatility <- function(d2, d3,d4,d6,d7) {
+```
+
+### Step 7 – Create `m2`
+
+Create the object `m2` so you can reuse it in later steps.
+
+```{r step_07, eval=FALSE}
+  m2 <- case_when(d2 == 0 ~ 2, d2 == 1 ~ 1,d2 == 2 ~ 3,d2 == 3 ~ 3)
+  m3 <- case_when(d3 == 0 ~ 2, d3 == 1 ~ 3, d3 == 2 ~ 3)
+  m4 <- case_when(d4 == 0 ~ 1, d4 == 1 ~ 4)
+  m6 <- case_when(d6 == 0 ~ 3, d6 == 1 ~ 1)
+  m7 <- case_when(d7 == 0 ~ 3,d7 == 1 ~ 3,d7 == 2 ~ 1,d7 == 3 ~ 1)
+```
+
+### Step 8 – Create `output`
+
+V = V-D2 x V-D3 x V-D4 x V-D6 x V-D7.
+
+```{r step_08, eval=FALSE}
+  output = m2 *m3 *m4 *m6*m7
+  return(output)
+}
+```
+
+### Step 9 – Define `get_reliability()`
+
+Create the helper function `get_reliability()` so you can reuse it throughout the workshop.
+
+```{r step_09, eval=FALSE}
+get_reliability <- function(d2, d3,d5,d6,d8,d9) {
+  m2 <- case_when(d2 == 0 ~ 0.95, d2 == 1 ~ 0.97, d2 == 2 ~ 0.96 , d2 == 3 ~ 0.96)
+```
+
+### Step 10 – Create `m3`
+
+Create the object `m3` so you can reuse it in later steps.
+
+```{r step_10, eval=FALSE}
+  m3 <- case_when(d3 == 0 ~ 0.9, d3 == 1 ~ 0.98, d3 == 2 ~ 0.95)
+  m5 <- case_when(d5 == 0 ~ 0.95, d5 == 1 ~ 0.92)
+  m6 <- case_when(d6 == 0 ~ 0.95, d6 == 1 ~ 0.99)
+  m8 <- case_when(d8 == 0 ~ 0.90, d8 == 1 ~ 0.92)
+```
+
+### Step 11 – Create `m9`
+
+Create the object `m9` so you can reuse it in later steps.
+
+```{r step_11, eval=FALSE}
+  m9 <- case_when(
+    d8 == 0 & d9 == 0 ~ 0.9* 0.88,
+    d8 == 0 & d9 == 1 ~ 0.9 * 0.94,
+    d8 == 0 & d9 == 2 ~ 0.9 * 0.85,
+    d8 == 1 & d9 == 0 ~ 0.92 *0.88,
+    d8 == 1 & d9 == 1 ~ 0.92 *0.94,
+    d8 == 1 & d9 == 2 ~ 0.92 *0.85,
+    TRUE ~ 0
+  )
+  # All decisions are in series 
+  output = m2*m3*m5*m6*m8*m9
+  return(output)
+}
+```
+
+### Step 12 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_12, eval=FALSE}
+archs = archs %>% mutate(cost = get_cost(d1,d2,d3,d4, d5, d6,d7,d8,d9))
+archs = archs %>% mutate(versatility = get_versatility(d2, d3,d4,d6,d7))
+archs = archs %>% mutate(Reliability = get_reliability(d2,d3,d5,d6,d8,d9))
+```
+
+### Step 13 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_13, eval=FALSE}
+archs2 = archs %>%
+  select(
+    id
+  ) %>%
+  mutate(d1 = archs$d1$d1,
+         d2 = archs$d2$d2,
+         d3 = archs$d3$d3,
+         # d4 = archs$d4$d4,
+         # d5 = archs$d5$d5,
+         # d6 = archs$d6$d6,
+         # d7 = archs$d7$d7,
+         # d8 = archs$d8$d8,
+         # d9 = archs$d9$d9,
+         cost = archs$cost,
+         versatility = archs$versatility, 
+         Reliability = archs$Reliability
+  )
+```
+
+### Step 14 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_14, eval=FALSE}
+archs2
+```
+
+### Step 15 – Load Packages
+
+Attach GA to make its functions available.
+
+```{r step_15, eval=FALSE}
+library(GA)
+library(rmoo)
+# rmoo()
+# bit2int()
+# constrain()
+# f1
+```
+
+### Step 16 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_16, eval=FALSE}
+archs2$d1 %>% unique()
+archs2$d2 %>% unique()
+archs2$d3 %>% unique()
+```
+
+### Step 17 – Define `bit2int()`
+
+Create the helper function `bit2int()` so you can reuse it throughout the workshop.
+
+```{r step_17, eval=FALSE}
+bit2int = function(x){
+  # valid bitstring
+  # x = c(0, 0,0, 0,0)
+  xhat1 = GA::binary2decimal(x[1])
+  xhat2 = GA::binary2decimal(x[2:3])
+  xhat3 = GA::binary2decimal(x[4:5])
+  # Return our indtegers  
+  xhat = c(xhat1, xhat2, xhat3)
+  return(xhat)
+```
+
+### Step 18 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_18, eval=FALSE}
+}
+```
+
+### Step 19 – Define `f1()`
+
+Create the helper function `f1()` so you can reuse it throughout the workshop.
+
+```{r step_19, eval=FALSE}
+f1 = function(x, nobjs = 2, ...){
+  # valid bitstring
+  # x = c(0, 0,0, 0,0)
+  xhat = bit2int(x)
+  m1 = get_cost(d1 = xhat[1], d2 = xhat[2], d3 = xhat[3], d4 = 0, d5 = 0, d6 = 0,d7 = 0, d8 = 0, d9 = 0)    
+  m2 = get_reliability(d2 = xhat[2], d3 = xhat[3], d5 = 0, d6 = 0, d8 = 0, d9 = 0)
+```
+
+### Step 20 – Create `output`
+
+Create the object `output` so you can reuse it in later steps.
+
+```{r step_20, eval=FALSE}
+  output = matrix(c(m1,m2), nrow = 1)
+  return(output)
+}
+```
+
+### Step 21 – Create `o`
+
+Create the object `o` so you can reuse it in later steps.
+
+```{r step_21, eval=FALSE}
+o = rmoo(
+  fitness = f1, type = "binary", algorithm = "NSGA-III",
+  # Upper and Lower bounds on the bitstrings
+  lower = c(0,0,0,0,0), upper = c(1,1,1,1,1),
+  # Settings
+  monitor = TRUE, summary = TRUE,
+  nObj = 2, nBits = 5, popSize = 50, maxiter = 100
+)
+```
+
+### Step 22 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_22, eval=FALSE}
+summary(o)
+o@solution # multi-objective pareto front (in binary)
+bit2int(o@solution) #
+```
+
+## Learning Checks
+
+**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+<details>
+<summary>Show answer</summary>
+
+Use `source(file.path("workshops", "44_optimization_exercise_equipment_case.R"))` from the Console or press the Source button while the script is active.
+
+</details>
+
+**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+
+<details>
+<summary>Show answer</summary>
+
+Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+
+</details>
+
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+
+<details>
+<summary>Show answer</summary>
+
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+
+</details>
+
+**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+
+<details>
+<summary>Show answer</summary>
+
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+
+</details>
