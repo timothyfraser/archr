@@ -117,23 +117,23 @@ mymat3[1, 2:3]
 rm(list = ls())
 
 
-t = readr::read_csv("workshops/test_data.csv")
+t = readr::read_csv("workshops/04_stakeholder_test_data.csv")
 
 t$id
 t$coffees
 t$sale
 
 # .rds - r data storage
-m = readr::read_rds("workshops/test_data.rds")
+m = readr::read_rds("workshops/04_stakeholder_test_data.rds")
 
 m
 
 
-readr::write_csv(t, file = "workshops/test_data2.csv")
+readr::write_csv(t, file = "workshops/04_stakeholder_test_data2.csv")
 
-write_csv(t, file = "workshops/test_data2.csv")
+write_csv(t, file = "workshops/04_stakeholder_test_data2.csv")
 
-write_rds(as.matrix(t), file = "workshops/test_data2.rds")
+write_rds(as.matrix(t), file = "workshops/04_stakeholder_test_data2.rds")
 
 
 rm(list = ls())

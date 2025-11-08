@@ -469,7 +469,7 @@ ggmany = ggpubr::ggarrange(g1,g2,g3, nrow = 1)
 # And save to file with ggsave() from ggplot
 ggsave(
   plot = ggmany,
-  filename = "workshops/tutorial_enumeration_5.png", 
+  filename = "workshops/18_enumeration_visualization.png", 
   # You can optionally add a dots-per-inch (dpi)
   dpi = 200, 
   # as well as a width and height in inches
