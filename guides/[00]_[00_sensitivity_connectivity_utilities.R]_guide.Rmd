@@ -21,17 +21,270 @@ This tutorial complements `00_sensitivity_connectivity_utilities.R` and unpacks 
 
 - Navigate the script `00_sensitivity_connectivity_utilities.R` within the Evaluation module.
 - Connect the topic "Sensitivity and connectivity utilities" to systems architecting decisions.
-- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
-- Define and call custom functions to encapsulate reusable logic.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Define custom functions to package repeatable logic.
 
 ## Application
 
-1. Open `workshops/00_sensitivity_connectivity_utilities.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
-4. Re-run the custom functions with your own arguments to observe how the outputs change.
-5. When you are comfortable, run `source(file.path("workshops", "00_sensitivity_connectivity_utilities.R"))` or click Source to execute the full workshop.
-6. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Define `me()`
+
+FUNCTIONS ############################### Calculate main effect.
+
+```{r step_01, eval=FALSE}
+me = function(data, decision = "d2", value = 1, metric = "m1"){
+  # Testing values
+  # decision = "d2"; value = 1; metric = "m1"
+  data2 = data %>%
+    # Grab any columns with these character strings as their column names
+    select(any_of(c(alt = decision, metric = metric))) %>%
+    # Add a decision column
+    mutate(decision = decision) %>%
+    # Reorder them
+    select(decision, alt, metric)
+  # Calculate effect
+  data3 = data2 %>%
+    summarize(
+      xhat = mean(metric[alt == value], na.rm = TRUE),
+      x = mean(metric[alt != value], na.rm = TRUE),
+      dbar = xhat - x  
+    )
+  output = data3$dbar
+```
+
+### Step 2 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_02, eval=FALSE}
+  return(output)
+}
+```
+
+### Step 3 – Define `sensitivity()`
+
+Beginning attempt at a sensitivity.
+
+```{r step_03, eval=FALSE}
+sensitivity = function(data, decision_i = "d2", metric = "m1"){
+  # Testing Values
+  # decision = "d2"; metric = "m1"
+  # Get values for your ith decision
+  values = unlist(unique(data[, decision_i]))
+```
+
+### Step 4 – Create `holder`
+
+Create a table to hold my results.
+
+```{r step_04, eval=FALSE}
+  holder = tibble(values = values, me = NA_real_)
+  for(i in 1:length(values)){
+    holder$me[i] = me(data, decision = decision_i, value = values[i], metric = metric)
+  }
+```
+
+### Step 5 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_05, eval=FALSE}
+  s = holder %>%
+    summarize(stat = mean(abs(me)))
+```
+
+### Step 6 – Create `output`
+
+Create the object `output` so you can reuse it in later steps.
+
+```{r step_06, eval=FALSE}
+  output = s$stat
+  return(output)    
+}
+```
+
+### Step 7 – Define `me_ij()`
+
+Create the helper function `me_ij()` so you can reuse it throughout the workshop.
+
+```{r step_07, eval=FALSE}
+me_ij = function(data, decision_i, value_i, decision_j, value_j, metric = "m1", notj = FALSE){
+  #Testing values
+  # decision_i = "d3"; value_i = 1
+  # decision_j = "d2"; value_j = 1
+  # metric = "m1"; notj = TRUE
+```
+
+### Step 8 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_08, eval=FALSE}
+  data1 = data %>%
+    select(any_of(c(di = decision_i, dj = decision_j, m = metric)))
+```
+
+### Step 9 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_09, eval=FALSE}
+  if(notj == TRUE){ 
+    # given that dj != j
+    data1 = data1 %>% filter(dj != value_j)   
+  }else if(notj == FALSE){
+    # given that dj == j
+    data1 = data1 %>% filter(dj == value_j)  
+  }
+```
+
+### Step 10 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_10, eval=FALSE}
+  output = data1 %>%
+    # Reclassify decision i as does it equal value i or not
+    mutate(di = di == value_i) %>% 
+    # Get mean when di == i vs. when di != i
+    summarize(xhat = mean(m[di == TRUE]),
+              x = mean(m[di == FALSE]),
+              diff = xhat - x) %>%
+    # Return the difference
+    with(diff)
+```
+
+### Step 11 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_11, eval=FALSE}
+  return(output)
+}
+```
+
+### Step 12 – Define `sensitivity_ij()`
+
+Create the helper function `sensitivity_ij()` so you can reuse it throughout the workshop.
+
+```{r step_12, eval=FALSE}
+sensitivity_ij = function(data, decision_i, decision_j, value_j, metric, notj = FALSE){
+  #decision_i = "d3"; decision_j = "d2"; value_j = 1; metric = "m1"; notj = FALSE
+```
+
+### Step 13 – Practice the Pipe
+
+Get all values of decision i.
+
+```{r step_13, eval=FALSE}
+  data %>%
+    select(any_of(c(di = decision_i))) %>%
+    distinct() %>%
+    # For each unique value of decision i
+    group_by(di) %>% 
+    # Get the interaction effect with the constant same value j of decision j
+    summarize(
+      stat = me_ij(data = data, decision_i = decision_i, value_i = di, 
+                   decision_j = decision_j, value_j = value_j, 
+                   metric = metric, notj = notj),
+      .groups = "drop"
+    ) %>%
+    # Get absolute value
+    mutate(stat = abs(stat)) %>%
+    # Take mean
+    summarize(stat = mean(stat, na.rm = TRUE)) %>%
+    # return statistic
+    with(stat)
+}
+```
+
+### Step 14 – Define `connectivity_ij()`
+
+Create the helper function `connectivity_ij()` so you can reuse it throughout the workshop.
+
+```{r step_14, eval=FALSE}
+connectivity_ij = function(data, decision_i, decision_j = "d2", metric = "m1"){
+  # decision_i = "d3"; decision_j = "d2"; metric = "m1"
+  data1 = data %>%
+    select(any_of(c(dj = decision_j))) %>%
+    distinct()  %>%
+    # Get every combo of these with TRUE and FALSE
+    expand_grid(notj = c(TRUE, FALSE)) %>%
+    # For each set
+    group_by(dj, notj) %>%
+    # Get the sensitivity of decision i given decision j == or != value j
+    summarize(
+      stat = sensitivity_ij(data, decision_i = decision_i, decision_j = decision_j, value_j = dj, metric = metric, notj = notj),
+      .groups = "drop") %>%
+    ungroup()
+```
+
+### Step 15 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_15, eval=FALSE}
+  output = data1 %>%
+    # For each...
+    group_by(dj) %>%
+    # Get the absolute difference
+    summarize(stat = abs(diff(stat)),.groups = "drop") %>%
+    # Now get the mean absolute difference
+    summarize(stat = mean(stat)) %>%
+    # Return the statistic
+    with(stat)
+```
+
+### Step 16 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_16, eval=FALSE}
+  return(output)
+}
+```
+
+### Step 17 – Define `connectivity()`
+
+Get total connectivity of decision i.
+
+```{r step_17, eval=FALSE}
+connectivity = function(data, decision_i = "d3", decisions = c("d1", "d2", "d3"), metric = "m1"){
+```
+
+### Step 18 – Create `other_decisions`
+
+Get the other decisions.
+
+```{r step_18, eval=FALSE}
+  other_decisions = decisions[!decisions %in% decision_i]
+  # Get a grid of all di-dj pairs
+  output = expand_grid(
+    di = decision_i,
+    dj = other_decisions
+  ) %>%
+    # For each di-dj pair (specifically, for each dj)
+    group_by(di,dj) %>%
+    # Get the connectivity between decisions di and dj
+    summarize(
+      stat = connectivity_ij(data = data, decision_i = di, decision_j = dj, metric = metric),
+      .groups = "drop"
+    ) %>%
+    ungroup() %>%
+    # Now, take the mean of these statistics
+    # You have one for each decision j,
+    # as in each decision that is not i
+    summarize(stat = sum(stat) / n()) %>% 
+    with(stat)
+```
+
+### Step 19 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_19, eval=FALSE}
+  return(output)
+}
+```
 
 ## Learning Checks
 
@@ -44,20 +297,20 @@ Use `source(file.path("workshops", "00_sensitivity_connectivity_utilities.R"))` 
 
 </details>
 
-**Learning Check 2.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+**Learning Check 2.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
 
 <details>
 <summary>Show answer</summary>
 
-It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
 
 </details>
 
-**Learning Check 3.** How can you verify that a custom function defined in the script behaves the way you expect?
+**Learning Check 3.** How can you build confidence that a newly defined function behaves as intended?
 
 <details>
 <summary>Show answer</summary>
 
-Call the function with a simple input (for example the one used in the script) and print or view the returned value, then try a new input to see how the output changes.
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
 
 </details>

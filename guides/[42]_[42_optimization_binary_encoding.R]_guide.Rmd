@@ -23,17 +23,139 @@ This tutorial complements `42_optimization_binary_encoding.R` and unpacks the wo
 - Connect the topic "Binary encoding primer" to systems architecting decisions.
 - Install any required packages highlighted with `install.packages()`.
 - Load packages with `library()` and verify they attach without warnings.
-- Define and call custom functions to encapsulate reusable logic.
+- Define custom functions to package repeatable logic.
 
 ## Application
 
-1. Open `workshops/42_optimization_binary_encoding.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Run any `install.packages()` lines once to make sure the dependencies exist on your machine.
-4. Load the libraries listed near the top of the script and confirm they attach without errors.
-5. Re-run the custom functions with your own arguments to observe how the outputs change.
-6. When you are comfortable, run `source(file.path("workshops", "42_optimization_binary_encoding.R"))` or click Source to execute the full workshop.
-7. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Load Packages
+
+Attach dplyr to make its functions available.
+
+```{r step_01, eval=FALSE}
+library(dplyr)
+# install.packages("GA")
+# install.packages("rmoo")
+library(GA)
+library(rmoo)
+```
+
+### Step 2 – Run the Code Block
+
+[XX][X][X]. Execute the block and pay attention to the output it produces.
+
+```{r step_02, eval=FALSE}
+c(0,1, 0, 0) # binary
+```
+
+### Step 3 – Run the Code Block
+
+Convert from binary into decimal.
+
+```{r step_03, eval=FALSE}
+binary2decimal(x = c(0, 0) )
+binary2decimal(x = c(0, 1) )
+binary2decimal(x = c(1, 0) )
+binary2decimal(x = c(1, 1) )
+```
+
+### Step 4 – Define `int2bit()`
+
+Create the helper function `int2bit()` so you can reuse it throughout the workshop.
+
+```{r step_04, eval=FALSE}
+int2bit = function(xhat){
+```
+
+### Step 5 – Create `d1`
+
+Create the object `d1` so you can reuse it in later steps.
+
+```{r step_05, eval=FALSE}
+  d1 = xhat[1]
+  d2 = xhat[2]
+  d3 = xhat[3]
+```
+
+### Step 6 – Run the Code Block
+
+D1 Resampler If d1 is NOT in this set of valid values.
+
+```{r step_06, eval=FALSE}
+  if(!d1 %in% c(0,1,2)){
+    # Randomly resample from valid values
+    d1 = sample(size = 1, x = c(0,1,2) ) 
+  }
+  # D1 Convert to bits
+  x1 = case_when(
+    d1 == 0 ~ c(0,0),
+    d1 == 1 ~ c(0,1),
+    d1 == 2 ~ c(1,0)
+  )
+```
+
+### Step 7 – Run the Code Block
+
+D2 Resampler. Execute the block and pay attention to the output it produces.
+
+```{r step_07, eval=FALSE}
+  if(!d2 %in% c(0,1)){ d2 = sample(size = 1, x = c(0,1)) }
+```
+
+### Step 8 – Create `x2`
+
+D2 Convert to Bits.
+
+```{r step_08, eval=FALSE}
+  x2 = case_when(
+    d2 == 0 ~ c(0),
+    d2 == 1 ~ c(1)
+  )
+```
+
+### Step 9 – Run the Code Block
+
+D3 Resampler. Execute the block and pay attention to the output it produces.
+
+```{r step_09, eval=FALSE}
+  if(!d3 %in% c(0,1)){ d3 = sample(size = 1, x = c(0,1)) }
+```
+
+### Step 10 – Create `x3`
+
+D3 Convert to Bits.
+
+```{r step_10, eval=FALSE}
+  x3 = case_when(
+    d3 == 0 ~ c(0),
+    d3 == 1 ~ c(1)
+  )
+```
+
+### Step 11 – Create `x`
+
+Goal: turn our integer vector into a vector of bits x.
+
+```{r step_11, eval=FALSE}
+  x = c(x1, x2, x3)
+  return(x)
+}
+```
+
+### Step 12 – Run the Code Block
+
+Test it. Execute the block and pay attention to the output it produces.
+
+```{r step_12, eval=FALSE}
+int2bit(xhat = c(3, 1, 1))
+```
+
+### Step 13 – Define `bit2int()`
+
+From binary to integer.
+
+```{r step_13, eval=FALSE}
+bit2int = function(x){ }
+```
 
 ## Learning Checks
 
@@ -55,11 +177,11 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** How can you verify that a custom function defined in the script behaves the way you expect?
+**Learning Check 3.** How can you build confidence that a newly defined function behaves as intended?
 
 <details>
 <summary>Show answer</summary>
 
-Call the function with a simple input (for example the one used in the script) and print or view the returned value, then try a new input to see how the output changes.
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
 
 </details>

@@ -25,10 +25,26 @@ This tutorial complements `03_stakeholder_first_r_script.R` and unpacks the work
 
 ## Application
 
-1. Open `workshops/03_stakeholder_first_r_script.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. When you are comfortable, run `source(file.path("workshops", "03_stakeholder_first_r_script.R"))` or click Source to execute the full workshop.
-4. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Try Arithmetic
+
+My first script. Evaluate a quick arithmetic expression to observe R's console output.
+
+```{r step_01, eval=FALSE}
+1 + 2 
+x = 2
+x
+x + 2
+c(2,3,4)
+```
+
+### Step 2 – Create `myvec`
+
+Create the object `myvec` so you can reuse it in later steps.
+
+```{r step_02, eval=FALSE}
+myvec = c(1,2,3,4)
+myvec
+```
 
 ## Learning Checks
 
@@ -46,15 +62,15 @@ Use `source(file.path("workshops", "03_stakeholder_first_r_script.R"))` from the
 <details>
 <summary>Show answer</summary>
 
-It emphasizes how first r script practice supports the overall systems architecting process in this course.
+It highlights how first r script practice supports the overall systems architecting process in this course.
 
 </details>
 
-**Learning Check 3.** Where in the guide should you revisit if you need to recall prerequisite steps before re-running the code?
+**Learning Check 3.** Where should you look if you need to reset your setup before re-running the script?
 
 <details>
 <summary>Show answer</summary>
 
-Return to the Setup section to confirm the working directory, required packages, and project context before executing the scripts again.
+Return to the Setup section to confirm your working directory, packages, and clean R session.
 
 </details>

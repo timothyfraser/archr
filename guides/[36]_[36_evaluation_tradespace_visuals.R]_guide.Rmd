@@ -25,10 +25,20 @@ This tutorial complements `36_evaluation_tradespace_visuals.R` and unpacks the w
 
 ## Application
 
-1. Open `workshops/36_evaluation_tradespace_visuals.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. When you are comfortable, run `source(file.path("workshops", "36_evaluation_tradespace_visuals.R"))` or click Source to execute the full workshop.
-4. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Review the Script
+
+Read through the script and experiment with each line in the console.
+
+```{r step_01, eval=FALSE}
+# Script: 36_evaluation_tradespace_visuals.R
+# Original: tutorial_tradespace_2.R
+# Topic: Tradespace visualization techniques
+# Section: Evaluation
+# Developed by: Timothy Fraser, PhD
+# tutorial_tradespace_2.R
+# Yup! We skipped the number 2! 
+# Don't worry - you didn't miss any content!
+```
 
 ## Learning Checks
 
@@ -46,15 +56,15 @@ Use `source(file.path("workshops", "36_evaluation_tradespace_visuals.R"))` from 
 <details>
 <summary>Show answer</summary>
 
-It emphasizes how tradespace visualization techniques supports the overall systems architecting process in this course.
+It highlights how tradespace visualization techniques supports the overall systems architecting process in this course.
 
 </details>
 
-**Learning Check 3.** Where in the guide should you revisit if you need to recall prerequisite steps before re-running the code?
+**Learning Check 3.** Where should you look if you need to reset your setup before re-running the script?
 
 <details>
 <summary>Show answer</summary>
 
-Return to the Setup section to confirm the working directory, required packages, and project context before executing the scripts again.
+Return to the Setup section to confirm your working directory, packages, and clean R session.
 
 </details>

@@ -22,16 +22,96 @@ This tutorial complements `43_optimization_bit_integer_conversion.R` and unpacks
 - Navigate the script `43_optimization_bit_integer_conversion.R` within the Optimization module.
 - Connect the topic "Bit-integer conversion utilities" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
-- Define and call custom functions to encapsulate reusable logic.
+- Define custom functions to package repeatable logic.
 
 ## Application
 
-1. Open `workshops/43_optimization_bit_integer_conversion.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Load the libraries listed near the top of the script and confirm they attach without errors.
-4. Re-run the custom functions with your own arguments to observe how the outputs change.
-5. When you are comfortable, run `source(file.path("workshops", "43_optimization_bit_integer_conversion.R"))` or click Source to execute the full workshop.
-6. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Load Packages
+
+Load GA package. Attach GA to make its functions available.
+
+```{r step_01, eval=FALSE}
+library(GA)
+```
+
+### Step 2 – Run the Code Block
+
+Test out our binary2decimal() function from GA.
+
+```{r step_02, eval=FALSE}
+binary2decimal(x = c(1,1))
+```
+
+### Step 3 – Define `bit2int()`
+
+Let's try to code this up!
+
+```{r step_03, eval=FALSE}
+bit2int = function(x){
+  # Testing value
+  # x = c(0,0,0,1, 1,1, 1,1)
+```
+
+### Step 4 – Create `d1_1`
+
+Decision 1 Converted to xhat.
+
+```{r step_04, eval=FALSE}
+  d1_1 = binary2decimal(x = x[1])
+  d1_2 = binary2decimal(x = x[2])
+  d1_3 = binary2decimal(x = x[3])
+  d1_4 = binary2decimal(x = x[4])
+```
+
+### Step 5 – Run the Code Block
+
+If all of decision 1 options are 0, then FAIL Reject if...
+
+```{r step_05, eval=FALSE}
+  if(d1_1 == 0 & d1_2 == 0 & d1_3 == 0 & d1_4 == 0){  return(NA)   }
+```
+
+### Step 6 – Create `d2`
+
+Decision 2. Create the object `d2` so you can reuse it in later steps.
+
+```{r step_06, eval=FALSE}
+  d2 = binary2decimal(x[5:6])
+  # Reject if...
+  if( (d1_1 == 1 | d1_2 == 1 | d1_3 == 1) & d2 == 3){ return(NA)  }
+  if( (d1_1 == 0 & d1_2 == 0 & d1_3 == 0 & d1_4 == 1) & d2 != 3){ return(NA)  }
+```
+
+### Step 7 – Create `d3`
+
+Decision 3. Create the object `d3` so you can reuse it in later steps.
+
+```{r step_07, eval=FALSE}
+  d3 = binary2decimal(x[7:8])
+  # Reject if...
+  if( (d1_1 == 1 | d1_2 == 1 | d1_3 == 1) & d3 == 3){ return(NA)  }
+  if( (d1_1 == 0 & d1_2 == 0 & d1_3 == 0 & d1_4 == 1) & d3 != 3){ return(NA)  }
+```
+
+### Step 8 – Create `xhat`
+
+Bundle! Create the object `xhat` so you can reuse it in later steps.
+
+```{r step_08, eval=FALSE}
+  xhat = c(d1_1, d1_2, d1_3, d1_4, d2, d3)
+  return(xhat)
+}
+```
+
+### Step 9 – Run the Code Block
+
+An invalid option returns NA.
+
+```{r step_09, eval=FALSE}
+bit2int(x = c(0,0,0,0, 1,1, 1,1))
+# A valid option returns the integer string
+bit2int(x = c(0,0,0,1, 1,1, 1,1))
+```
 
 ## Learning Checks
 
@@ -53,11 +133,11 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** How can you verify that a custom function defined in the script behaves the way you expect?
+**Learning Check 3.** How can you build confidence that a newly defined function behaves as intended?
 
 <details>
 <summary>Show answer</summary>
 
-Call the function with a simple input (for example the one used in the script) and print or view the returned value, then try a new input to see how the output changes.
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
 
 </details>

@@ -22,20 +22,554 @@ This tutorial complements `34_evaluation_storytelling.R` and unpacks the worksho
 - Navigate the script `34_evaluation_storytelling.R` within the Evaluation module.
 - Connect the topic "Evaluation storytelling lab" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
-- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
-- Define and call custom functions to encapsulate reusable logic.
-- Create or interpret visualizations produced with `ggplot2`.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Define custom functions to package repeatable logic.
+- Iterate on visualisations built with `ggplot2`.
 
 ## Application
 
-1. Open `workshops/34_evaluation_storytelling.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Load the libraries listed near the top of the script and confirm they attach without errors.
-4. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
-5. Re-run the custom functions with your own arguments to observe how the outputs change.
-6. Recreate the plotted visuals and experiment with aesthetic mappings to reinforce each layer.
-7. When you are comfortable, run `source(file.path("workshops", "34_evaluation_storytelling.R"))` or click Source to execute the full workshop.
-8. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Load Packages
+
+Load required libraries. Attach dplyr to make its functions available.
+
+```{r step_01, eval=FALSE}
+library(dplyr)
+library(ggplot2)
+```
+
+### Step 2 – Create `t`
+
+Create a data frame,.
+
+```{r step_02, eval=FALSE}
+t = tibble(
+  time = 1:5,      # Time periods
+  # supposing a fixed annual cost and return...
+  benefit = 30000, # Annual benefits
+  cost = 5000,     # Annual costs
+  # Where the funds lose 5% in value each year...
+  discount = 0.05  # Discount rate
+)
+```
+
+### Step 3 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_03, eval=FALSE}
+t
+```
+
+### Step 4 – Practice the Pipe
+
+Calculate net revenue. Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_04, eval=FALSE}
+t = t %>% 
+  mutate(netrev = benefit - cost)
+t
+```
+
+### Step 5 – Practice the Pipe
+
+Calculate net present value for each time.
+
+```{r step_05, eval=FALSE}
+t = t %>% 
+  mutate(npv = netrev / (1 + discount)^time)
+```
+
+### Step 6 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_06, eval=FALSE}
+t
+```
+
+### Step 7 – Run the Code Block
+
+View the results. Execute the block and pay attention to the output it produces.
+
+```{r step_07, eval=FALSE}
+t
+```
+
+### Step 8 – Start a ggplot
+
+Plotting NPV over time.
+
+```{r step_08, eval=FALSE}
+ggplot(t, aes(x = time, y = npv)) +       
+  geom_point() +
+  labs(x = "Time", y = "Net Present Value") +
+  ggtitle("Net Present Value Over Time")
+```
+
+### Step 9 – Create `data`
+
+smartboards. Create the object `data` so you can reuse it in later steps.
+
+```{r step_09, eval=FALSE}
+data = tribble(
+  ~unit, ~cost,
+   1,     2000,
+   10,    16000,
+   50,    90000,
+   100,   140000,
+)
+```
+
+### Step 10 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_10, eval=FALSE}
+ggplot() +
+  geom_point(data = data, mapping = aes(x = unit, y = cost))
+```
+
+### Step 11 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_11, eval=FALSE}
+m = data %>% lm(formula = cost ~ unit)
+# Cost = $4,920 + $1,418 * unit
+```
+
+### Step 12 – Define `get_cost()`
+
+Create the helper function `get_cost()` so you can reuse it throughout the workshop.
+
+```{r step_12, eval=FALSE}
+get_cost = function(unit){ 4920 + 1418 * unit }
+```
+
+### Step 13 – Create `data2`
+
+Create the object `data2` so you can reuse it in later steps.
+
+```{r step_13, eval=FALSE}
+data2 = tibble(
+  unit = 150,
+  # pred = get_cost(unit), # this is equivalent
+  pred = predict(m, newdata = tibble(unit))
+)
+```
+
+### Step 14 – Create `data3`
+
+Create the object `data3` so you can reuse it in later steps.
+
+```{r step_14, eval=FALSE}
+data3 = tibble(
+  unit = 1:150,
+  pred = predict(m, newdata = tibble(unit))
+)
+```
+
+### Step 15 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_15, eval=FALSE}
+data3
+```
+
+### Step 16 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_16, eval=FALSE}
+ggplot() +
+  geom_point(data = data, mapping = aes(x = unit, y = cost)) +
+  geom_line(data = data3, mapping = aes(x = unit, y = pred)) +
+  geom_point(data = data2, mapping = aes(x = unit, y = pred), color = "red")
+```
+
+### Step 17 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_17, eval=FALSE}
+m2 = data %>% lm(formula = log(cost) ~ unit)
+m2
+```
+
+### Step 18 – Create `data4`
+
+ln(cost) = 8.63484 ln$ + 0.03726 ln$ * unit.
+
+```{r step_18, eval=FALSE}
+data4 = tibble(
+  unit = 1:150,
+  pred = predict(m2, newdata = tibble(unit))
+) %>%
+  mutate(pred = exp(pred))
+```
+
+### Step 19 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_19, eval=FALSE}
+ggplot() +
+  geom_point(data = data, mapping = aes(x = unit, y = cost)) +
+  geom_line(data = data3, mapping = aes(x = unit, y = pred), color = "blue") +
+  geom_line(data = data4, mapping = aes(x = unit, y = pred), color = "red") +
+  geom_point(data = data2, mapping = aes(x = unit, y = pred), color = "blue")
+```
+
+### Step 20 – Create `p_fail`
+
+Define probabilities. Create the object `p_fail` so you can reuse it in later steps.
+
+```{r step_20, eval=FALSE}
+p_fail = 0.05
+p_works = 1 - p_fail
+```
+
+### Step 21 – Create `pay_min`
+
+Define utility function for pay Choose what means min utility (0) for you.
+
+```{r step_21, eval=FALSE}
+pay_min = 0
+# Choose what means max utility (1) for you
+pay_max = 10000
+```
+
+### Step 22 – Create `pay_works`
+
+Calculate utility of drone working (by rescaling).
+
+```{r step_22, eval=FALSE}
+pay_works = 10000
+u_pay_works = (pay_works - pay_min) / (pay_max - pay_min)
+```
+
+### Step 23 – Create `pay_fail`
+
+Calculate utility if drone fails.
+
+```{r step_23, eval=FALSE}
+pay_fail = -5000
+u_pay_fail = (pay_fail - pay_min) / (pay_max - pay_min)
+```
+
+### Step 24 – Create `u_pay`
+
+Calculate expected utility that you would earn Expected utility here is ~0.93.
+
+```{r step_24, eval=FALSE}
+u_pay = p_works * u_pay_works + p_fail * u_pay_fail
+u_pay # View
+```
+
+### Step 25 – Create `e_min`
+
+Define utility function for emissions.
+
+```{r step_25, eval=FALSE}
+e_min = 0
+e_max = 20
+```
+
+### Step 26 – Create `e_works`
+
+Create the object `e_works` so you can reuse it in later steps.
+
+```{r step_26, eval=FALSE}
+e_works = 10
+```
+
+### Step 27 – Create `u_e_works`
+
+Create the object `u_e_works` so you can reuse it in later steps.
+
+```{r step_27, eval=FALSE}
+u_e_works = (e_works - e_min) / (e_max - e_min)
+```
+
+### Step 28 – Create `e_fail`
+
+Create the object `e_fail` so you can reuse it in later steps.
+
+```{r step_28, eval=FALSE}
+e_fail = 3
+u_e_fail = (e_fail - e_min) / (e_max - e_min)
+```
+
+### Step 29 – Create `u_e`
+
+So the expected utility here is ~0.52 on a scale from 0 to 20. Calculate expected utility for emissions.
+
+```{r step_29, eval=FALSE}
+u_e = p_works * u_e_works + p_fail * u_e_fail
+u_e # View
+1 - u_e
+```
+
+### Step 30 – Create `w_e`
+
+Define weights. Create the object `w_e` so you can reuse it in later steps.
+
+```{r step_30, eval=FALSE}
+w_e = 0.30
+w_pay = 0.70
+```
+
+### Step 31 – Create `t`
+
+Combine utilities. Create the object `t` so you can reuse it in later steps.
+
+```{r step_31, eval=FALSE}
+t = tibble(
+  type = c("emissions", "pay"),           # Types of utilities
+  # remember to make high emissions BAD
+  # remember direction matters!
+  u = c(1 - u_e, u_pay),                      # Utility values
+  w = c(w_e, w_pay)                       # Weights
+)
+```
+
+### Step 32 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_32, eval=FALSE}
+t
+```
+
+### Step 33 – Create `combined_additive`
+
+Calculate combined utility additively.
+
+```{r step_33, eval=FALSE}
+combined_additive = sum(t$u * t$w)
+combined_additive
+```
+
+### Step 34 – Create `combined_multiplicative`
+
+Calculate combined utility multiplicatively.
+
+```{r step_34, eval=FALSE}
+combined_multiplicative = prod(t$u * t$w)
+combined_multiplicative
+```
+
+### Step 35 – Create `r`
+
+Create the object `r` so you can reuse it in later steps.
+
+```{r step_35, eval=FALSE}
+r = tibble(
+  mu = 500 # miles
+)
+# mean time to failure! = mean miles travelled
+# failure rate = 1 / mean time to failure
+# use it in an exponential distribution
+# take 1000 random samples from that distribution
+```
+
+### Step 36 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_36, eval=FALSE}
+r2 = r %>%
+  reframe(sim = rexp(n = 1000, rate = 1 / mu))
+```
+
+### Step 37 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_37, eval=FALSE}
+r3 = r2 %>%
+  summarize(
+    p50 = quantile(sim, probs = 0.50),
+    p75 = quantile(sim, probs = 0.75),
+    sd = sd(sim),
+    mean = mean(sim),
+    max = max(sim),
+    min = min(sim),
+    p99 = quantile(sim, prob = 0.99),
+    p01 = quantile(sim, prob = 0.01)
+  )
+```
+
+### Step 38 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_38, eval=FALSE}
+r3
+```
+
+### Step 39 – Load Packages
+
+Attach archr to make its functions available.
+
+```{r step_39, eval=FALSE}
+library(archr)
+library(dplyr)
+```
+
+### Step 40 – Create `a`
+
+Say we've got 3 binary decisions d1 = EIRP of transmitter (option 1 vs. option 0) d2 = G/T of receiver (option 1 vs. option 0) d3 = Slant Range (option 1 vs. option 0).
+
+```{r step_40, eval=FALSE}
+a = archr::enumerate_binary(n = 3)
+```
+
+### Step 41 – Define `get_performance()`
+
+Create the helper function `get_performance()` so you can reuse it throughout the workshop.
+
+```{r step_41, eval=FALSE}
+get_performance = function(d1,d2,d3, n = 1000, benchmark = 0){
+```
+
+### Step 42 – Clear Objects
+
+d1 = EIRP of transmitter (option 1 vs. option 0).
+
+```{r step_42, eval=FALSE}
+  sim1 = case_when(d1 == 1 ~ rnorm(n = n, mean = 30, sd = 5),
+                 d1 == 0 ~ rnorm(n = n, mean = 0, sd = 0) )
+  # d2 = G/T of receiver  (option 1 vs. option 0)
+  sim2 = case_when(d2 == 1 ~ rnorm(n = n, mean = 0, sd = 2),
+                 d2 == 0 ~ rnorm(n = n, mean = 0, sd = 0))
+  # d3 = Slant Range (option 1 vs. option 0)
+  sim3 = case_when(d3 == 1 ~ rnorm(n = n, mean = 4, sd = 2),
+                   d3 == 0 ~ rnorm(n = n, mean = 0, sd = 0))
+```
+
+### Step 43 – Create `sim`
+
+Get total simulated metrics.
+
+```{r step_43, eval=FALSE}
+  sim = sim1 + sim2 + sim3
+```
+
+### Step 44 – Create `metric`
+
+Calculate percentage that are less than benchmark!
+
+```{r step_44, eval=FALSE}
+  metric = sum(sim < benchmark) / length(sim)
+```
+
+### Step 45 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_45, eval=FALSE}
+  return(metric)
+}
+```
+
+### Step 46 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_46, eval=FALSE}
+get_performance(d1 = 1, d2 = 2, d3 = 3, n = 1000, benchmark = 0)
+```
+
+### Step 47 – Load Packages
+
+Attach archr to make its functions available.
+
+```{r step_47, eval=FALSE}
+library(archr)
+library(dplyr)
+```
+
+### Step 48 – Create `a`
+
+Say we've got 3 binary decisions d1 = EIRP of transmitter (option 1 vs. option 0) d2 = G/T of receiver (option 1 vs. option 0) d3 = Atmospheric Losses (option 1 vs. option 0).
+
+```{r step_48, eval=FALSE}
+a = archr::enumerate_binary(n = 3)
+```
+
+### Step 49 – Define `get_performance()`
+
+Create the helper function `get_performance()` so you can reuse it throughout the workshop.
+
+```{r step_49, eval=FALSE}
+get_performance = function(d1, d2, d3, n, benchmark){
+  # Testing values
+  # d1 = 1; d2 = 1; d3 = 1; n = 100; benchmark = 30
+```
+
+### Step 50 – Clear Objects
+
+transmitter m1 = case_when(d1 == 1 ~ 30, d1 == 0 ~ 0).
+
+```{r step_50, eval=FALSE}
+  sim1 = case_when(d1 == 1 ~ rnorm(n = n, mean = 30, sd = 5), 
+                   d1 == 0 ~ rnorm(n = n, mean = 0, sd = 0) )
+  # receiver
+  sim2 = case_when(d2 == 1 ~ rnorm(n = n, mean = 0, sd = 2),
+                   d2 == 0 ~ rnorm(n = n, mean = 0, sd = 0) )
+  # climate that the tech is deployed in
+  sim3 = case_when(d3 == 1 ~ rnorm(n = n, mean = 4, sd = 2),
+                   d3 == 0 ~ rnorm(n = n, mean = 0, sd = 0))
+  # combine
+  sims = sim1 + sim2 + sim3
+```
+
+### Step 51 – Create `metric`
+
+Option 4. Create the object `metric` so you can reuse it in later steps.
+
+```{r step_51, eval=FALSE}
+  metric = sum(sims < benchmark) / n
+```
+
+### Step 52 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_52, eval=FALSE}
+  return(metric)
+}
+```
+
+### Step 53 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_53, eval=FALSE}
+get_performance(d1 = 1, d2 = 1, d3 = 1, n = 100, benchmark = 2)
+get_performance(d1 = 0, d2 = 0, d3 = 0, n = 100, benchmark = 2)
+```
+
+### Step 54 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_54, eval=FALSE}
+get_performance(d1 = 1, d2 = 1, d3 = 1, n = 100, benchmark = 30)
+```
+
+### Step 55 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_55, eval=FALSE}
+a %>% 
+  rowwise() %>%
+  mutate(m1 = get_performance(d1 = d1, d2 = d2, d3 = d3, n = 1000, benchmark = 30)) %>%
+  ungroup()
+```
 
 ## Learning Checks
 
@@ -57,29 +591,29 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
 
 <details>
 <summary>Show answer</summary>
 
-It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
 
 </details>
 
-**Learning Check 4.** How can you verify that a custom function defined in the script behaves the way you expect?
+**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
 
 <details>
 <summary>Show answer</summary>
 
-Call the function with a simple input (for example the one used in the script) and print or view the returned value, then try a new input to see how the output changes.
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
 
 </details>
 
-**Learning Check 5.** When the script produces a `ggplot`, what experiment can you run to understand the mapping between data and aesthetics?
+**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
 
 <details>
 <summary>Show answer</summary>
 
-Modify one aesthetic, such as switching `color` to `fill` or adjusting `geom_point()` size, and re-run the plot to see how visual encodings respond.
+Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
 
 </details>

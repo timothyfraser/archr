@@ -22,18 +22,138 @@ This tutorial complements `21_enumeration_capstone.R` and unpacks the workshop o
 - Navigate the script `21_enumeration_capstone.R` within the Enumeration module.
 - Connect the topic "Enumeration capstone lab" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
-- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
-- Define and call custom functions to encapsulate reusable logic.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Define custom functions to package repeatable logic.
 
 ## Application
 
-1. Open `workshops/21_enumeration_capstone.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Load the libraries listed near the top of the script and confirm they attach without errors.
-4. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
-5. Re-run the custom functions with your own arguments to observe how the outputs change.
-6. When you are comfortable, run `source(file.path("workshops", "21_enumeration_capstone.R"))` or click Source to execute the full workshop.
-7. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Load Packages
+
+Attach dplyr to make its functions available.
+
+```{r step_01, eval=FALSE}
+library(dplyr)
+library(tidyr)
+```
+
+### Step 2 – Create `grid`
+
+Get full factorial grid of combinations.
+
+```{r step_02, eval=FALSE}
+grid = expand_grid(
+  # Catalyst K
+  k = c("A", "B"),
+  # Concentration C
+  c = c(20, 40),
+  # Temperature t
+  t = c(160, 180),
+) %>%
+  # order columns as shown in the example...
+  mutate(run = 1:n()) %>%
+  select(run, t, c, k)
+```
+
+### Step 3 – Practice the Pipe
+
+We run the experiment once and get these results.
+
+```{r step_03, eval=FALSE}
+data = grid %>% mutate(y = c(60,72,54,68,52,83,45, 80))
+```
+
+### Step 4 – Practice the Pipe
+
+Calculate the direct (one-way) treatment effects.
+
+```{r step_04, eval=FALSE}
+data %>%
+  summarize(
+    dbar_c = mean( y[c==40] - y[c==20] ),
+    dbar_t = mean( y[t== 180] - y[t==160] ),
+    dbar_k = mean( y[k== "B"] - y[k=="A"] )
+  )
+```
+
+### Step 5 – Practice the Pipe
+
+Calculate the two-way treatment effects.
+
+```{r step_05, eval=FALSE}
+data %>%
+  reframe(
+    xbar1 = y[ (t==180 & k=="B") | (t==160& k=="A") ] %>% mean(),
+    xbar0 = y[ (t==160 & k=="B") | (t==180& k=="A")] %>% mean(),
+    dbar = xbar1 - xbar0
+  )
+```
+
+### Step 6 – Define `get_minsize()`
+
+Create the helper function `get_minsize()` so you can reuse it throughout the workshop.
+
+```{r step_06, eval=FALSE}
+get_minsize = function(data, decisions = c("d1")){
+  library(dplyr)
+  library(tidyr)
+```
+
+### Step 7 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_07, eval=FALSE}
+  data %>%
+    select(any_of(decisions)) %>%
+    # Count up k, the number of unique alternatives per decision
+    summarize(across(everything(), .fns = ~length(unique(.x)))) %>%
+    # Pivot it longer
+    tidyr::pivot_longer(
+      cols = everything(), 
+      names_to = "k", values_to = "value") %>%
+    # Count up the minimum number of architectures necessary to test
+    # that number of main effects
+    summarize(minsize = 1 + sum(value - 1)) %>%
+    # Return it as a vector
+    with(minsize)        
+}
+```
+
+### Step 8 – Load Packages
+
+Attach dplyr to make its functions available.
+
+```{r step_08, eval=FALSE}
+library(dplyr)
+library(tidyr)
+library(archr)
+```
+
+### Step 9 – Create `a`
+
+Create the object `a` so you can reuse it in later steps.
+
+```{r step_09, eval=FALSE}
+a = enumerate_sf(n = c(2,5,4))
+```
+
+### Step 10 – Run the Code Block
+
+to count sample size needed...
+
+```{r step_10, eval=FALSE}
+get_minsize(a, decisions = c("d1"))
+get_minsize(a, decisions = c("d1", "d2"))
+get_minsize(a, decisions = c("d1", "d2", "d3"))
+```
+
+### Step 11 – Clear Objects
+
+Remove objects from the environment to prevent name clashes.
+
+```{r step_11, eval=FALSE}
+rm(list = ls())
+```
 
 ## Learning Checks
 
@@ -55,20 +175,20 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
 
 <details>
 <summary>Show answer</summary>
 
-It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
 
 </details>
 
-**Learning Check 4.** How can you verify that a custom function defined in the script behaves the way you expect?
+**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
 
 <details>
 <summary>Show answer</summary>
 
-Call the function with a simple input (for example the one used in the script) and print or view the returned value, then try a new input to see how the output changes.
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
 
 </details>

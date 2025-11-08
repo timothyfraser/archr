@@ -22,16 +22,125 @@ This tutorial complements `12_enumeration_scenarios.R` and unpacks the workshop 
 - Navigate the script `12_enumeration_scenarios.R` within the Enumeration module.
 - Connect the topic "Enumeration scenario examples" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
-- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
 
 ## Application
 
-1. Open `workshops/12_enumeration_scenarios.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Load the libraries listed near the top of the script and confirm they attach without errors.
-4. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
-5. When you are comfortable, run `source(file.path("workshops", "12_enumeration_scenarios.R"))` or click Source to execute the full workshop.
-6. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Load Packages
+
+Attach dplyr to make its functions available.
+
+```{r step_01, eval=FALSE}
+library(dplyr)
+library(tidyr)
+library(archr)
+```
+
+### Step 2 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_02, eval=FALSE}
+enumerate_sf(n = 3)
+enumerate_sf(n = 2)
+enumerate_ds(n = 2, k = 2)
+```
+
+### Step 3 – Create `a`
+
+Create the object `a` so you can reuse it in later steps.
+
+```{r step_03, eval=FALSE}
+a = expand_grid(
+  enumerate_sf(n = 3, .did = 1),
+  enumerate_sf(n = 2, .did = 2),
+  enumerate_ds(n = 2, k = 2, .did = 3)
+)
+```
+
+### Step 4 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_04, eval=FALSE}
+a
+```
+
+### Step 5 – Practice the Pipe
+
+k = what's the max number of options you can choose simulataneously minimum number??
+
+```{r step_05, eval=FALSE}
+enumerate_ds(n = 2, k = 2, .did = 3) %>%
+  mutate(count =  d3_1 + d3_2 ) %>%
+  filter(count >= 1)
+```
+
+### Step 6 – Create `a`
+
+Create the object `a` so you can reuse it in later steps.
+
+```{r step_06, eval=FALSE}
+a = expand_grid(
+  enumerate_sf(n = 3, .did = 1),
+  enumerate_sf(n = 2, .did = 2),
+  enumerate_ds(n = 2, k = 2, .did = 3) %>%
+    mutate(count =  d3_1 + d3_2 ) %>%
+    filter(count >= 1) %>%
+    select(-count)
+)
+```
+
+### Step 7 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_07, eval=FALSE}
+a
+```
+
+### Step 8 – Load Packages
+
+Attach dplyr to make its functions available.
+
+```{r step_08, eval=FALSE}
+library(dplyr)
+library(tidyr)
+library(archr)
+library(ggplot2)
+```
+
+### Step 9 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_09, eval=FALSE}
+enumerate_ds(n = 5, k = 5, .did = 1) %>%
+  filter((d1_1 + d1_2 + d1_3 + d1_4 + d1_5) > 0)
+enumerate_sf(n = 3)
+enumerate_ds(n = 2)
+```
+
+### Step 10 – Create `a`
+
+Create the object `a` so you can reuse it in later steps.
+
+```{r step_10, eval=FALSE}
+a = expand_grid(
+  enumerate_ds(n = 5, k = 5, .did = 1) %>%
+    filter((d1_1 + d1_2 + d1_3 + d1_4 + d1_5) > 0),
+  enumerate_sf(n = 3, .did = 2),
+  enumerate_ds(n = 2, k = 2, .did = 3)
+)
+```
+
+### Step 11 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_11, eval=FALSE}
+a
+```
 
 ## Learning Checks
 
@@ -53,11 +162,11 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
 
 <details>
 <summary>Show answer</summary>
 
-It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
 
 </details>

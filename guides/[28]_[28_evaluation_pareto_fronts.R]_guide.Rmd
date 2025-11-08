@@ -22,18 +22,142 @@ This tutorial complements `28_evaluation_pareto_fronts.R` and unpacks the worksh
 - Navigate the script `28_evaluation_pareto_fronts.R` within the Evaluation module.
 - Connect the topic "Pareto fronts exploration" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
-- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
-- Create or interpret visualizations produced with `ggplot2`.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Iterate on visualisations built with `ggplot2`.
 
 ## Application
 
-1. Open `workshops/28_evaluation_pareto_fronts.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Load the libraries listed near the top of the script and confirm they attach without errors.
-4. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
-5. Recreate the plotted visuals and experiment with aesthetic mappings to reinforce each layer.
-6. When you are comfortable, run `source(file.path("workshops", "28_evaluation_pareto_fronts.R"))` or click Source to execute the full workshop.
-7. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Load Packages
+
+SETUP ################################# Load packages.
+
+```{r step_01, eval=FALSE}
+library(dplyr)
+library(archr)
+library(ggplot2)
+# Load data
+data("donuts", package = "archr")
+donuts
+```
+
+### Step 2 – Create `m`
+
+PARETO FRONT ############################ Make a table m we'll build Enumerate architectures, including an .id.
+
+```{r step_02, eval=FALSE}
+m = enumerate_binary(n = nrow(donuts), .id = TRUE)
+```
+
+### Step 3 – Practice the Pipe
+
+Record the architectures as a matrix.
+
+```{r step_03, eval=FALSE}
+a = m %>% select(-id) %>% as.matrix()
+```
+
+### Step 4 – Practice the Pipe
+
+Add in columns for total metrics.
+
+```{r step_04, eval=FALSE}
+m = m %>% 
+  mutate(
+    # For this example, we'll calculate benefit and cost with matrix multiplication,
+    # but you could calculate cost or benefit many different ways
+    # Matrix multiple the matrix by the vector of benefits
+    benefit = a %*% donuts$benefit,
+    # Matrix multiple the matrix by the vector of costs
+    cost =   a %*% donuts$cost)
+```
+
+### Step 5 – Practice the Pipe
+
+View last five. Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_05, eval=FALSE}
+m %>% select(id, benefit, cost) %>% tail(5)
+```
+
+### Step 6 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_06, eval=FALSE}
+ggplot() +
+  geom_point(data = m, mapping = aes(x = benefit, y = cost))
+```
+
+### Step 7 – Practice the Pipe
+
+Get the ids of the pareto front with pareto().
+
+```{r step_07, eval=FALSE}
+m = m %>%
+  mutate(front = pareto(x = cost, y = -benefit))
+```
+
+### Step 8 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_08, eval=FALSE}
+m %>% select(id, cost, benefit, front)
+# ?archr::pareto()
+```
+
+### Step 9 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_09, eval=FALSE}
+ggplot() +
+  geom_point(data = m, mapping = aes(x = benefit, y = cost),
+             color = "grey") +
+  geom_line(data = m %>% filter(front == TRUE),
+            mapping = aes(x = benefit, y = cost),
+            color = "red")
+```
+
+### Step 10 – Practice the Pipe
+
+Thresholds ##################################### Show just a slice of the architectures based on thresholds.
+
+```{r step_10, eval=FALSE}
+m %>% 
+  filter(front == TRUE & benefit > 20 & cost < 100)
+```
+
+### Step 11 – Start a ggplot
+
+Add those thresholds for context usinge geom_hline and geom_vline!
+
+```{r step_11, eval=FALSE}
+ggplot() +
+  geom_point(data = m, mapping = aes(x = benefit, y = cost),
+             color = "grey") +
+  geom_line(data = m %>% filter(front == TRUE),
+            mapping = aes(x = benefit, y = cost),
+            color = "red") +
+  geom_hline(yintercept = 100, color = "blue") +
+  geom_vline(xintercept = 20, color = "blue")
+```
+
+### Step 12 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_12, eval=FALSE}
+m
+```
+
+### Step 13 – Clear Objects
+
+Cleanup ! Remove objects from the environment to prevent name clashes.
+
+```{r step_13, eval=FALSE}
+rm(list = ls())
+```
 
 ## Learning Checks
 
@@ -55,20 +179,20 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
 
 <details>
 <summary>Show answer</summary>
 
-It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
 
 </details>
 
-**Learning Check 4.** When the script produces a `ggplot`, what experiment can you run to understand the mapping between data and aesthetics?
+**Learning Check 4.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
 
 <details>
 <summary>Show answer</summary>
 
-Modify one aesthetic, such as switching `color` to `fill` or adjusting `geom_point()` size, and re-run the plot to see how visual encodings respond.
+Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
 
 </details>

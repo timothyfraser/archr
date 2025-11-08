@@ -22,16 +22,68 @@ This tutorial complements `16_enumeration_constraints.R` and unpacks the worksho
 - Navigate the script `16_enumeration_constraints.R` within the Enumeration module.
 - Connect the topic "Enumeration with constraints" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
-- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
 
 ## Application
 
-1. Open `workshops/16_enumeration_constraints.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Load the libraries listed near the top of the script and confirm they attach without errors.
-4. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
-5. When you are comfortable, run `source(file.path("workshops", "16_enumeration_constraints.R"))` or click Source to execute the full workshop.
-6. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Load Packages
+
+Attach dplyr to make its functions available.
+
+```{r step_01, eval=FALSE}
+library(dplyr)
+library(readr)
+library(tidyr)
+library(archr)
+```
+
+### Step 2 – Create `decision1`
+
+D1: Get a donut (Binary: 0, 1)?
+
+```{r step_02, eval=FALSE}
+decision1 = enumerate_binary(n = 1, .did = 1)
+# D2a: Features on Donut (DS) (0,1, 0,1)
+decision2a = enumerate_ds(n = 2, k = 2, .did = 2) %>%
+  select(d2a_1 = d2_1, d2a_2 = d2_2) %>%
+  mutate(d2b = 3)
+# D2b: If not Donut, what other breakfast? (0,1,2,3)
+decision2b = enumerate_sf(n = c(4), .did = 2) %>%
+  select(d2b = d2) %>%
+  mutate(d2a_1 = 0, d2a_2 = 0)
+```
+
+### Step 3 – Create `part1`
+
+Create the object `part1` so you can reuse it in later steps.
+
+```{r step_03, eval=FALSE}
+part1 = expand_grid(
+  decision1 %>% filter(d1 == 0),
+  decision2a
+)
+```
+
+### Step 4 – Create `part2`
+
+Create the object `part2` so you can reuse it in later steps.
+
+```{r step_04, eval=FALSE}
+part2 = expand_grid(
+  decision1 %>% filter(d1 == 1),
+  decision2b
+)
+```
+
+### Step 5 – Create `arch`
+
+Create the object `arch` so you can reuse it in later steps.
+
+```{r step_05, eval=FALSE}
+arch = bind_rows(
+  part1, part2
+)
+```
 
 ## Learning Checks
 
@@ -53,11 +105,11 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
 
 <details>
 <summary>Show answer</summary>
 
-It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
 
 </details>

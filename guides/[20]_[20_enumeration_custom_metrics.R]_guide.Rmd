@@ -22,18 +22,114 @@ This tutorial complements `20_enumeration_custom_metrics.R` and unpacks the work
 - Navigate the script `20_enumeration_custom_metrics.R` within the Enumeration module.
 - Connect the topic "Custom metric development" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
-- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
-- Define and call custom functions to encapsulate reusable logic.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Define custom functions to package repeatable logic.
 
 ## Application
 
-1. Open `workshops/20_enumeration_custom_metrics.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Load the libraries listed near the top of the script and confirm they attach without errors.
-4. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
-5. Re-run the custom functions with your own arguments to observe how the outputs change.
-6. When you are comfortable, run `source(file.path("workshops", "20_enumeration_custom_metrics.R"))` or click Source to execute the full workshop.
-7. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Load Packages
+
+Attach dplyr to make its functions available.
+
+```{r step_01, eval=FALSE}
+library(dplyr)
+library(archr)
+```
+
+### Step 2 – Define `get_percentages()`
+
+Can be hard to compare visually, but let's check them numerically...
+
+```{r step_02, eval=FALSE}
+get_percentages = function(x, did = "d2"){
+  # Testing values
+  #x = mini$d2
+```
+
+### Step 3 – Practice the Pipe
+
+Get the tally per alternative.
+
+```{r step_03, eval=FALSE}
+  tally = tibble(altid = x) %>%
+    group_by(altid) %>%
+    summarize(count = n())
+  # Calculate percentages
+  percentages = tally %>% 
+    mutate(total = sum(count)) %>%
+    mutate(percent = count / total) %>%
+    mutate(label = round(percent * 100, 1)) %>%
+    mutate(label = paste0(label, "%"))
+  # Add a decision id and format
+  percentages = percentages %>% 
+    mutate(did = did) %>%
+    select(did, altid, count, total, percent, label)
+```
+
+### Step 4 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_04, eval=FALSE}
+  return(percentages)
+}
+```
+
+### Step 5 – Create `a`
+
+Make an architecture matrix of 3 binary decisions.
+
+```{r step_05, eval=FALSE}
+a = enumerate_sf(n = c(2,2,2))
+```
+
+### Step 6 – Practice the Pipe
+
+Repeat this code several times.
+
+```{r step_06, eval=FALSE}
+sample = a %>%
+  group_by(d1) %>%
+  sample_n(size = 2)
+```
+
+### Step 7 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_07, eval=FALSE}
+get_percentages(x = sample$d1, did = "d1")
+get_percentages(x = sample$d2, did = "d2")
+get_percentages(x = sample$d3, did = "d3")
+```
+
+### Step 8 – Practice the Pipe
+
+One way to improve balance is to stratify by MULTIPLE variables. (though NEVER by ALL variables).
+
+```{r step_08, eval=FALSE}
+sample = a %>%
+  group_by(d1, d2) %>%
+  sample_n(size = 2)
+```
+
+### Step 9 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_09, eval=FALSE}
+get_percentages(x = sample$d1, did = "d1")
+get_percentages(x = sample$d2, did = "d2")
+get_percentages(x = sample$d3, did = "d3")
+```
+
+### Step 10 – Clear Objects
+
+A little better! Remove objects from the environment to prevent name clashes.
+
+```{r step_10, eval=FALSE}
+rm(list = ls())
+```
 
 ## Learning Checks
 
@@ -55,20 +151,20 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
 
 <details>
 <summary>Show answer</summary>
 
-It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
 
 </details>
 
-**Learning Check 4.** How can you verify that a custom function defined in the script behaves the way you expect?
+**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
 
 <details>
 <summary>Show answer</summary>
 
-Call the function with a simple input (for example the one used in the script) and print or view the returned value, then try a new input to see how the output changes.
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
 
 </details>

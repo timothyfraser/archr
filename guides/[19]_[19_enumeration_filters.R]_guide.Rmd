@@ -22,20 +22,184 @@ This tutorial complements `19_enumeration_filters.R` and unpacks the workshop on
 - Navigate the script `19_enumeration_filters.R` within the Enumeration module.
 - Connect the topic "Filtering enumerated architectures" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
-- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
-- Define and call custom functions to encapsulate reusable logic.
-- Create or interpret visualizations produced with `ggplot2`.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Define custom functions to package repeatable logic.
+- Iterate on visualisations built with `ggplot2`.
 
 ## Application
 
-1. Open `workshops/19_enumeration_filters.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Load the libraries listed near the top of the script and confirm they attach without errors.
-4. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
-5. Re-run the custom functions with your own arguments to observe how the outputs change.
-6. Recreate the plotted visuals and experiment with aesthetic mappings to reinforce each layer.
-7. When you are comfortable, run `source(file.path("workshops", "19_enumeration_filters.R"))` or click Source to execute the full workshop.
-8. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Load Packages
+
+Load packages. Attach dplyr to make its functions available.
+
+```{r step_01, eval=FALSE}
+library(dplyr) # for data wrangling
+library(ggplot2) # for plotting
+library(ggpubr) # for combining plots
+```
+
+### Step 2 – Run the Code Block
+
+random sample from a uniform distribution -- 2 parameters min (a) and max (b).
+
+```{r step_02, eval=FALSE}
+runif(n = 5, min = 0, max = 10)
+```
+
+### Step 3 – Create `data`
+
+Suppose we have 10000 architectures, each with an x, y, and z metrics.
+
+```{r step_03, eval=FALSE}
+data = tibble(
+  x = runif(n = 10000, min = 0, max = 1),
+  y = runif(n = 10000, min = 0, max = 1),
+  z = sample(x = c("a", "b", "c"), size = 10000, replace = TRUE)) %>%
+  # Also, we'll just create some stratifying variables for later.
+  mutate(x_quarters = ntile(x, 4),
+       y_quarters = ntile(y, 4))
+```
+
+### Step 4 – Create `g1`
+
+Population. Create the object `g1` so you can reuse it in later steps.
+
+```{r step_04, eval=FALSE}
+g1 = ggplot() +
+  geom_point(data = data, mapping = aes(x = x, y = y, color = z),
+             alpha = 0.5)
+```
+
+### Step 5 – Run the Code Block
+
+The whole population would look like this...
+
+```{r step_05, eval=FALSE}
+g1
+```
+
+### Step 6 – Practice the Pipe
+
+Pure Random Sample Use sample_n() to sample 100 architectures.
+
+```{r step_06, eval=FALSE}
+sample1 = data %>%
+  sample_n(size = 1000)
+```
+
+### Step 7 – Create `g2`
+
+A purely random sample would look like this...
+
+```{r step_07, eval=FALSE}
+g2 = ggplot() +
+  geom_point(data = sample1, mapping = aes(x = x, y = y, color = z), 
+             alpha = 0.5)
+```
+
+### Step 8 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_08, eval=FALSE}
+g2
+```
+
+### Step 9 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_09, eval=FALSE}
+sample2 = data %>%
+  group_by(x_quarters, y_quarters, z) %>%
+  sample_n(size = round(1000/(4*4*3)))
+```
+
+### Step 10 – Create `g3`
+
+Create the object `g3` so you can reuse it in later steps.
+
+```{r step_10, eval=FALSE}
+g3 = ggplot() +
+  geom_point(data = sample2, mapping = aes(x = x, y = y, color = z), 
+             alpha = 0.5)
+library(ggpubr)
+```
+
+### Step 11 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_11, eval=FALSE}
+ggarrange(g2,g3, nrow = 1)
+```
+
+### Step 12 – Define `get_percentages()`
+
+Can be hard to compare visually, but let's check them numerically...
+
+```{r step_12, eval=FALSE}
+get_percentages = function(x, did = "d2"){
+  # Testing values
+  #x = mini$d2
+```
+
+### Step 13 – Practice the Pipe
+
+Get the tally per alternative.
+
+```{r step_13, eval=FALSE}
+  tally = tibble(altid = x) %>%
+    group_by(altid) %>%
+    summarize(count = n())
+  # Calculate percentages
+  percentages = tally %>% 
+    mutate(total = sum(count)) %>%
+    mutate(percent = count / total) %>%
+    mutate(label = round(percent * 100, 1)) %>%
+    mutate(label = paste0(label, "%"))
+  # Add a decision id and format
+  percentages = percentages %>% 
+    mutate(did = did) %>%
+    select(did, altid, count, total, percent, label)
+```
+
+### Step 14 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_14, eval=FALSE}
+  return(percentages)
+}
+```
+
+### Step 15 – Run the Code Block
+
+What's the breakdown by our 3 stratifying variables?
+
+```{r step_15, eval=FALSE}
+get_percentages(x = sample2$x_quarters)
+get_percentages(x = sample2$y_quarters)
+get_percentages(x = sample2$z)
+```
+
+### Step 16 – Run the Code Block
+
+Compare that to the pure random sample.
+
+```{r step_16, eval=FALSE}
+get_percentages(x = sample1$x_quarters)
+get_percentages(x = sample1$y_quarters)
+get_percentages(x = sample1$z)
+```
+
+### Step 17 – Clear Objects
+
+Clean up! Remove objects from the environment to prevent name clashes.
+
+```{r step_17, eval=FALSE}
+rm(list = ls())
+```
 
 ## Learning Checks
 
@@ -57,29 +221,29 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
 
 <details>
 <summary>Show answer</summary>
 
-It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
 
 </details>
 
-**Learning Check 4.** How can you verify that a custom function defined in the script behaves the way you expect?
+**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
 
 <details>
 <summary>Show answer</summary>
 
-Call the function with a simple input (for example the one used in the script) and print or view the returned value, then try a new input to see how the output changes.
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
 
 </details>
 
-**Learning Check 5.** When the script produces a `ggplot`, what experiment can you run to understand the mapping between data and aesthetics?
+**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
 
 <details>
 <summary>Show answer</summary>
 
-Modify one aesthetic, such as switching `color` to `fill` or adjusting `geom_point()` size, and re-run the plot to see how visual encodings respond.
+Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
 
 </details>

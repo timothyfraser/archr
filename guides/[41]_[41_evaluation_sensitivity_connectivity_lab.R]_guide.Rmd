@@ -22,18 +22,139 @@ This tutorial complements `41_evaluation_sensitivity_connectivity_lab.R` and unp
 - Navigate the script `41_evaluation_sensitivity_connectivity_lab.R` within the Evaluation module.
 - Connect the topic "Sensitivity and connectivity lab" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
-- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
-- Create or interpret visualizations produced with `ggplot2`.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Iterate on visualisations built with `ggplot2`.
 
 ## Application
 
-1. Open `workshops/41_evaluation_sensitivity_connectivity_lab.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Load the libraries listed near the top of the script and confirm they attach without errors.
-4. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
-5. Recreate the plotted visuals and experiment with aesthetic mappings to reinforce each layer.
-6. When you are comfortable, run `source(file.path("workshops", "41_evaluation_sensitivity_connectivity_lab.R"))` or click Source to execute the full workshop.
-7. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Load Packages
+
+Attach dplyr to make its functions available.
+
+```{r step_01, eval=FALSE}
+library(dplyr)
+library(readr)
+library(tidyr)
+library(ggplot2)
+library(archr)
+```
+
+### Step 2 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_02, eval=FALSE}
+source("workshops/00_sensitivity_connectivity_utilities.R")
+```
+
+### Step 3 – Practice the Pipe
+
+Replicate the exact data structure from the slides.
+
+```{r step_03, eval=FALSE}
+data = enumerate_sf(n = c(2, 3, 2)) %>%
+  # Add metrics
+  mutate(m1 = c(33,73, 40, 80, 30, 70, 66, 146, 80, 160, 60, 140),
+         m2 = c(0.8910, 0.9801, 0.8991, 0.9890, 0.4500, 0.4950, 0.9899, 0.9998, 0.9900, 0.9999, 0.7425, 0.7499)) %>%
+  mutate(d1 = d1 + 1, d2 = d2 + 1, d3 = d3+1) %>%
+  select(d1 = d3, d2 = d2, d3 = d1, m1, m2)
+```
+
+### Step 4 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_04, eval=FALSE}
+data
+```
+
+### Step 5 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_05, eval=FALSE}
+connectivity(data = data, decision_i = "d2", decisions = c("d1","d2","d3"), metric = "m1")
+```
+
+### Step 6 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_06, eval=FALSE}
+sensitivity(data = data,decision_i = "d2", metric = "m1")
+```
+
+### Step 7 – Create `points`
+
+VISUAL ###################################. Create the object `points` so you can reuse it in later steps.
+
+```{r step_07, eval=FALSE}
+points = expand_grid(
+  decision = c("d1","d2","d3"),
+  metric = c("m1","m2")
+) %>%
+  group_by(decision, metric) %>%
+  #rowwise() %>% 
+  summarize(
+    c = connectivity(data = data, decision_i = decision, decisions = c("d1","d2","d3"), metric = metric),
+    s = sensitivity(data = data, decision_i = decision, metric = metric),
+    .groups = "drop"
+  )
+```
+
+### Step 8 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_08, eval=FALSE}
+points
+```
+
+### Step 9 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_09, eval=FALSE}
+ggplot() +
+  geom_point(data = points, mapping = aes(
+    x = c, y = s, color = decision),
+    size = 10) +
+  geom_text(data = points, mapping = aes(
+    x = c, y = s, label = decision), 
+    color = "white") +
+  facet_wrap(~metric, scales = "free") +
+  theme(legend.position = "none")
+```
+
+### Step 10 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_10, eval=FALSE}
+pointsm1 = points %>%
+  filter(metric == "m1")
+```
+
+### Step 11 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_11, eval=FALSE}
+ggplot() +
+  geom_point(data = pointsm1, mapping = aes(
+    x = c, y = s, color = decision),
+    size = 10) +
+  geom_text(data = pointsm1, mapping = aes(
+    x = c, y = s, label = decision), 
+    color = "white") +
+  theme(legend.position = "none") +
+  geom_vline(xintercept = 12.5) +
+  geom_hline(yintercept = 30) +
+  scale_x_continuous(limits = c(0, 25)) +
+  scale_y_continuous(limits = c(0, 60)) +
+  labs(x = "Connectivity Score (Metric X)",
+       y = "Sensitivity Score (Metric X)")
+```
 
 ## Learning Checks
 
@@ -55,20 +176,20 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
 
 <details>
 <summary>Show answer</summary>
 
-It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
 
 </details>
 
-**Learning Check 4.** When the script produces a `ggplot`, what experiment can you run to understand the mapping between data and aesthetics?
+**Learning Check 4.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
 
 <details>
 <summary>Show answer</summary>
 
-Modify one aesthetic, such as switching `color` to `fill` or adjusting `geom_point()` size, and re-run the plot to see how visual encodings respond.
+Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
 
 </details>

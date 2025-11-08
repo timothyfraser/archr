@@ -25,11 +25,21 @@ This tutorial complements `01_stakeholder_github_setup.R` and unpacks the worksh
 
 ## Application
 
-1. Open `workshops/01_stakeholder_github_setup.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Run any `install.packages()` lines once to make sure the dependencies exist on your machine.
-4. When you are comfortable, run `source(file.path("workshops", "01_stakeholder_github_setup.R"))` or click Source to execute the full workshop.
-5. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Install Packages
+
+Install credentials package. Install credentials so the rest of the workshop can run.
+
+```{r step_01, eval=FALSE}
+install.packages("credentials")
+```
+
+### Step 2 – Register GitHub PAT
+
+Set github personal-access-token (PAT).
+
+```{r step_02, eval=FALSE}
+credentials::set_github_pat()
+```
 
 ## Learning Checks
 
@@ -56,6 +66,6 @@ Those commands make sure the required libraries are available so every subsequen
 <details>
 <summary>Show answer</summary>
 
-It emphasizes how github onboarding for course supports the overall systems architecting process in this course.
+It highlights how github onboarding for course supports the overall systems architecting process in this course.
 
 </details>

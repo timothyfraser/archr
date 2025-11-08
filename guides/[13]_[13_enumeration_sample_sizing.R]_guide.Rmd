@@ -22,18 +22,77 @@ This tutorial complements `13_enumeration_sample_sizing.R` and unpacks the works
 - Navigate the script `13_enumeration_sample_sizing.R` within the Enumeration module.
 - Connect the topic "Minimum sample sizing utility" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
-- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
-- Define and call custom functions to encapsulate reusable logic.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Define custom functions to package repeatable logic.
 
 ## Application
 
-1. Open `workshops/13_enumeration_sample_sizing.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Load the libraries listed near the top of the script and confirm they attach without errors.
-4. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
-5. Re-run the custom functions with your own arguments to observe how the outputs change.
-6. When you are comfortable, run `source(file.path("workshops", "13_enumeration_sample_sizing.R"))` or click Source to execute the full workshop.
-7. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Define `get_minsize()`
+
+Create the helper function `get_minsize()` so you can reuse it throughout the workshop.
+
+```{r step_01, eval=FALSE}
+get_minsize = function(data, decisions = c("d1")){
+  library(dplyr)
+  library(tidyr)
+```
+
+### Step 2 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_02, eval=FALSE}
+  data %>%
+    select(any_of(decisions)) %>%
+    # Count up k, the number of unique alternatives per decision
+    summarize(across(everything(), .fns = ~length(unique(.x)))) %>%
+    # Pivot it longer
+    tidyr::pivot_longer(
+      cols = everything(), 
+      names_to = "k", values_to = "value") %>%
+    # Count up the minimum number of architectures necessary to test
+    # that number of main effects
+    summarize(minsize = 1 + sum(value - 1)) %>%
+    # Return it as a vector
+    with(minsize)        
+}
+```
+
+### Step 3 – Load Packages
+
+Attach dplyr to make its functions available.
+
+```{r step_03, eval=FALSE}
+library(dplyr)
+library(tidyr)
+library(archr)
+```
+
+### Step 4 – Create `a`
+
+Create the object `a` so you can reuse it in later steps.
+
+```{r step_04, eval=FALSE}
+a = enumerate_sf(n = c(2,5,4))
+```
+
+### Step 5 – Run the Code Block
+
+to count sample size needed...
+
+```{r step_05, eval=FALSE}
+get_minsize(a, decisions = c("d1"))
+get_minsize(a, decisions = c("d1", "d2"))
+get_minsize(a, decisions = c("d1", "d2", "d3"))
+```
+
+### Step 6 – Clear Objects
+
+Remove objects from the environment to prevent name clashes.
+
+```{r step_06, eval=FALSE}
+rm(list = ls())
+```
 
 ## Learning Checks
 
@@ -55,20 +114,20 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
 
 <details>
 <summary>Show answer</summary>
 
-It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
 
 </details>
 
-**Learning Check 4.** How can you verify that a custom function defined in the script behaves the way you expect?
+**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
 
 <details>
 <summary>Show answer</summary>
 
-Call the function with a simple input (for example the one used in the script) and print or view the returned value, then try a new input to see how the output changes.
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
 
 </details>

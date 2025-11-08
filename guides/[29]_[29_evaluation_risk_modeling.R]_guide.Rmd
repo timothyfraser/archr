@@ -22,18 +22,294 @@ This tutorial complements `29_evaluation_risk_modeling.R` and unpacks the worksh
 - Navigate the script `29_evaluation_risk_modeling.R` within the Evaluation module.
 - Connect the topic "Risk modeling tutorial" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
-- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
-- Create or interpret visualizations produced with `ggplot2`.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Iterate on visualisations built with `ggplot2`.
 
 ## Application
 
-1. Open `workshops/29_evaluation_risk_modeling.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Load the libraries listed near the top of the script and confirm they attach without errors.
-4. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
-5. Recreate the plotted visuals and experiment with aesthetic mappings to reinforce each layer.
-6. When you are comfortable, run `source(file.path("workshops", "29_evaluation_risk_modeling.R"))` or click Source to execute the full workshop.
-7. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Load Packages
+
+PACKAGES ###############################. Attach dplyr to make its functions available.
+
+```{r step_01, eval=FALSE}
+library(dplyr)
+library(readr)
+```
+
+### Step 2 – Create `cost`
+
+Cost distribution stats ($1000s) by subsystem.
+
+```{r step_02, eval=FALSE}
+cost = tribble(
+  ~type, ~system, ~dist,    ~mu, ~sigma,
+  "cost", "app",  "normal", 40,  2,
+  "cost", "mak",  "exponential", 30,  NA,
+  "cost", "dec",  "normal", 60,  4,
+  "cost", "qc",  "poisson", 20,  NA,
+  "cost", "del",  "normal", 80,  5
+)
+```
+
+### Step 3 – Create `time`
+
+Time distribution stats (hours) by subsystem.
+
+```{r step_03, eval=FALSE}
+time <- tribble(
+  ~type, ~system, ~dist,        ~mu, ~sigma,
+  "time", "app",  "normal",      500,   25,
+  "time", "mak",  "exponential", 1500,  NA,
+  "time", "dec",  "normal",      400,   25,
+  "time", "qc",   "poisson",     1200,  NA,
+  "time", "del",  "normal",      1300,  30
+)
+```
+
+### Step 4 – Run the Code Block
+
+1.1 We know the stats of the App Subsystem's Time distribution view the app row - it's a normal distribution.
+
+```{r step_04, eval=FALSE}
+time
+```
+
+### Step 5 – Practice the Pipe
+
+grab stats 's'. Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_05, eval=FALSE}
+s = time %>% filter(system == "app")
+```
+
+### Step 6 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_06, eval=FALSE}
+s$mu # access the mean ("mu")  
+s$sigma  # access the standard deviation ("sigma")
+```
+
+### Step 7 – Create `bench`
+
+Get Quantities of Interest Set benchmark 'bench'.
+
+```{r step_07, eval=FALSE}
+bench = 520;
+```
+
+### Step 8 – Clear Objects
+
+Eg. What # of cases took exactly 520 hours to make "app"? -- P(x = 520) = ???
+
+```{r step_08, eval=FALSE}
+dnorm(bench, mean = s$mu, sd = s$sigma)
+```
+
+### Step 9 – Clear Objects
+
+-- Eg. What # of cases took <= 520 hours?
+
+```{r step_09, eval=FALSE}
+pnorm(bench, mean = s$mu, sd = s$sigma)
+```
+
+### Step 10 – Clear Objects
+
+What # of cases took MORE than 520 hours?
+
+```{r step_10, eval=FALSE}
+1 - pnorm(bench, mean = s$mu, sd = s$sigma)
+```
+
+### Step 11 – Practice the Pipe
+
+Probability of failure (failure = more than 520 hours)!
+
+```{r step_11, eval=FALSE}
+time %>% mutate(prob = 1 - pnorm(bench, mean = mu, sd = sigma))
+```
+
+### Step 12 – Practice the Pipe
+
+Joint probability of failure.
+
+```{r step_12, eval=FALSE}
+p = time %>% 
+  mutate(prob = case_when(
+    # when normal...
+    dist == "normal" ~  1 - pnorm(bench, mean = mu, sd = sigma),
+    dist == "exponential" ~ 1 - pexp(bench, rate = 1 / mu),
+    dist == "poisson" ~ 1 - ppois(bench, lambda = mu),
+    # otherwise
+    TRUE ~ NA
+  ))
+```
+
+### Step 13 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_13, eval=FALSE}
+p %>% summarize(joint = prod(prob))
+```
+
+### Step 14 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_14, eval=FALSE}
+p
+```
+
+### Step 15 – Create `n`
+
+Let's get 100 values...
+
+```{r step_15, eval=FALSE}
+n = 100;
+```
+
+### Step 16 – Create `p1`
+
+Create the object `p1` so you can reuse it in later steps.
+
+```{r step_16, eval=FALSE}
+p1 = tibble(
+  bench = bench,
+  x = seq(from = 420, to = 560, length.out = 100),
+  fill = x < bench,
+  prob = dnorm(x, mean = s$mu, sd = s$sigma)
+)
+```
+
+### Step 17 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_17, eval=FALSE}
+ggplot() +
+  geom_point(data = p1, mapping = aes(x = x, y = prob))
+```
+
+### Step 18 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_18, eval=FALSE}
+ggplot() +
+  geom_area(data = p1, mapping = aes(x = x, y = prob))
+ggplot() +
+  geom_line(data = p1, mapping = aes(x = x, y = prob))
+```
+
+### Step 19 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_19, eval=FALSE}
+ggplot() +
+  geom_area(data = p1, mapping = aes(x = x, y = prob)) +
+  geom_line(data = p1, mapping = aes(x = x, y = prob), color = "steelblue", size = 2)
+```
+
+### Step 20 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_20, eval=FALSE}
+ggplot() +
+  geom_area(data = p1, mapping = aes(x = x, y = prob, fill = fill))
+```
+
+### Step 21 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_21, eval=FALSE}
+ggplot() +
+  geom_area(data = p1, mapping = aes(x = x, y = prob, fill = fill))
+```
+
+### Step 22 – Create `p2`
+
+Create the object `p2` so you can reuse it in later steps.
+
+```{r step_22, eval=FALSE}
+p2 = tibble(
+  bench = bench,
+  x = seq(from = 420, to = 560, length.out = 100),
+  fill = x < bench,
+  prob = dnorm(x, mean = s$mu, sd = s$sigma),
+  # Cumulative probability
+  cprob = pnorm(x, mean = s$mu, sd = s$sigma),
+  # random values
+  sim = rnorm(x, mean = s$mu, sd = s$sigma)
+)
+```
+
+### Step 23 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_23, eval=FALSE}
+ggplot() +
+  geom_area(data = p2, mapping = aes(x = x, y = cprob, fill = fill))
+```
+
+### Step 24 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_24, eval=FALSE}
+p2 %>% 
+  select(sim)
+```
+
+### Step 25 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_25, eval=FALSE}
+ggplot() +
+  geom_histogram(data = p2, mapping = aes(x = sim), fill = "steelblue", color = "black")
+```
+
+### Step 26 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_26, eval=FALSE}
+ggplot() +
+  geom_histogram(data = p2, mapping = aes(x = sim), fill = "steelblue", color = "black")
+```
+
+### Step 27 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_27, eval=FALSE}
+ggplot() +
+  geom_histogram(data = p2, mapping = aes(x = sim), fill = "#023402", color = "black")
+```
+
+### Step 28 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_28, eval=FALSE}
+ggplot() +
+  geom_density(data = p2, mapping = aes(x = sim), fill = "#023402", color = "black")
+```
+
+### Step 29 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_29, eval=FALSE}
+colors()
+```
 
 ## Learning Checks
 
@@ -55,20 +331,20 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
 
 <details>
 <summary>Show answer</summary>
 
-It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
 
 </details>
 
-**Learning Check 4.** When the script produces a `ggplot`, what experiment can you run to understand the mapping between data and aesthetics?
+**Learning Check 4.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
 
 <details>
 <summary>Show answer</summary>
 
-Modify one aesthetic, such as switching `color` to `fill` or adjusting `geom_point()` size, and re-run the plot to see how visual encodings respond.
+Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
 
 </details>

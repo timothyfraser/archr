@@ -22,18 +22,44 @@ This tutorial complements `11_architecting_simple_counting_function.R` and unpac
 - Navigate the script `11_architecting_simple_counting_function.R` within the Architecting Systems module.
 - Connect the topic "Counting function recitation" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
-- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
-- Define and call custom functions to encapsulate reusable logic.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Define custom functions to package repeatable logic.
 
 ## Application
 
-1. Open `workshops/11_architecting_simple_counting_function.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Load the libraries listed near the top of the script and confirm they attach without errors.
-4. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
-5. Re-run the custom functions with your own arguments to observe how the outputs change.
-6. When you are comfortable, run `source(file.path("workshops", "11_architecting_simple_counting_function.R"))` or click Source to execute the full workshop.
-7. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Define `count_n_m()`
+
+Create the helper function `count_n_m()` so you can reuse it throughout the workshop.
+
+```{r step_01, eval=FALSE}
+count_n_m = function(n, m){  n + m }
+```
+
+### Step 2 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_02, eval=FALSE}
+archr::
+count_n_m = function(n, m){  
+  # testing values
+  # library(dplyr)
+  # n = 3
+  # m = 2
+```
+
+### Step 3 – Create `data`
+
+Create the object `data` so you can reuse it in later steps.
+
+```{r step_03, eval=FALSE}
+  data = tibble(n = n, 
+         m = m) %>%
+    mutate(count = n + m)
+  output = data$count
+  return(output)
+}
+```
 
 ## Learning Checks
 
@@ -55,20 +81,20 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
 
 <details>
 <summary>Show answer</summary>
 
-It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
 
 </details>
 
-**Learning Check 4.** How can you verify that a custom function defined in the script behaves the way you expect?
+**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
 
 <details>
 <summary>Show answer</summary>
 
-Call the function with a simple input (for example the one used in the script) and print or view the returned value, then try a new input to see how the output changes.
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
 
 </details>

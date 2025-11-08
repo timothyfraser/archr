@@ -25,11 +25,25 @@ This tutorial complements `02_stakeholder_package_setup.R` and unpacks the works
 
 ## Application
 
-1. Open `workshops/02_stakeholder_package_setup.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Run any `install.packages()` lines once to make sure the dependencies exist on your machine.
-4. When you are comfortable, run `source(file.path("workshops", "02_stakeholder_package_setup.R"))` or click Source to execute the full workshop.
-5. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Install Packages
+
+List of packages installed.
+
+```{r step_01, eval=FALSE}
+install.packages(c(
+  # data wrangling packages
+  "dplyr", "readr", "tidyr", "stringr", "purrr", 
+  # networks packages
+  "igraph", "tidygraph", "ggraph", 
+  # Visualization packages
+  "ggplot2", "viridis", "ggpubr",
+  # Optimization support packages
+  "GA", "rmoo",
+  # Modeling support packages
+  "texreg", "broom",
+  # Extra helper packages
+  "gtools"))
+```
 
 ## Learning Checks
 
@@ -56,6 +70,6 @@ Those commands make sure the required libraries are available so every subsequen
 <details>
 <summary>Show answer</summary>
 
-It emphasizes how r package installation checklist supports the overall systems architecting process in this course.
+It highlights how r package installation checklist supports the overall systems architecting process in this course.
 
 </details>

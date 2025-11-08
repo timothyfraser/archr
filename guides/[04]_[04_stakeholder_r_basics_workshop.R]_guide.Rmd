@@ -23,21 +23,775 @@ This tutorial complements `04_stakeholder_r_basics_workshop.R` and unpacks the w
 - Connect the topic "Workshop 1 R fundamentals" to systems architecting decisions.
 - Install any required packages highlighted with `install.packages()`.
 - Load packages with `library()` and verify they attach without warnings.
-- Import and export data files using `readr` helpers and inspect the results.
-- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
-- Define and call custom functions to encapsulate reusable logic.
+- Import data files with `readr` helpers and inspect the resulting objects.
+- Export results to disk so you can reuse them across workshops.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Define custom functions to package repeatable logic.
 
 ## Application
 
-1. Open `workshops/04_stakeholder_r_basics_workshop.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Run any `install.packages()` lines once to make sure the dependencies exist on your machine.
-4. Load the libraries listed near the top of the script and confirm they attach without errors.
-5. Walk through the data import and export chunks, using the Environment pane to inspect the created objects.
-6. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
-7. Re-run the custom functions with your own arguments to observe how the outputs change.
-8. When you are comfortable, run `source(file.path("workshops", "04_stakeholder_r_basics_workshop.R"))` or click Source to execute the full workshop.
-9. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Try Arithmetic
+
+addition. Evaluate a quick arithmetic expression to observe R's console output.
+
+```{r step_01, eval=FALSE}
+1 + 1
+```
+
+### Step 2 – Create `x`
+
+make object 'x'. Create the object `x` so you can reuse it in later steps.
+
+```{r step_02, eval=FALSE}
+x = 2
+```
+
+### Step 3 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_03, eval=FALSE}
+x + 2
+```
+
+### Step 4 – Create `y`
+
+make new objects. Create the object `y` so you can reuse it in later steps.
+
+```{r step_04, eval=FALSE}
+y = x + 2
+y
+```
+
+### Step 5 – Remove Objects
+
+Remove specific objects. Delete specific objects so you can redefine them cleanly.
+
+```{r step_05, eval=FALSE}
+remove(x,y)
+# Clear everything all at once
+rm(list = ls())
+```
+
+### Step 6 – Install Packages
+
+Install. Install dplyr, readr, ggplot2 so the rest of the workshop can run.
+
+```{r step_06, eval=FALSE}
+install.packages(c("dplyr", "readr", "ggplot2"))
+```
+
+### Step 7 – Load Packages
+
+Load packages. Attach dplyr to make its functions available.
+
+```{r step_07, eval=FALSE}
+library(dplyr)
+library(readr)
+library(ggplot2)
+```
+
+### Step 8 – Create `myvec`
+
+Create the object `myvec` so you can reuse it in later steps.
+
+```{r step_08, eval=FALSE}
+myvec = c(1,2,3,4)
+```
+
+### Step 9 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_09, eval=FALSE}
+myvec
+```
+
+### Step 10 – Create `myrow`
+
+Create the object `myrow` so you can reuse it in later steps.
+
+```{r step_10, eval=FALSE}
+myrow = matrix( c(1,2,3,4), nrow = 1)
+```
+
+### Step 11 – Create `mycol`
+
+Create the object `mycol` so you can reuse it in later steps.
+
+```{r step_11, eval=FALSE}
+mycol = matrix( c(1,2,3,4), ncol = 1)
+```
+
+### Step 12 – Create a Matrix
+
+Create a matrix to practice element-wise and matrix operations.
+
+```{r step_12, eval=FALSE}
+matrix(c(myrow, myrow, myrow), byrow = TRUE, ncol = 4)
+```
+
+### Step 13 – Create a Matrix
+
+Create a matrix to practice element-wise and matrix operations.
+
+```{r step_13, eval=FALSE}
+matrix(c(mycol, mycol, mycol), byrow = FALSE, ncol = 3)
+```
+
+### Step 14 – Build a Data Frame
+
+Construct a small data frame that you can manipulate later.
+
+```{r step_14, eval=FALSE}
+data.frame(
+  x = c(1,2,3),
+  y = c("corgi", "dalmatian", "goldendoodle"),
+  z = c(1, 2, "3")
+)
+```
+
+### Step 15 – Create a Matrix
+
+Create a matrix to practice element-wise and matrix operations.
+
+```{r step_15, eval=FALSE}
+matrix(c(1,2,3, 4,5,6, 7,8,9), byrow = TRUE, nrow = 3, ncol = 3)
+```
+
+### Step 16 – Create `mymat3`
+
+Create the object `mymat3` so you can reuse it in later steps.
+
+```{r step_16, eval=FALSE}
+mymat3 = matrix(
+  # put comments inside of these chunks
+  c(1,2,3, 
+    4,5,6, 
+    7,8,9), 
+  # settings
+  byrow = TRUE, nrow = 3, ncol = 3)
+```
+
+### Step 17 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_17, eval=FALSE}
+mymat3^2
+```
+
+### Step 18 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_18, eval=FALSE}
+mymat3*2
+```
+
+### Step 19 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_19, eval=FALSE}
+mymat3 + mymat3
+```
+
+### Step 20 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_20, eval=FALSE}
+mymat3 %*% mymat3
+```
+
+### Step 21 – Create `day`
+
+Create the object `day` so you can reuse it in later steps.
+
+```{r step_21, eval=FALSE}
+day = c("M", "T", "W", "R", "F")
+temp = c(30, 20, 25, 27, 29)
+t = data.frame(day, temp)
+```
+
+### Step 22 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_22, eval=FALSE}
+t$day
+t$temp + 2
+```
+
+### Step 23 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_23, eval=FALSE}
+t$temp
+```
+
+### Step 24 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_24, eval=FALSE}
+t$temp = t$temp + 2
+```
+
+### Step 25 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_25, eval=FALSE}
+t$snow = c("yes", "no", "yes", "no", "no")
+```
+
+### Step 26 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_26, eval=FALSE}
+t$rain = c("yes", "no", "no", "no", NA)
+```
+
+### Step 27 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_27, eval=FALSE}
+t[1:3, 2]
+```
+
+### Step 28 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_28, eval=FALSE}
+mymat3[1, 2:3]
+```
+
+### Step 29 – Clear Objects
+
+Remove objects from the environment to prevent name clashes.
+
+```{r step_29, eval=FALSE}
+rm(list = ls())
+```
+
+### Step 30 – Import CSV Data
+
+Load workshops/04_stakeholder_test_data.csv into a tibble you can explore in R.
+
+```{r step_30, eval=FALSE}
+t = readr::read_csv("workshops/04_stakeholder_test_data.csv")
+```
+
+### Step 31 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_31, eval=FALSE}
+t$id
+t$coffees
+t$sale
+```
+
+### Step 32 – Import RDS Data
+
+.rds - r data storage.
+
+```{r step_32, eval=FALSE}
+m = readr::read_rds("workshops/04_stakeholder_test_data.rds")
+```
+
+### Step 33 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_33, eval=FALSE}
+m
+```
+
+### Step 34 – Save Data to CSV
+
+Export a tibble to workshops/04_stakeholder_test_data2.csv for later use.
+
+```{r step_34, eval=FALSE}
+readr::write_csv(t, file = "workshops/04_stakeholder_test_data2.csv")
+```
+
+### Step 35 – Save Data to CSV
+
+Export a tibble to workshops/04_stakeholder_test_data2.csv for later use.
+
+```{r step_35, eval=FALSE}
+write_csv(t, file = "workshops/04_stakeholder_test_data2.csv")
+```
+
+### Step 36 – Save Data to RDS
+
+Store an object as workshops/04_stakeholder_test_data2.rds to preserve its structure.
+
+```{r step_36, eval=FALSE}
+write_rds(as.matrix(t), file = "workshops/04_stakeholder_test_data2.rds")
+```
+
+### Step 37 – Clear Objects
+
+Remove objects from the environment to prevent name clashes.
+
+```{r step_37, eval=FALSE}
+rm(list = ls())
+```
+
+### Step 38 – Define `plusone()`
+
+Create the helper function `plusone()` so you can reuse it throughout the workshop.
+
+```{r step_38, eval=FALSE}
+plusone = function(inputs){ output = inputs; output }
+plusone = function(inputs){ output = inputs; return(output) }
+plusone = function(inputs){ 
+  output = inputs;
+  output 
+}
+```
+
+### Step 39 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_39, eval=FALSE}
+plusone(inputs = 2)
+```
+
+### Step 40 – Remove Objects
+
+Delete specific objects so you can redefine them cleanly.
+
+```{r step_40, eval=FALSE}
+remove(plusone)
+```
+
+### Step 41 – Define `plusone()`
+
+Create the helper function `plusone()` so you can reuse it throughout the workshop.
+
+```{r step_41, eval=FALSE}
+plusone = function(x){  y = x + 1; return(y)   }
+plusone(x = 2)
+plusone(x = c(2,3))
+```
+
+### Step 42 – Define `plustwo()`
+
+Create the helper function `plustwo()` so you can reuse it throughout the workshop.
+
+```{r step_42, eval=FALSE}
+plustwo = function(x){  y = x + 2; return(y)  } 
+plustwo(x = c(2,3))
+```
+
+### Step 43 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_43, eval=FALSE}
+plustwo(plusone(x = 1))
+library(dplyr)
+```
+
+### Step 44 – Practice the Pipe
+
+pipeline. Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_44, eval=FALSE}
+%>%
+%>%
+```
+
+### Step 45 – Practice the Pipe
+
+shortcut: ctl shift m.
+
+```{r step_45, eval=FALSE}
+%>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>%
+```
+
+### Step 46 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_46, eval=FALSE}
+1 %>% plusone()
+```
+
+### Step 47 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_47, eval=FALSE}
+1 %>% plusone(x = .)
+```
+
+### Step 48 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_48, eval=FALSE}
+1 %>% plusone() %>% plustwo()
+```
+
+### Step 49 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_49, eval=FALSE}
+1 %>% 
+  plusone() %>%
+  plustwo()
+```
+
+### Step 50 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_50, eval=FALSE}
+1 %>% 
+  # Take 1 and use plusone() on it
+  plusone() %>%
+  # Now take the output and use plustwo() on it
+  plustwo()
+```
+
+### Step 51 – Create `sh`
+
+Let's make a table including...
+
+```{r step_51, eval=FALSE}
+sh = tibble(
+  # name of stakeholder
+  name = c("Project", "Company", 
+           "Regulator", "Government", "Residents"),
+  # type of stakeholder
+  type = c("Beneficiary", "Beneficiary", "Problem", "Beneficiary", "Charitable"),
+  # number of value cycles they are a part of
+  cycles = c(3, 4, 2, 2, 2)
+)
+```
+
+### Step 52 – Run the Code Block
+
+stakeholders. Execute the block and pay attention to the output it produces.
+
+```{r step_52, eval=FALSE}
+sh
+```
+
+### Step 53 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_53, eval=FALSE}
+sh2 = sh %>%
+  mutate(value = c(NA, 0.3, 0.5, 0.3, 0.8))
+```
+
+### Step 54 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_54, eval=FALSE}
+sh2 %>%
+  summarize(total_value = sum(value, na.rm = TRUE))
+```
+
+### Step 55 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_55, eval=FALSE}
+summarize(sh2, total_value = sum(value, na.rm = TRUE))
+```
+
+### Step 56 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_56, eval=FALSE}
+sh2$value %>% sum(na.rm = TRUE)
+```
+
+### Step 57 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_57, eval=FALSE}
+sh2 %>%
+  summarize(
+    total_value = sum(value, na.rm = TRUE),
+    count = n())
+```
+
+### Step 58 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_58, eval=FALSE}
+sh2 %>%
+  group_by(type) %>%
+  summarize(total_value = sum(value, na.rm = TRUE))
+```
+
+### Step 59 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_59, eval=FALSE}
+sh2 %>%
+  group_by(type) %>%
+  summarize(total_value = sum(value, na.rm = TRUE),
+            count = n())
+```
+
+### Step 60 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_60, eval=FALSE}
+sh2 %>%
+  group_by(type)
+```
+
+### Step 61 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_61, eval=FALSE}
+sh2 %>%
+  group_by(type) %>%
+  summarize(total_value = sum(value, na.rm = TRUE),
+            count = n()) %>%
+  ungroup()
+```
+
+### Step 62 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_62, eval=FALSE}
+sh2 %>%
+  group_by(type) %>%
+  summarize(total_value = sum(value, na.rm = TRUE),
+            count = n())
+```
+
+### Step 63 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_63, eval=FALSE}
+seq(from = min(sh2$value, na.rm = TRUE),
+    to = max(sh2$value, na.rm = TRUE),
+    by = 0.1)
+```
+
+### Step 64 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_64, eval=FALSE}
+sh2 %>%
+  reframe(
+    range = seq(from = min(value, na.rm = TRUE),
+                to = max(value, na.rm = TRUE),
+                by = 0.1)
+  )
+```
+
+### Step 65 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_65, eval=FALSE}
+sh2 %>%
+  select(name, value)
+```
+
+### Step 66 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_66, eval=FALSE}
+sh2 %>%
+  select(group = name)
+```
+
+### Step 67 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_67, eval=FALSE}
+sh2 %>%
+  slice(2)
+```
+
+### Step 68 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_68, eval=FALSE}
+sh2 %>%
+  slice(c(1,2))
+```
+
+### Step 69 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_69, eval=FALSE}
+sh2 %>%
+  slice(-c(1,2))
+```
+
+### Step 70 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_70, eval=FALSE}
+sh2[-c(1,2), ]
+```
+
+### Step 71 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_71, eval=FALSE}
+sh2 %>%
+  filter(value > 0.5)
+```
+
+### Step 72 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_72, eval=FALSE}
+sh2 %>% 
+  filter(value > 0.5 |  type == "Problem")
+```
+
+### Step 73 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_73, eval=FALSE}
+sh2 %>% 
+  filter(value >= 0.5)
+```
+
+### Step 74 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_74, eval=FALSE}
+sh2 %>%
+  filter(is.na(value))
+```
+
+### Step 75 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_75, eval=FALSE}
+sh2 %>%
+  filter(!is.na(value))
+```
+
+### Step 76 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_76, eval=FALSE}
+sh2 %>%
+  arrange(value)
+```
+
+### Step 77 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_77, eval=FALSE}
+sh2 %>%
+  arrange(desc(value))
+```
+
+### Step 78 – Create `stats`
+
+Lets make our stats table.
+
+```{r step_78, eval=FALSE}
+stats = tibble(
+  type = c("Beneficiary", "Charitable", "Problem"),
+  total = c(1.4, 1.8, 0.9)
+)
+```
+
+### Step 79 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_79, eval=FALSE}
+stats
+```
+
+### Step 80 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_80, eval=FALSE}
+sh2
+```
+
+### Step 81 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_81, eval=FALSE}
+left_join(x = sh2, y = stats, by = "type")
+```
+
+### Step 82 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_82, eval=FALSE}
+sh2 %>%
+  left_join(y = stats, by = "type")
+```
+
+### Step 83 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_83, eval=FALSE}
+sh2 %>%
+  left_join(by = "type", y = stats) %>%
+  mutate(importance = value / total) %>%
+  filter(!is.na(importance)) %>%
+  group_by(type) %>%
+  summarize(avg = mean(importance)) %>%
+  arrange(desc(avg))
+```
+
+### Step 84 – Clear Objects
+
+Remove objects from the environment to prevent name clashes.
+
+```{r step_84, eval=FALSE}
+rm(list = ls())
+```
 
 ## Learning Checks
 
@@ -59,29 +813,29 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** Which helper do you use in this workshop to bring external data into R, and what should you check right after calling it?
+**Learning Check 3.** When you import data in this workshop, what should you inspect right after the read call?
 
 <details>
 <summary>Show answer</summary>
 
-Use the `readr` functions shown (such as `read_csv()` or `read_rds()`) and immediately inspect the resulting tibble in the Environment pane to confirm the columns loaded as expected.
+Check the tibble in the Environment pane (or print it) to confirm column names and types look correct.
 
 </details>
 
-**Learning Check 4.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+**Learning Check 4.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
 
 <details>
 <summary>Show answer</summary>
 
-It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
 
 </details>
 
-**Learning Check 5.** How can you verify that a custom function defined in the script behaves the way you expect?
+**Learning Check 5.** How can you build confidence that a newly defined function behaves as intended?
 
 <details>
 <summary>Show answer</summary>
 
-Call the function with a simple input (for example the one used in the script) and print or view the returned value, then try a new input to see how the output changes.
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
 
 </details>

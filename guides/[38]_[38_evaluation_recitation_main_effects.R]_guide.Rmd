@@ -22,20 +22,192 @@ This tutorial complements `38_evaluation_recitation_main_effects.R` and unpacks 
 - Navigate the script `38_evaluation_recitation_main_effects.R` within the Evaluation module.
 - Connect the topic "Recitation on main effects" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
-- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
-- Define and call custom functions to encapsulate reusable logic.
-- Create or interpret visualizations produced with `ggplot2`.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Define custom functions to package repeatable logic.
+- Iterate on visualisations built with `ggplot2`.
 
 ## Application
 
-1. Open `workshops/38_evaluation_recitation_main_effects.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Load the libraries listed near the top of the script and confirm they attach without errors.
-4. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
-5. Re-run the custom functions with your own arguments to observe how the outputs change.
-6. Recreate the plotted visuals and experiment with aesthetic mappings to reinforce each layer.
-7. When you are comfortable, run `source(file.path("workshops", "38_evaluation_recitation_main_effects.R"))` or click Source to execute the full workshop.
-8. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Practice the Pipe
+
+Enumerate Architectures Example from Slides in Class.
+
+```{r step_01, eval=FALSE}
+data = enumerate_sf(n = c(2, 3, 2)) %>%
+  # Add metrics
+  mutate(m1 = c(33,73, 40, 80, 30, 70, 66, 146, 80, 160, 60, 140),
+         m2 = c(0.8910, 0.9801, 0.8991, 0.9890, 0.4500, 0.4950, 0.9899, 0.9998, 0.9900, 0.9999, 0.7425, 0.7499))
+```
+
+### Step 2 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_02, eval=FALSE}
+data
+```
+
+### Step 3 – Define `me()`
+
+Create the helper function `me()` so you can reuse it throughout the workshop.
+
+```{r step_03, eval=FALSE}
+me = function(data, decision = "d2", value = 1, metric = "m1"){
+  data2 = data %>%
+    select(any_of(c(alt = decision, metric = metric))) %>%
+    mutate(decision = decision) %>%
+    select(decision, alt, metric)
+  data3 = data2 %>%
+    summarize(
+      xhat = mean(metric[alt == value], na.rm = TRUE),
+      x = mean(metric[alt != value], na.rm = TRUE),
+      dbar = xhat - x  
+    )
+  output = data3$dbar
+```
+
+### Step 4 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_04, eval=FALSE}
+  return(output)
+}
+```
+
+### Step 5 – Create `me1`
+
+Create the object `me1` so you can reuse it in later steps.
+
+```{r step_05, eval=FALSE}
+me1 = me(data, decision = "d2", value = 1, metric = "m1")
+me2 = me(data, decision = "d2", value = 0, metric = "m1")
+me3 = me(data, decision = "d2", value = 2, metric = "m1")
+```
+
+### Step 6 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_06, eval=FALSE}
+(abs(me1) + abs(me2) + abs(me3)) / 3
+```
+
+### Step 7 – Run the Code Block
+
+I'd suggest you use the final versions of these functions developed in: 00_sensitivity_connectivity_utilities.R.
+
+```{r step_07, eval=FALSE}
+source("workshops/00_sensitivity_connectivity_utilities.R")
+```
+
+### Step 8 – Run the Code Block
+
+Let's try using this function to get sensitivity scores for every decision and metric.
+
+```{r step_08, eval=FALSE}
+sensitivity(data, decision_i = "d1", metric = "m1")
+connectivity(data, decision_i = "d3", decisions = c("d1", "d2", "d3"), metric = "m1")
+```
+
+### Step 9 – Load Packages
+
+Attach dplyr to make its functions available.
+
+```{r step_09, eval=FALSE}
+library(dplyr)
+library(ggplot2)
+```
+
+### Step 10 – Create `data`
+
+Create the object `data` so you can reuse it in later steps.
+
+```{r step_10, eval=FALSE}
+data = tibble(
+  decision = c("D1", "D2", "D3", "D1", "D2", "D3"),
+  sensitivity = c(5, 20, 30, 5, 10, 15),
+  connectivity = c(8, 30, 20, 2, 5, 30),
+  metric = c("cost", "cost", "cost", "benefit", "benefit", "benefit")
+) %>%
+  mutate(metric = case_when(
+    metric == "cost" ~ "Cost (USD)",
+    metric == "benefit" ~ "Range (Mi)"
+  ))
+```
+
+### Step 11 – Create `quandrants`
+
+Create the object `quandrants` so you can reuse it in later steps.
+
+```{r step_11, eval=FALSE}
+quandrants = tibble(
+  label = c("Q1", "Q2", "Q3", "Q4"),
+  sensitivity = c(18, 18, 12, 12),
+  connectivity = c(18, 12,18,  12)
+)
+```
+
+### Step 12 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_12, eval=FALSE}
+divisions = data %>%
+  summarize(sensitivity = (max(sensitivity) - 0) / 2,
+            connectivity = (max(connectivity) - 0) / 2 )
+```
+
+### Step 13 – Create `gg`
+
+Create the object `gg` so you can reuse it in later steps.
+
+```{r step_13, eval=FALSE}
+gg = ggplot() +
+  # Plot points
+  geom_point(
+    data = data, 
+    mapping = aes(
+      x = connectivity, y = sensitivity, 
+      color = metric),
+    size = 15
+  ) +
+  # Plot labels for points on top
+  geom_text(
+    data = data,
+    mapping = aes(
+      x = connectivity, y = sensitivity,
+      label = decision
+    )
+  ) +
+  # geom_hline(yintercept = 15) +
+  # geom_vline(xintercept = 15) +
+  geom_hline(data = divisions, mapping = aes(yintercept = sensitivity)) +
+  geom_vline(data = divisions, mapping = aes(xintercept = connectivity)) +
+  # Pop some labels for quandrants
+  geom_text(
+    data = quandrants,
+    mapping = aes(
+      x = sensitivity, y = connectivity,
+      label = label),
+    color = "darkgrey"
+    ) +
+  theme_bw() +
+  # Specify the limits
+  scale_y_continuous(limits = c(0, 30)) +
+  scale_x_continuous(limits = c(0, 30)) +
+  # Put legend on bottom
+  theme(legend.position = "bottom")
+```
+
+### Step 14 – Run the Code Block
+
+Split up into panels.
+
+```{r step_14, eval=FALSE}
+gg + 
+  facet_wrap(~metric, scales = "free")
+```
 
 ## Learning Checks
 
@@ -57,29 +229,29 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
 
 <details>
 <summary>Show answer</summary>
 
-It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
 
 </details>
 
-**Learning Check 4.** How can you verify that a custom function defined in the script behaves the way you expect?
+**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
 
 <details>
 <summary>Show answer</summary>
 
-Call the function with a simple input (for example the one used in the script) and print or view the returned value, then try a new input to see how the output changes.
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
 
 </details>
 
-**Learning Check 5.** When the script produces a `ggplot`, what experiment can you run to understand the mapping between data and aesthetics?
+**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
 
 <details>
 <summary>Show answer</summary>
 
-Modify one aesthetic, such as switching `color` to `fill` or adjusting `geom_point()` size, and re-run the plot to see how visual encodings respond.
+Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
 
 </details>

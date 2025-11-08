@@ -1,15 +1,36 @@
 #!/usr/bin/env python3
 """
-Utility script to generate tutorial Rmd guides for every workshop script.
+Generate step-by-step R Markdown guides for every workshop script.
 """
+
 from __future__ import annotations
 
-from pathlib import Path
+import re
 import textwrap
+from dataclasses import dataclass
+from pathlib import Path
 
 
 WORKSHOP_DIR = Path("/workspace/workshops")
 GUIDE_DIR = Path("/workspace/guides")
+
+META_PREFIXES = (
+    "script:",
+    "original:",
+    "topic:",
+    "section:",
+    "developed by:",
+    "@name",
+    "@title",
+    "@description",
+)
+
+
+@dataclass
+class Step:
+    title: str
+    description: str
+    code: list[str]
 
 
 def parse_meta(text: str) -> dict[str, str]:
@@ -27,8 +48,6 @@ def parse_meta(text: str) -> dict[str, str]:
 
 def detect_features(text: str) -> dict[str, bool]:
     lower = text.lower()
-    install_packages = "install.packages" in lower
-    library_present = "library(" in lower or "require(" in lower
     read_tokens = [
         "read_csv",
         "readr::read_csv",
@@ -60,27 +79,207 @@ def detect_features(text: str) -> dict[str, bool]:
     ]
     apply_tokens = ["map(", "apply(", "lapply(", "sapply(", "purrr::", "vapply("]
 
-    read_data = any(token in lower for token in read_tokens)
-    write_data = any(token in lower for token in write_tokens)
-    dplyr = "%>%" in text or "dplyr::" in text or any(token in lower for token in dplyr_tokens)
-    ggplot = "ggplot(" in lower or "geom_" in lower
-    function_def = "function(" in lower
-    loops = "for (" in lower or "while (" in lower
-    apply = any(token in lower for token in apply_tokens)
-    ga = "ga(" in lower or "genetic" in lower
-
     return {
-        "install_packages": install_packages,
-        "library": library_present,
-        "read_data": read_data,
-        "write_data": write_data,
-        "dplyr": dplyr,
-        "ggplot": ggplot,
-        "function_def": function_def,
-        "loops": loops,
-        "apply": apply,
-        "ga": ga,
+        "install_packages": "install.packages" in lower,
+        "library": "library(" in lower or "require(" in lower,
+        "read_data": any(token in lower for token in read_tokens),
+        "write_data": any(token in lower for token in write_tokens),
+        "dplyr": "%>%" in text or "dplyr::" in text or any(token in lower for token in dplyr_tokens),
+        "ggplot": "ggplot(" in lower or "geom_" in lower,
+        "function_def": "function(" in lower,
+        "loops": "for (" in lower or "while (" in lower,
+        "apply": any(token in lower for token in apply_tokens),
+        "ga": "ga(" in lower or "genetic" in lower,
     }
+
+
+def normalise_space(text: str) -> str:
+    return re.sub(r"\s+", " ", text.strip())
+
+
+def ensure_sentence(text: str) -> str:
+    if not text:
+        return ""
+    text = text.strip()
+    if text and text[-1] not in ".!?":
+        text += "."
+    return text
+
+
+def title_case(text: str) -> str:
+    words = re.split(r"[\s_-]+", text.strip())
+    return " ".join(word.capitalize() for word in words if word)
+
+
+def infer_step_metadata(code_lines: list[str]) -> tuple[str, str]:
+    first_code = ""
+    for line in code_lines:
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped.startswith("#"):
+            continue
+        first_code = stripped
+        break
+
+    if not first_code:
+        return ("Review This Code", "Run the code block and observe the output.")
+
+    lower = first_code.lower()
+
+    def extract_packages(pattern: str) -> str:
+        matches = re.findall(pattern, first_code)
+        return ", ".join(matches)
+
+    if "install.packages" in lower:
+        pkgs = extract_packages(r'install\.packages\((?:c\()?(?P<pkg>[^)]+)\)')
+        pkg_names = re.findall(r'"([^"]+)"', pkgs) or re.findall(r"'([^']+)'", pkgs)
+        pkg_text = ", ".join(pkg_names) if pkg_names else "the listed packages"
+        return ("Install Packages", f"Install {pkg_text} so the rest of the workshop can run.")
+
+    if lower.startswith("library(") or lower.startswith("require("):
+        pkg = re.findall(r"(?:library|require)\(([^)]+)\)", first_code)
+        pkg_text = pkg[0].strip() if pkg else "the package"
+        return ("Load Packages", f"Attach {pkg_text} to make its functions available.")
+
+    if "credentials::set_github_pat" in lower:
+        return ("Register GitHub PAT", "Store your GitHub personal access token securely using the credentials package.")
+
+    if "readr::read_csv" in lower or "read_csv(" in lower:
+        file_match = re.findall(r'\"([^\"]+\.csv)\"', first_code)
+        file_text = file_match[0] if file_match else "the CSV file"
+        return ("Import CSV Data", f"Load {file_text} into a tibble you can explore in R.")
+
+    if "readr::read_rds" in lower or "read_rds(" in lower or "readr::read_rds" in lower:
+        file_match = re.findall(r'\"([^\"]+\.rds)\"', first_code)
+        file_text = file_match[0] if file_match else "the RDS file"
+        return ("Import RDS Data", f"Read {file_text} so you can inspect the stored objects.")
+
+    if "write_csv(" in lower or "readr::write_csv" in lower:
+        file_match = re.findall(r'\"([^\"]+\.csv)\"', first_code)
+        file_text = file_match[0] if file_match else "a CSV file"
+        return ("Save Data to CSV", f"Export a tibble to {file_text} for later use.")
+
+    if "write_rds(" in lower or "readr::write_rds" in lower:
+        file_match = re.findall(r'\"([^\"]+\.rds)\"', first_code)
+        file_text = file_match[0] if file_match else "an RDS file"
+        return ("Save Data to RDS", f"Store an object as {file_text} to preserve its structure.")
+
+    func_match = re.search(r"(\w+)\s*(?:<-|=)\s*function\s*\(", first_code)
+    if func_match:
+        func_name = func_match.group(1)
+        return (f"Define `{func_name}()`", f"Create the helper function `{func_name}()` so you can reuse it throughout the workshop.")
+
+    if lower.startswith("function("):
+        return ("Define a Function", "Declare an inline function you can use immediately in the pipeline.")
+
+    if "%>%" in first_code:
+        return ("Practice the Pipe", "Use the `%>%` operator to pass each result to the next tidyverse verb.")
+
+    if lower.startswith("ggplot("):
+        return ("Start a ggplot", "Initialize a ggplot so you can layer geoms and customise aesthetics.")
+
+    if lower.startswith("data.frame(") or lower.startswith("tibble("):
+        return ("Build a Data Frame", "Construct a small data frame that you can manipulate later.")
+
+    if lower.startswith("matrix("):
+        return ("Create a Matrix", "Create a matrix to practice element-wise and matrix operations.")
+
+    if lower.startswith("rm(") or "rm(" in lower:
+        return ("Clear Objects", "Remove objects from the environment to prevent name clashes.")
+
+    if lower.startswith("remove("):
+        return ("Remove Objects", "Delete specific objects so you can redefine them cleanly.")
+
+    if lower.startswith("for ") or lower.startswith("for("):
+        return ("Loop Through Values", "Iterate over values to apply the same logic to each item.")
+
+    if re.match(r"[0-9\.\s\+\-\*/()]+$", first_code):
+        return ("Try Arithmetic", "Evaluate a quick arithmetic expression to observe R's console output.")
+
+    assign_match = re.match(r"([\w\.]+)\s*(?:<-|=)", first_code)
+    if assign_match:
+        var_name = assign_match.group(1)
+        return (f"Create `{var_name}`", f"Create the object `{var_name}` so you can reuse it in later steps.")
+
+    return ("Run the Code Block", "Execute the block and pay attention to the output it produces.")
+
+
+def description_needs_more(text: str) -> bool:
+    return len(text.split()) < 4
+
+
+def derive_title_from_description(description: str) -> str | None:
+    if not description:
+        return None
+    sentence = description.split(".")[0]
+    if not sentence:
+        return None
+    return title_case(sentence)
+
+
+def extract_steps(text: str) -> list[Step]:
+    steps: list[Step] = []
+    desc_buffer: list[str] = []
+    code_buffer: list[str] = []
+
+    def flush_step() -> None:
+        nonlocal desc_buffer, code_buffer
+        if not code_buffer:
+            desc_buffer = []
+            return
+
+        comment_text = normalise_space(" ".join(desc_buffer))
+        title_guess, auto_desc = infer_step_metadata(code_buffer)
+
+        description = comment_text
+        if description and description_needs_more(description):
+            description = ensure_sentence(description) + " " + ensure_sentence(auto_desc)
+        elif description:
+            description = ensure_sentence(description)
+        else:
+            description = ensure_sentence(auto_desc)
+
+        title = title_guess or derive_title_from_description(comment_text) or "Workshop Step"
+
+        steps.append(
+            Step(
+                title=title,
+                description=description,
+                code=list(code_buffer),
+            )
+        )
+        desc_buffer = []
+        code_buffer = []
+
+    for raw_line in text.splitlines():
+        stripped = raw_line.strip()
+
+        if stripped == "":
+            flush_step()
+            continue
+
+        if stripped.startswith("#'"):
+            continue
+
+        if stripped.startswith("#"):
+            comment = stripped.lstrip("#").strip()
+            if code_buffer:
+                code_buffer.append(raw_line)
+            else:
+                if comment and not comment.lower().startswith(META_PREFIXES):
+                    desc_buffer.append(comment)
+            continue
+
+        code_buffer.append(raw_line)
+
+    flush_step()
+    return steps
+
+
+def comment_startswith(prefixes: tuple[str, ...], text: str) -> bool:
+    lower = text.lower()
+    return any(lower.startswith(prefix) for prefix in prefixes)
 
 
 def build_skills(meta: dict[str, str], features: dict[str, bool], script_name: str) -> list[str]:
@@ -93,70 +292,30 @@ def build_skills(meta: dict[str, str], features: dict[str, bool], script_name: s
         lines.append(f"Connect the topic \"{topic}\" to systems architecting decisions.")
 
     if features["install_packages"]:
-        lines.append("Install any required packages highlighted with `install.packages()`.")
+        lines.append("Install any required packages highlighted with `install.packages()`.") 
     if features["library"]:
         lines.append("Load packages with `library()` and verify they attach without warnings.")
     if features["read_data"]:
-        lines.append("Import and export data files using `readr` helpers and inspect the results.")
+        lines.append("Import data files with `readr` helpers and inspect the resulting objects.")
+    if features["write_data"]:
+        lines.append("Export results to disk so you can reuse them across workshops.")
     if features["dplyr"]:
-        lines.append("Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.")
+        lines.append("Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.")
     if features["function_def"]:
-        lines.append("Define and call custom functions to encapsulate reusable logic.")
+        lines.append("Define custom functions to package repeatable logic.")
     if features["ggplot"]:
-        lines.append("Create or interpret visualizations produced with `ggplot2`.")
+        lines.append("Iterate on visualisations built with `ggplot2`.")
     if features["loops"]:
-        lines.append("Use control flow (such as `for` loops) to iterate over scenarios.")
+        lines.append("Use loops to explore multiple scenarios quickly.")
     if features["apply"]:
-        lines.append("Leverage `apply` and `purrr` tools to evaluate many design alternatives in one step.")
+        lines.append("Leverage `apply`/`purrr` tools for vectorised evaluations.")
     if features["ga"]:
-        lines.append("Explore optimization routines configured with the `GA` package.")
+        lines.append("Experiment with optimisation searches powered by the `GA` package.")
 
     if len(lines) < 3:
         lines.append("Document observations from running each code block in your lab notebook.")
 
     return lines
-
-
-def build_application_steps(meta: dict[str, str], features: dict[str, bool], script_name: str) -> list[str]:
-    steps: list[str] = []
-    steps.append(
-        f"Open `workshops/{script_name}` in the Source pane and skim the header comments for context."
-    )
-    steps.append(
-        "Set your working directory to the project root so relative paths such as `workshops/` resolve correctly."
-    )
-
-    if features["install_packages"]:
-        steps.append("Run any `install.packages()` lines once to make sure the dependencies exist on your machine.")
-    if features["library"]:
-        steps.append("Load the libraries listed near the top of the script and confirm they attach without errors.")
-    if features["read_data"]:
-        steps.append(
-            "Walk through the data import and export chunks, using the Environment pane to inspect the created objects."
-        )
-    if features["dplyr"]:
-        steps.append(
-            "Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console."
-        )
-    if features["function_def"]:
-        steps.append("Re-run the custom functions with your own arguments to observe how the outputs change.")
-    if features["ggplot"]:
-        steps.append("Recreate the plotted visuals and experiment with aesthetic mappings to reinforce each layer.")
-    if features["loops"]:
-        steps.append("Trace through any loops to understand how iteration explores multiple stakeholder or design cases.")
-    if features["apply"]:
-        steps.append("Review `apply` and `map` examples and try swapping in a different input vector to test yourself.")
-    if features["ga"]:
-        steps.append(
-            "Inspect the optimization configuration (population size, mutation rate) to see how they influence GA output."
-        )
-
-    steps.append(
-        f"When you are comfortable, run `source(file.path(\"workshops\", \"{script_name}\"))` or click Source to execute the full workshop."
-    )
-    steps.append("Record key takeaways and questions in the Learning Checks section below.")
-
-    return steps
 
 
 def build_learning_checks(meta: dict[str, str], features: dict[str, bool], script_name: str) -> list[dict[str, str]]:
@@ -178,42 +337,60 @@ def build_learning_checks(meta: dict[str, str], features: dict[str, bool], scrip
         )
     if features["read_data"]:
         add(
-            "Which helper do you use in this workshop to bring external data into R, and what should you check right after calling it?",
-            "Use the `readr` functions shown (such as `read_csv()` or `read_rds()`) and immediately inspect the resulting tibble in the Environment pane to confirm the columns loaded as expected.",
+            "When you import data in this workshop, what should you inspect right after the read call?",
+            "Check the tibble in the Environment pane (or print it) to confirm column names and types look correct.",
         )
     if features["dplyr"]:
         add(
-            "What does the `%>%` pipeline operator help you accomplish in the worked examples?",
-            "It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.",
+            "How does the `%>%` pipeline help you reason about multi-step transformations in this script?",
+            "It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.",
         )
     if features["function_def"]:
         add(
-            "How can you verify that a custom function defined in the script behaves the way you expect?",
-            "Call the function with a simple input (for example the one used in the script) and print or view the returned value, then try a new input to see how the output changes.",
+            "How can you build confidence that a newly defined function behaves as intended?",
+            "Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.",
         )
     if features["ggplot"]:
         add(
-            "When the script produces a `ggplot`, what experiment can you run to understand the mapping between data and aesthetics?",
-            "Modify one aesthetic, such as switching `color` to `fill` or adjusting `geom_point()` size, and re-run the plot to see how visual encodings respond.",
+            "What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?",
+            "Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.",
         )
     if features["ga"]:
         add(
-            "What GA configuration element should you review to understand how the optimization search proceeds?",
-            "Check population size, mutation probability, and the fitness function definition because they drive how candidate architectures evolve.",
+            "Which GA configuration elements should you review after running the optimisation example?",
+            "Check the population size, mutation probability, and fitness function definition to understand how the search explores designs.",
         )
 
     if len(questions) < 3:
         add(
             f"In your own words, what key idea does the topic \"{topic}\" reinforce?",
-            f"It emphasizes how {topic.lower()} supports the overall systems architecting process in this course.",
+            f"It highlights how {topic.lower()} supports the overall systems architecting process in this course.",
         )
     if len(questions) < 3:
         add(
-            "Where in the guide should you revisit if you need to recall prerequisite steps before re-running the code?",
-            "Return to the Setup section to confirm the working directory, required packages, and project context before executing the scripts again.",
+            "Where should you look if you need to reset your setup before re-running the script?",
+            "Return to the Setup section to confirm your working directory, packages, and clean R session.",
         )
 
     return questions[:5]
+
+
+def build_application_section(steps: list[Step]) -> str:
+    parts: list[str] = []
+    for idx, step in enumerate(steps, start=1):
+        chunk_label = f"step_{idx:02d}"
+        code_body = "\n".join(step.code).rstrip()
+        block_lines = [
+            f"### Step {idx} – {step.title}",
+            "",
+            step.description,
+            "",
+            f"```{{r {chunk_label}, eval=FALSE}}",
+            code_body,
+            "```",
+        ]
+        parts.append("\n".join(block_lines).strip())
+    return "\n\n".join(parts)
 
 
 def build_document(script_path: Path) -> str:
@@ -221,9 +398,18 @@ def build_document(script_path: Path) -> str:
     content = script_path.read_text(encoding="utf-8")
     meta = parse_meta(content)
     features = detect_features(content)
+    steps = extract_steps(content)
+
+    if not steps:
+        steps = [
+            Step(
+                title="Review the Script",
+                description="Read through the script and experiment with each line in the console.",
+                code=[content.strip()],
+            )
+        ]
 
     skills = build_skills(meta, features, script_name)
-    application_steps = build_application_steps(meta, features, script_name)
     checks = build_learning_checks(meta, features, script_name)
 
     number = script_name.split("_")[0]
@@ -256,7 +442,8 @@ def build_document(script_path: Path) -> str:
     intro = " ".join(intro_lines)
 
     skills_block = "\n".join(f"- {line}" for line in skills)
-    application_block = "\n".join(f"{idx}. {line}" for idx, line in enumerate(application_steps, start=1))
+
+    application_block = build_application_section(steps)
 
     learning_block_parts: list[str] = []
     for idx, item in enumerate(checks, start=1):

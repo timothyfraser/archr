@@ -22,18 +22,256 @@ This tutorial complements `17_enumeration_sampling_strategies.R` and unpacks the
 - Navigate the script `17_enumeration_sampling_strategies.R` within the Enumeration module.
 - Connect the topic "Sampling strategies for architectures" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
-- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
-- Leverage `apply` and `purrr` tools to evaluate many design alternatives in one step.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Leverage `apply`/`purrr` tools for vectorised evaluations.
 
 ## Application
 
-1. Open `workshops/17_enumeration_sampling_strategies.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Load the libraries listed near the top of the script and confirm they attach without errors.
-4. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
-5. Review `apply` and `map` examples and try swapping in a different input vector to test yourself.
-6. When you are comfortable, run `source(file.path("workshops", "17_enumeration_sampling_strategies.R"))` or click Source to execute the full workshop.
-7. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Load Packages
+
+What if we need to do full factorial enumeration?
+
+```{r step_01, eval=FALSE}
+library(dplyr)
+library(tidyr)
+library(archr)
+library(purrr)
+```
+
+### Step 2 – Run the Code Block
+
+The `tidyr` way ########################.
+
+```{r step_02, eval=FALSE}
+expand_grid(
+  eor = c("no" = 0, "yes" = 1),
+  earth_launch = c("orbit" = 0, "direct" = 1),
+  fuel = c("cryogenic" = 0, "storable" = 1, "N/A" = 2)
+)
+```
+
+### Step 3 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_03, eval=FALSE}
+c("no" = 0, "yes" = 1)
+c(0, 1)
+```
+
+### Step 4 – Run the Code Block
+
+The `archr` way ########################.
+
+```{r step_04, eval=FALSE}
+enumerate_sf(n = c(2,2,3))
+```
+
+### Step 5 – Create `eor`
+
+Alternatives for each decision.
+
+```{r step_05, eval=FALSE}
+eor = c("no" = 0, "yes" = 1)
+earth_launch = c("orbit" = 0, "direct" = 1)
+fuel = c("cryogenic" = 0, "storable" = 1, "N/A" = 2)
+# total decisions = 3
+```
+
+### Step 6 – Create `archs`
+
+List to contain the architectures.
+
+```{r step_06, eval=FALSE}
+archs = list()
+# Counter for the number of architectures
+n_archs = 0
+```
+
+### Step 7 – Loop Through Values
+
+For decision 1... Iterate over values to apply the same logic to each item.
+
+```{r step_07, eval=FALSE}
+for(i in eor){
+  # For decision 2...
+  for(j in earth_launch){
+    # For decision 3...
+    for(k in fuel){
+      n_archs = n_archs + 1
+      # Add this vector to the list in the n_archs-th spot
+      archs[[n_archs]] <- c(i,j,k)
+    }
+  }
+}
+```
+
+### Step 8 – Run the Code Block
+
+Let's look at this weird list object archs.
+
+```{r step_08, eval=FALSE}
+archs
+```
+
+### Step 9 – Run the Code Block
+
+the base-R way... ###################### Turn each item into a matrix, the bind the rows together.
+
+```{r step_09, eval=FALSE}
+do.call(rbind, lapply(archs, matrix, ncol = 3))
+```
+
+### Step 10 – Load Packages
+
+Attach dplyr to make its functions available.
+
+```{r step_10, eval=FALSE}
+library(dplyr)
+library(purrr)
+```
+
+### Step 11 – Practice the Pipe
+
+We can use the purrr package for that. We could say, for each item in this list archs,.
+
+```{r step_11, eval=FALSE}
+archs %>%
+  # map to that item the function, matrix and as_tibble
+  purrr::map(~matrix(., ncol = 3) %>% as_tibble()) %>%
+  # and then bind those many data.frames into one
+  dplyr::bind_rows()
+```
+
+### Step 12 – Clear Objects
+
+clear environment. Remove objects from the environment to prevent name clashes.
+
+```{r step_12, eval=FALSE}
+rm(list = ls())
+```
+
+### Step 13 – Create `arch1`
+
+For example... say we make 1 standard form decision then 2 binary decisions.
+
+```{r step_13, eval=FALSE}
+arch1 = expand_grid(
+  enumerate_sf(n = 3, .did = 1),
+  enumerate_binary(n = 2, .did = 2)
+)
+arch1
+```
+
+### Step 14 – Create `arch2`
+
+say we make 2 binary decisions then 1 standard form decisions.
+
+```{r step_14, eval=FALSE}
+arch2 = expand_grid(
+  enumerate_binary(n = 2, .did = 1),
+  enumerate_sf(n = 3, .did = 3)
+)
+```
+
+### Step 15 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_15, eval=FALSE}
+arch2
+```
+
+### Step 16 – Run the Code Block
+
+Still produces the same number of architectures.
+
+```{r step_16, eval=FALSE}
+nrow(arch1) == nrow(arch2)
+```
+
+### Step 17 – Create `arch3`
+
+But then suppose that there's a dependency constraint in the next decision... where if the standard form decision == 2, then decision 4 != 0.
+
+```{r step_17, eval=FALSE}
+arch3 = expand_grid(
+  enumerate_sf(n = 3, .did = 1),
+  enumerate_binary(n = 2, .did = 2),
+  enumerate_sf(n = 2, .did = 4)
+) %>%
+  # Cut the rows where these conditions are true.
+  filter( !(d1 == 2 & d4 == 0) )
+```
+
+### Step 18 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_18, eval=FALSE}
+arch3
+```
+
+### Step 19 – Create `arch4`
+
+That matters! Be sure to do THAT in sequence before adding more decisions. Eg.
+
+```{r step_19, eval=FALSE}
+arch4 = expand_grid(arch3, enumerate_binary(n = 4, .did = 5))
+```
+
+### Step 20 – Create `arch5`
+
+Or in total... Create the object `arch5` so you can reuse it in later steps.
+
+```{r step_20, eval=FALSE}
+arch5 = arch1 = expand_grid(
+  enumerate_sf(n = 3, .did = 1),
+  enumerate_binary(n = 2, .did = 2)
+) %>%
+  # Add some more decisions
+  expand_grid(., enumerate_sf(n = 2, .did = 4)) %>%
+  # Cut the rows where these conditions are true.
+  filter( !(d1 == 2 & d4 == 0) ) %>%
+  # Add in one more decision
+  expand_grid(., enumerate_binary(n = 4, .did = 5))
+```
+
+### Step 21 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_21, eval=FALSE}
+arch5
+# See, if we change the order of the first sf and binary decisions,
+# doesn't change anything
+arch6 = arch1 = expand_grid(
+  enumerate_binary(n = 2, .did = 2),
+  enumerate_sf(n = 3, .did = 1)
+) %>%
+  # Add some more decisions
+  expand_grid(., enumerate_sf(n = 2, .did = 4)) %>%
+  # Cut the rows where these conditions are true.
+  filter( !(d1 == 2 & d4 == 0) ) %>%
+  # Add in one more decision
+  expand_grid(., enumerate_binary(n = 4, .did = 5))
+```
+
+### Step 22 – Run the Code Block
+
+Still makes same number of architectures.
+
+```{r step_22, eval=FALSE}
+nrow(arch5) == nrow(arch6)
+```
+
+### Step 23 – Clear Objects
+
+Clean up! Remove objects from the environment to prevent name clashes.
+
+```{r step_23, eval=FALSE}
+rm(list = ls())
+```
 
 ## Learning Checks
 
@@ -55,11 +293,11 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
 
 <details>
 <summary>Show answer</summary>
 
-It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
 
 </details>

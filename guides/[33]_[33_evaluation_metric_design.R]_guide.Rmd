@@ -22,18 +22,405 @@ This tutorial complements `33_evaluation_metric_design.R` and unpacks the worksh
 - Navigate the script `33_evaluation_metric_design.R` within the Evaluation module.
 - Connect the topic "Metric design exercises" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
-- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
-- Create or interpret visualizations produced with `ggplot2`.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Iterate on visualisations built with `ggplot2`.
 
 ## Application
 
-1. Open `workshops/33_evaluation_metric_design.R` in the Source pane and skim the header comments for context.
-2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
-3. Load the libraries listed near the top of the script and confirm they attach without errors.
-4. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
-5. Recreate the plotted visuals and experiment with aesthetic mappings to reinforce each layer.
-6. When you are comfortable, run `source(file.path("workshops", "33_evaluation_metric_design.R"))` or click Source to execute the full workshop.
-7. Record key takeaways and questions in the Learning Checks section below.
+### Step 1 – Load Packages
+
+Load necessary libraries. Attach dplyr to make its functions available.
+
+```{r step_01, eval=FALSE}
+library(dplyr)
+library(ggplot2)
+```
+
+### Step 2 – Create `products`
+
+Lifespan Distribution: distribution (PDF) for a vector of product lifespans. Reflects the probability that a product failed after X hours or years Eg. Here's a vector of 10 items' lifespans, in hours.
+
+```{r step_02, eval=FALSE}
+products = c(24, 273, 41, 282, 14, 210, 325, 276, 96, 149)
+```
+
+### Step 3 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_03, eval=FALSE}
+products %>% hist()
+```
+
+### Step 4 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_04, eval=FALSE}
+products %>% density() %>% plot()
+```
+
+### Step 5 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_05, eval=FALSE}
+ggplot() +
+  geom_density(data = tibble(products), mapping = aes(x = products))
+```
+
+### Step 6 – Create `mu`
+
+Mean Time to Failure: the mean of a lifespan distribution. Describes the average hours to failure per unit. Eg. let's get the MTTF for our products' life distribution.
+
+```{r step_06, eval=FALSE}
+mu = mean(products)
+```
+
+### Step 7 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+```{r step_07, eval=FALSE}
+mu
+```
+
+### Step 8 – Create `lambda`
+
+Failure Rate (Lambda): inverse of mean time to failure. Describes the average number of times a product fails per time-step (eg. per hour). Eg. let's get the Failure Rate for our products' life distribution.
+
+```{r step_08, eval=FALSE}
+lambda = 1 / mean(products)
+lambda
+```
+
+### Step 9 – Run the Code Block
+
+Exponential Distribution: a common form for lifespan distributions, characterized by one parameter, lambda. Note: MATLAB wants instead the mean time to failure (MTTF) for its exponential functions, but if you have lambda, you can get the MTTF. Eg. what's the cumulative probability of a product failing at or before 100 hours, given an Exp. Distr. with MTTF mu?
+
+```{r step_09, eval=FALSE}
+pexp(100, rate = 1/mu)
+```
+
+### Step 10 – Run the Code Block
+
+Probability of Failure F(t): cumulative probability of failure by time t. expcdf() will give you F(t) in an exponential distribution. Probability of Reliability/Survival R(t): cumulative probability it DOESN'T fail by time t. For example, R(t = 100) = 1 - expcdf(100, mu). Eg. what's the cumulative probability of product survives for 100 hours, given an Exp. Distr. with MTTF mu?
+
+```{r step_10, eval=FALSE}
+1 - pexp(100, rate = 1/mu)
+```
+
+### Step 11 – Practice the Pipe
+
+Take a random sample!
+
+```{r step_11, eval=FALSE}
+rexp(n = 1000, rate = 1 / mu) %>% hist()
+```
+
+### Step 12 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_12, eval=FALSE}
+rexp(n = 1000, rate = 1 / mu) %>% density() %>% plot()
+```
+
+### Step 13 – Create `data`
+
+Create the object `data` so you can reuse it in later steps.
+
+```{r step_13, eval=FALSE}
+data = tibble(t = rexp(n = 1000, rate = 1 / mu))
+ggplot() +
+  geom_density(data = data, mapping = aes(x = t))
+```
+
+### Step 14 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_14, eval=FALSE}
+ggplot() +
+  geom_density(data = data, mapping = aes(x = t))
+```
+
+### Step 15 – Create `r_a`
+
+Suppose at time t = 100 hours...
+
+```{r step_15, eval=FALSE}
+r_a = 0.88
+r_b = 0.99
+r_c = 0.95
+# 82% chance that the whole system stays reliable for 100 hours
+r_a * r_b * r_c
+```
+
+### Step 16 – Create `t`
+
+My coffee shop's system has 3 serially-connected components: A = coffee maker (MTTF = 500 hours) B = bean grinder (MTTF = 5000 hours) C = dishwasher (MTTF = 1000 hours) What's the probability the system survives 100 hours?
+
+```{r step_16, eval=FALSE}
+t <- 100
+```
+
+### Step 17 – Create `r_a`
+
+Reliability of A (coffee maker) by time t R_a(t) = 1 - F_a(t).
+
+```{r step_17, eval=FALSE}
+r_a <- 1 - pexp(t, rate = 1/500)
+```
+
+### Step 18 – Create `r_b`
+
+Reliability of B (bean grinder) by time t.
+
+```{r step_18, eval=FALSE}
+r_b <- 1 - pexp(t, rate = 1/5000)
+```
+
+### Step 19 – Create `r_c`
+
+Reliability of C (dishwasher) by time t.
+
+```{r step_19, eval=FALSE}
+r_c <- 1 - pexp(t, rate = 1/1000)
+```
+
+### Step 20 – Create `r_s`
+
+Reliability of System by time t = 100.
+
+```{r step_20, eval=FALSE}
+r_s <- r_a * r_b * r_c
+r_s
+```
+
+### Step 21 – Create `r_a1`
+
+Suppose we buy 3 coffee makers - as long as one works, we can maintain the system.
+
+```{r step_21, eval=FALSE}
+r_a1 <- r_a
+r_a2 <- r_a
+r_a3 <- r_a
+```
+
+### Step 22 – Create `r_a_parallel`
+
+Let's find chance at least 1 remains functional.
+
+```{r step_22, eval=FALSE}
+r_a_parallel <- 1 - prod(1 - c(r_a1, r_a2, r_a3))
+r_a_parallel
+```
+
+### Step 23 – Run the Code Block
+
+If series. Execute the block and pay attention to the output it produces.
+
+```{r step_23, eval=FALSE}
+r_a1 * r_a2 * r_a3
+```
+
+### Step 24 – Create `overall_reliability`
+
+We could compute the reliability of the overall system at time t like so!
+
+```{r step_24, eval=FALSE}
+overall_reliability <- r_a_parallel * r_b * r_c
+overall_reliability
+```
+
+### Step 25 – Create `s`
+
+Learning Curve Formula: Y = aX^b suppose a 80% learning curve.
+
+```{r step_25, eval=FALSE}
+s <- 0.80
+```
+
+### Step 26 – Create `gains`
+
+means each time quantity doubles, you gain 20% in efficiency.
+
+```{r step_26, eval=FALSE}
+gains <- 1 - s
+```
+
+### Step 27 – Create `b`
+
+Calculate the slope of the learning curve.
+
+```{r step_27, eval=FALSE}
+b <- log(s) / log(2.00)
+```
+
+### Step 28 – Create `a`
+
+If it takes 30 hours to make tool A at the beginning...
+
+```{r step_28, eval=FALSE}
+a <- 30
+```
+
+### Step 29 – Create `x`
+
+What happens if we make tool A many times?
+
+```{r step_29, eval=FALSE}
+x <- c(1, 2, 5, 10, 20, 50, 100, 150, 200)
+```
+
+### Step 30 – Create `y`
+
+Our slope suggests that the average time to make Tool A becomes...
+
+```{r step_30, eval=FALSE}
+y <- a * x^b
+y
+```
+
+### Step 31 – Create `data`
+
+Let's plot that learning curve!
+
+```{r step_31, eval=FALSE}
+data = tibble(x, y)
+```
+
+### Step 32 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_32, eval=FALSE}
+ggplot() +
+  geom_line(data = data, mapping = aes(x = x, y = y)) +
+  labs(x = "Number of times made (X)", y = "Average time (Y) to make Tool A")
+```
+
+### Step 33 – Create `data2`
+
+Create the object `data2` so you can reuse it in later steps.
+
+```{r step_33, eval=FALSE}
+data2 = bind_rows(
+  tibble(
+    a = 30,
+    x = c(1, 2, 5, 10, 20, 50, 100, 150, 200),
+    s = 0.80,
+    y = a * x^ (log(s) / log(2.00))
+  ),
+  tibble(
+    a = 30,
+    x = c(1, 2, 5, 10, 20, 50, 100, 150, 200),
+    s = 0.90,
+    y = a * x^ (log(s) / log(2.00))
+  )
+)
+```
+
+### Step 34 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_34, eval=FALSE}
+ggplot() +
+  geom_line(data = data2, 
+            mapping = aes(
+              x = x, y = y,
+              group = s, color = s)) +
+  labs(x = "Number of times made (X)",
+       y = "Average time (Y) to make Tool A")
+```
+
+### Step 35 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+```{r step_35, eval=FALSE}
+data3 = tibble(s = c(0.80, 0.85, 0.90, 0.92, 0.97, 0.99)) %>%
+  # For each s...
+  group_by(s) %>%
+  # Make this vector!
+  reframe(
+    a = 30,
+    x = c(1, 2, 5, 10, 20, 50, 100, 150, 200),
+    y = a * x^ (log(s) / log(2.00))    
+  )
+```
+
+### Step 36 – Run the Code Block
+
+View it! Execute the block and pay attention to the output it produces.
+
+```{r step_36, eval=FALSE}
+data3
+```
+
+### Step 37 – Start a ggplot
+
+Visualize it! Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+```{r step_37, eval=FALSE}
+ggplot() +
+  # Let's make color = factor(s)
+  # That splits the colors into a discrete color scale
+  geom_line(data = data3, 
+            mapping = aes(
+              x = x, y = y,
+              group = s, color = factor(s) )) +
+  labs(x = "Number of times made (X)",
+       y = "Average time (Y) to make Tool A")
+```
+
+### Step 38 – Clear Objects
+
+Z. Done! Clear environment.
+
+```{r step_38, eval=FALSE}
+rm(list = ls())
+```
+
+### Step 39 – Create `cpu`
+
+Create the object `cpu` so you can reuse it in later steps.
+
+```{r step_39, eval=FALSE}
+cpu = 0.99
+keys = 0.98
+keys2 = 0.999999999999
+display = 0.96
+mouse = 0.95
+# Reliability of your system is just 88%
+cpu * keys * display * mouse
+```
+
+### Step 40 – Run the Code Block
+
+Two keys = 86%.
+
+```{r step_40, eval=FALSE}
+cpu * keys^2 * display * mouse
+```
+
+### Step 41 – Run the Code Block
+
+All keys = 40%.
+
+```{r step_41, eval=FALSE}
+cpu * keys^40 * display * mouse
+```
+
+### Step 42 – Run the Code Block
+
+All keys = 40%.
+
+```{r step_42, eval=FALSE}
+cpu * keys2^40 * display * mouse
+```
 
 ## Learning Checks
 
@@ -55,20 +442,20 @@ Those commands make sure the required libraries are available so every subsequen
 
 </details>
 
-**Learning Check 3.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
 
 <details>
 <summary>Show answer</summary>
 
-It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
 
 </details>
 
-**Learning Check 4.** When the script produces a `ggplot`, what experiment can you run to understand the mapping between data and aesthetics?
+**Learning Check 4.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
 
 <details>
 <summary>Show answer</summary>
 
-Modify one aesthetic, such as switching `color` to `fill` or adjusting `geom_point()` size, and re-run the plot to see how visual encodings respond.
+Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
 
 </details>
