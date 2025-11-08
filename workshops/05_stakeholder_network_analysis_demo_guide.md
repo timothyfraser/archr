@@ -1,38 +1,46 @@
----
-title: "[05] Stakeholder network analysis demo Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `05_stakeholder_network_analysis_demo.R` and unpacks the workshop on stakeholder network analysis demo. You will see how it advances the Stakeholder Analysis sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `05_stakeholder_network_analysis_demo.R` and
+unpacks the workshop on stakeholder network analysis demo. You will see
+how it advances the Stakeholder Analysis sequence while building
+confidence with base R and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `05_stakeholder_network_analysis_demo.R` within the Stakeholder Analysis module.
-- Connect the topic "Stakeholder network analysis demo" to systems architecting decisions.
+- Navigate the script `05_stakeholder_network_analysis_demo.R` within
+  the Stakeholder Analysis module.
+- Connect the topic “Stakeholder network analysis demo” to systems
+  architecting decisions.
 - Install any required packages highlighted with `install.packages()`.
-- Load packages with `library()` and verify they attach without warnings.
-- Import data files with `readr` helpers and inspect the resulting objects.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Import data files with `readr` helpers and inspect the resulting
+  objects.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Iterate on visualisations built with `ggplot2`.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Run the Code Block]
+    B[Run the Code Block] --> C[Start a ggplot]
+    C[Start a ggplot] --> D[Start a ggplot (Step 34)]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
 Load packages. Attach dplyr to make its functions available.
-
 
 ``` r
 library(dplyr)
@@ -44,7 +52,6 @@ library(archr)
 ### Step 2 – Create `link`
 
 Create the object `link` so you can reuse it in later steps.
-
 
 ``` r
 link = get_sheet(docid = "1VL0jSoWRq0CZqhpEMXQUaY7LQuqu5XbWHdgQ38wbawo", gid = "0")
@@ -59,7 +66,6 @@ e %>% select(from)
 
 Create the object `m` so you can reuse it in later steps.
 
-
 ``` r
 m = get_adjacency(edges = e)
 ```
@@ -67,7 +73,6 @@ m = get_adjacency(edges = e)
 ### Step 4 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 m
@@ -79,7 +84,6 @@ g = get_graph(a = m)
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 g
 ```
@@ -88,7 +92,6 @@ g
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 plot(g)
 ```
@@ -96,7 +99,6 @@ plot(g)
 ### Step 7 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 e %>% head(3)
@@ -108,7 +110,6 @@ colnames(m)
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 e
 g
@@ -119,7 +120,6 @@ scores = get_scores(g = g, root = "Project", var = "value")
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 scores
 ```
@@ -127,7 +127,6 @@ scores
 ### Step 10 – Create `cycles`
 
 Create the object `cycles` so you can reuse it in later steps.
-
 
 ``` r
 cycles = get_cycles(g = g, root = "Project", cutoff = 100, 
@@ -139,7 +138,6 @@ cycles
 
 Gets me coordinates for each of my nodes and edges.
 
-
 ``` r
 gg = get_coords(g = g, layout = "kk")
 ```
@@ -147,7 +145,6 @@ gg = get_coords(g = g, layout = "kk")
 ### Step 12 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 gg$nodes
@@ -158,7 +155,6 @@ gg$edges
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 gg$nodes
 ```
@@ -166,7 +162,6 @@ gg$nodes
 ### Step 14 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 gg$edges
@@ -176,7 +171,6 @@ gg$edges
 
 Attach ggplot2 to make its functions available.
 
-
 ``` r
 library(ggplot2)
 ```
@@ -184,7 +178,6 @@ library(ggplot2)
 ### Step 16 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 gg$nodes
@@ -195,7 +188,6 @@ ggplot() +
 ### Step 17 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -208,7 +200,6 @@ ggplot() +
 ### Step 18 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -224,7 +215,6 @@ ggplot() +
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
 
-
 ``` r
 ggplot() +
   geom_point(data = gg$nodes, mapping = aes(x = x, y = y)) +
@@ -236,7 +226,6 @@ ggplot() +
 ### Step 20 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -251,7 +240,6 @@ ggplot() +
 ### Step 21 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -270,7 +258,6 @@ ggplot() +
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
 
-
 ``` r
 ggplot() +
   geom_curve(
@@ -287,7 +274,6 @@ ggplot() +
 ### Step 23 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -306,7 +292,6 @@ ggplot() +
 ### Step 24 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -329,7 +314,6 @@ ggplot() +
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
 
-
 ``` r
 ggplot() +
   geom_curve(
@@ -350,7 +334,6 @@ ggplot() +
 ### Step 26 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -374,7 +357,6 @@ ggplot() +
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
 
-
 ``` r
 ggplot() +
   geom_curve(
@@ -397,7 +379,6 @@ ggplot() +
 ### Step 28 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -424,7 +405,6 @@ ggplot() +
 
 Create the object `g2` so you can reuse it in later steps.
 
-
 ``` r
 g2 = ggplot() +
   geom_curve(
@@ -447,7 +427,6 @@ g2 = ggplot() +
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 g2
 ```
@@ -455,7 +434,6 @@ g2
 ### Step 31 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 g2 +
@@ -476,7 +454,6 @@ g2 +
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 colors()
 ```
@@ -484,7 +461,6 @@ colors()
 ### Step 33 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 "steelblue"
@@ -495,7 +471,6 @@ Execute the block and pay attention to the output it produces.
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
 
-
 ``` r
 ggplot() +
   geom_point(data = gg$nodes, mapping = aes(x=x, y=y),
@@ -504,47 +479,52 @@ ggplot() +
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** Which libraries does Step 1 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "05_stakeholder_network_analysis_demo.R"))` from the Console or press the Source button while the script is active.
+It attaches dplyr, readr, ggplot2 and archr, ensuring their functions
+are available before you execute the downstream code.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** After Step 2, what does `link` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It creates `link` that selects a focused set of columns, and threads the
+result through a dplyr pipeline. Create the object `link` so you can
+reuse it in later steps.
 
 </details>
 
-**Learning Check 3.** When you import data in this workshop, what should you inspect right after the read call?
+**Learning Check 3.** After Step 3, what does `m` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Check the tibble in the Environment pane (or print it) to confirm column names and types look correct.
+It creates `m`. Create the object `m` so you can reuse it in later
+steps.
 
 </details>
 
-**Learning Check 4.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 4.** After Step 4, what does `g` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
-
-</details>
-
-**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
-
-<details>
-<summary>Show answer</summary>
-
-Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+It creates `g`. Execute the block and pay attention to the output it
+produces.
 
 </details>

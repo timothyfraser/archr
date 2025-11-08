@@ -1,38 +1,46 @@
----
-title: "[48] Parking garage optimization case Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `48_optimization_parking_garage_case.R` and unpacks the workshop on parking garage optimization case. You will see how it advances the Optimization sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `48_optimization_parking_garage_case.R` and
+unpacks the workshop on parking garage optimization case. You will see
+how it advances the Optimization sequence while building confidence with
+base R and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `48_optimization_parking_garage_case.R` within the Optimization module.
-- Connect the topic "Parking garage optimization case" to systems architecting decisions.
-- Load packages with `library()` and verify they attach without warnings.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Navigate the script `48_optimization_parking_garage_case.R` within the
+  Optimization module.
+- Connect the topic “Parking garage optimization case” to systems
+  architecting decisions.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Define custom functions to package repeatable logic.
 - Iterate on visualisations built with `ggplot2`.
 - Experiment with optimisation searches powered by the `GA` package.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Define get_demand()]
+    B[Define get_demand()] --> C[Start a ggplot]
+    C[Start a ggplot] --> D[Start a ggplot (Step 15)]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
-packages #####################################. Attach dplyr to make its functions available.
-
+packages \#####################################. Attach dplyr to make
+its functions available.
 
 ``` r
 library(dplyr) # for data wrangling
@@ -44,8 +52,8 @@ library(rmoo) # for multi-objective genetic algorithms
 
 ### Step 2 – Define `get_npv()`
 
-functions ######################################. Create the helper function `get_npv()` so you can reuse it throughout the workshop.
-
+functions \######################################. Create the helper
+function `get_npv()` so you can reuse it throughout the workshop.
 
 ``` r
 get_npv = function(t, r, i){r / (1 + i)^t }
@@ -53,8 +61,8 @@ get_npv = function(t, r, i){r / (1 + i)^t }
 
 ### Step 3 – Define `get_capacity()`
 
-Create the helper function `get_capacity()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_capacity()` so you can reuse it
+throughout the workshop.
 
 ``` r
 get_capacity = function(d1){ d1 * 200 }
@@ -62,8 +70,8 @@ get_capacity = function(d1){ d1 * 200 }
 
 ### Step 4 – Define `get_usage()`
 
-Create the helper function `get_usage()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_usage()` so you can reuse it throughout
+the workshop.
 
 ``` r
 get_usage = function(demand, capacity){
@@ -73,8 +81,8 @@ get_usage = function(demand, capacity){
 
 ### Step 5 – Define `get_revenue()`
 
-Create the helper function `get_revenue()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_revenue()` so you can reuse it
+throughout the workshop.
 
 ``` r
 get_revenue = function(t, usage){ 10000 * t * usage }
@@ -82,8 +90,8 @@ get_revenue = function(t, usage){ 10000 * t * usage }
 
 ### Step 6 – Define `get_demand()`
 
-Create the helper function `get_demand()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_demand()` so you can reuse it throughout
+the workshop.
 
 ``` r
 get_demand = function(t){ log(t) * 334.4 + 697.7 }
@@ -91,8 +99,8 @@ get_demand = function(t){ log(t) * 334.4 + 697.7 }
 
 ### Step 7 – Define `get_operating_cost()`
 
-Create the helper function `get_operating_cost()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_operating_cost()` so you can reuse it
+throughout the workshop.
 
 ``` r
 get_operating_cost = function(capacity){
@@ -103,8 +111,8 @@ get_operating_cost = function(capacity){
 
 ### Step 8 – Define `get_lease_cost()`
 
-Create the helper function `get_lease_cost()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_lease_cost()` so you can reuse it
+throughout the workshop.
 
 ``` r
 get_lease_cost = function(){ 3.6 * 1000000 }
@@ -116,8 +124,8 @@ get_construction_cost = function(capacity, levels = 0){
 
 ### Step 9 – Create `a`
 
-Let's make our architectures - 1 decision, the number of levels in the garage.
-
+Let’s make our architectures - 1 decision, the number of levels in the
+garage.
 
 ``` r
 a = archr::enumerate_sf(
@@ -146,8 +154,8 @@ a = archr::enumerate_sf(
 
 ### Step 10 – Start a ggplot
 
-Show expected change in net present value over time, depending on this decision (how many levels you build).
-
+Show expected change in net present value over time, depending on this
+decision (how many levels you build).
 
 ``` r
 ggplot() +
@@ -157,8 +165,8 @@ ggplot() +
 
 ### Step 11 – Start a ggplot
 
-Find the maximum 20-year NPV given number of levels of parking garage (d1).
-
+Find the maximum 20-year NPV given number of levels of parking garage
+(d1).
 
 ``` r
 ggplot() +
@@ -169,8 +177,7 @@ ggplot() +
 
 ### Step 12 – Practice the Pipe
 
-Find the peak numerically -- 9 levels.
-
+Find the peak numerically – 9 levels.
 
 ``` r
 a %>% filter(t == 20) %>%
@@ -179,8 +186,8 @@ a %>% filter(t == 20) %>%
 
 ### Step 13 – Create `a2`
 
-simulate ###################################### Let's make our architectures - 1 decision, the number of levels in the garage.
-
+simulate \###################################### Let’s make our
+architectures - 1 decision, the number of levels in the garage.
 
 ``` r
 a2 = archr::enumerate_sf(
@@ -226,8 +233,8 @@ a2 = archr::enumerate_sf(
 
 ### Step 14 – Practice the Pipe
 
-Find the peak. Use the `%>%` operator to pass each result to the next tidyverse verb.
-
+Find the peak. Use the `%>%` operator to pass each result to the next
+tidyverse verb.
 
 ``` r
 a2 %>% filter(t == 20) %>%
@@ -237,7 +244,6 @@ a2 %>% filter(t == 20) %>%
 ### Step 15 – Start a ggplot
 
 Show that the peak occurs at 7 levels not, not 9.
-
 
 ``` r
 ggplot() +
@@ -251,47 +257,50 @@ ggplot() +
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** What role does the helper `get_npv()` defined in
+Step 2 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "48_optimization_parking_garage_case.R"))` from the Console or press the Source button while the script is active.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** What role does the helper `get_capacity()` defined
+in Step 3 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** What role does the helper `get_usage()` defined in
+Step 4 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 4.** What role does the helper `get_revenue()` defined
+in Step 5 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
-
-</details>
-
-**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
-
-<details>
-<summary>Show answer</summary>
-
-Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+It packages reusable logic needed by later steps.
 
 </details>

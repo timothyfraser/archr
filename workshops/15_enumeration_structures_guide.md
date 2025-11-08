@@ -1,38 +1,46 @@
----
-title: "[15] Enumeration of structures Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `15_enumeration_structures.R` and unpacks the workshop on enumeration of structures. You will see how it advances the Enumeration sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `15_enumeration_structures.R` and unpacks the
+workshop on enumeration of structures. You will see how it advances the
+Enumeration sequence while building confidence with base R and tidyverse
+tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `15_enumeration_structures.R` within the Enumeration module.
-- Connect the topic "Enumeration of structures" to systems architecting decisions.
+- Navigate the script `15_enumeration_structures.R` within the
+  Enumeration module.
+- Connect the topic “Enumeration of structures” to systems architecting
+  decisions.
 - Install any required packages highlighted with `install.packages()`.
-- Load packages with `library()` and verify they attach without warnings.
-- Import data files with `readr` helpers and inspect the resulting objects.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Import data files with `readr` helpers and inspect the resulting
+  objects.
 - Export results to disk so you can reuse them across workshops.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Practice the Pipe]
+    B[Practice the Pipe] --> C[Run the Code Block]
+    C[Run the Code Block] --> D[Create arch]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
 Attach archr to make its functions available.
-
 
 ``` r
 library(archr) # get enumerate_ functions
@@ -42,8 +50,8 @@ library(tidyr) # expand_grid()
 
 ### Step 2 – Run the Code Block
 
-which instruments. Execute the block and pay attention to the output it produces.
-
+which instruments. Execute the block and pay attention to the output it
+produces.
 
 ``` r
 enumerate_ds(n = 3, k = 3, .did = 1)
@@ -51,8 +59,8 @@ enumerate_ds(n = 3, k = 3, .did = 1)
 
 ### Step 3 – Run the Code Block
 
-packaging. Execute the block and pay attention to the output it produces.
-
+packaging. Execute the block and pay attention to the output it
+produces.
 
 ``` r
 enumerate_sf(n = c(5), .did = 2)
@@ -60,8 +68,8 @@ enumerate_sf(n = c(5), .did = 2)
 
 ### Step 4 – Run the Code Block
 
-scheduling. Execute the block and pay attention to the output it produces.
-
+scheduling. Execute the block and pay attention to the output it
+produces.
 
 ``` r
 enumerate_sf(n = c(2), .did = 3)
@@ -69,8 +77,8 @@ enumerate_sf(n = c(2), .did = 3)
 
 ### Step 5 – Run the Code Block
 
-If no constraints... Execute the block and pay attention to the output it produces.
-
+If no constraints… Execute the block and pay attention to the output it
+produces.
 
 ``` r
 expand_grid(
@@ -85,8 +93,8 @@ expand_grid(
 
 ### Step 6 – Create `parta`
 
-which instruments. Create the object `parta` so you can reuse it in later steps.
-
+which instruments. Create the object `parta` so you can reuse it in
+later steps.
 
 ``` r
 parta = expand_grid(
@@ -101,7 +109,6 @@ parta = expand_grid(
 
 Create the object `partb` so you can reuse it in later steps.
 
-
 ``` r
 partb = expand_grid(
   enumerate_ds(n = 3, k = 3, .did = 1) %>%
@@ -112,8 +119,8 @@ partb = expand_grid(
 
 ### Step 8 – Create `constrained`
 
-constrained architecture. Create the object `constrained` so you can reuse it in later steps.
-
+constrained architecture. Create the object `constrained` so you can
+reuse it in later steps.
 
 ``` r
 constrained = bind_rows(parta, partb)
@@ -122,7 +129,6 @@ constrained = bind_rows(parta, partb)
 ### Step 9 – Create `final`
 
 Create the object `final` so you can reuse it in later steps.
-
 
 ``` r
 final = expand_grid(
@@ -136,7 +142,6 @@ final = expand_grid(
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 final
 remove(final)
@@ -144,8 +149,8 @@ remove(final)
 
 ### Step 11 – Load Packages
 
-load packages ############################# install.packages("workshops/archr_1.0.tar.gz", type = "source").
-
+load packages \#############################
+install.packages(“workshops/archr_1.0.tar.gz”, type = “source”).
 
 ``` r
 library(archr) # enumerate_....
@@ -159,8 +164,7 @@ library(tidyr) # expand_grid()
 
 ### Step 12 – Run the Code Block
 
-binary ###################### binary tree.
-
+binary \###################### binary tree.
 
 ``` r
 enumerate_binary(n = 2)
@@ -169,8 +173,7 @@ enumerate_binary(n = 2, .id = TRUE)
 
 ### Step 13 – Run the Code Block
 
-standard form ###################### trees!
-
+standard form \###################### trees!
 
 ``` r
 enumerate_sf(n = c(2,2))
@@ -182,8 +185,8 @@ enumerate_sf(n = c(2,3,8))
 
 ### Step 14 – Run the Code Block
 
-downselecting ################################## Pick up to 4 out of 8 donuts.
-
+downselecting \################################## Pick up to 4 out of 8
+donuts.
 
 ``` r
 enumerate_ds(n = 8, k = 4)
@@ -192,7 +195,6 @@ enumerate_ds(n = 8, k = 4)
 ### Step 15 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 enumerate_ds(n = 8, k = 4) %>%
@@ -203,7 +205,6 @@ enumerate_ds(n = 8, k = 4) %>%
 ### Step 16 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 enumerate_ds(n = 8, k = 4) %>%
@@ -220,7 +221,6 @@ enumerate_ds(n = 8, k = 4) %>%
 
 make a k-min and a k-max.
 
-
 ``` r
 enumerate_ds(n = 8, k = 8) %>%
   # Make a 'counter' column
@@ -236,7 +236,6 @@ enumerate_ds(n = 8, k = 8) %>%
 
 Can we do this with group_by?
 
-
 ``` r
 enumerate_ds(n = 8, k = 8, .id = TRUE)  %>%
   group_by(id) %>%
@@ -245,8 +244,8 @@ enumerate_ds(n = 8, k = 8, .id = TRUE)  %>%
 
 ### Step 19 – Run the Code Block
 
-assignment #####################################. Execute the block and pay attention to the output it produces.
-
+assignment \#####################################. Execute the block and
+pay attention to the output it produces.
 
 ``` r
 ?archr::enumerate_assignment
@@ -259,7 +258,6 @@ assignment #####################################. Execute the block and pay atte
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 enumerate_assignment(n = 4, m = 4, k = 1)
 enumerate_assignment(n = 4, m = 4, k = 2)
@@ -271,7 +269,6 @@ enumerate_assignment(n = 4, m = 4, k = 5)
 
 Create the object `arch` so you can reuse it in later steps.
 
-
 ``` r
 arch = enumerate_assignment(n = 4, m = 5, k = 2)
 ```
@@ -280,7 +277,6 @@ arch = enumerate_assignment(n = 4, m = 5, k = 2)
 
 Create the object `mylist` so you can reuse it in later steps.
 
-
 ``` r
 mylist = archr::arch_to_assignment(arch = arch)
 ```
@@ -288,7 +284,6 @@ mylist = archr::arch_to_assignment(arch = arch)
 ### Step 23 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 mylist$`1`
@@ -301,7 +296,6 @@ mylist$`4`
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 arch
 ```
@@ -310,15 +304,14 @@ arch
 
 Delete specific objects so you can redefine them cleanly.
 
-
 ``` r
 remove(arch, mylist)
 ```
 
 ### Step 26 – Run the Code Block
 
-Change decision number. Execute the block and pay attention to the output it produces.
-
+Change decision number. Execute the block and pay attention to the
+output it produces.
 
 ``` r
 enumerate_assignment(n = 4, m = 5, k = 2, .did = 3)
@@ -328,7 +321,6 @@ enumerate_assignment(n = 4, m = 5, k = 2, .did = 3)
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 enumerate_permutation(n = 4, k = 3)
 enumerate_permutation(n = 4, k = 3, .did = 2)
@@ -337,7 +329,6 @@ enumerate_permutation(n = 4, k = 3, .did = 2)
 ### Step 28 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 enumerate_partition(n = 4, k = 2)
@@ -350,7 +341,6 @@ enumerate_partition(n = 4, k = 2,
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 enumerate_adjacency(n = 4, k = 1)
 enumerate_adjacency(n = 4, k = 4*4)
@@ -360,7 +350,6 @@ enumerate_adjacency(n = 4, k = 4*4)
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 enumerate_adjacency(n = 4, k = 4*4) %>% tail(1)
 ```
@@ -368,7 +357,6 @@ enumerate_adjacency(n = 4, k = 4*4) %>% tail(1)
 ### Step 31 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 enumerate_adjacency(n = 4, k = 1, diag = FALSE)
@@ -379,15 +367,14 @@ enumerate_adjacency(n = 4, k = 1, diag = TRUE)
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 enumerate_adjacency(n = 4, k = 1, .did = 3)
 ```
 
 ### Step 33 – Practice the Pipe
 
-using filter() #####################################. Use the `%>%` operator to pass each result to the next tidyverse verb.
-
+using filter() \#####################################. Use the `%>%`
+operator to pass each result to the next tidyverse verb.
 
 ``` r
 enumerate_ds(n = 8, k = 4) %>%
@@ -397,8 +384,7 @@ enumerate_ds(n = 8, k = 4) %>%
 
 ### Step 34 – Practice the Pipe
 
-using mutate() and filter() ############ make a k-min and a k-max.
-
+using mutate() and filter() \############ make a k-min and a k-max.
 
 ``` r
 enumerate_ds(n = 8, k = 8) %>%
@@ -414,7 +400,6 @@ enumerate_ds(n = 8, k = 8) %>%
 ### Step 35 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 enumerate_sf(n = c(2,3,3))  %>%
@@ -434,7 +419,6 @@ enumerate_sf(n = c(2,3,3))  %>%
 
 Suggestion - do it step by step.
 
-
 ``` r
 arch = enumerate_sf(n = c(2,3,3)) 
 arch
@@ -449,7 +433,6 @@ arch
 ### Step 37 – Create `a1`
 
 Create the object `a1` so you can reuse it in later steps.
-
 
 ``` r
 a1 = enumerate_sf(n = c(3))
@@ -466,7 +449,6 @@ a3 = enumerate_permutation(n = 3, k = 3, .did = 3)
 
 Get a grid of all combos of d1 and d2.
 
-
 ``` r
 arch = expand_grid(a1, a2, a3)
 # For each architecture, now add on...
@@ -474,8 +456,9 @@ arch = expand_grid(a1, a2, a3)
 
 ### Step 39 – Practice the Pipe
 
-gotta constrain here, because if in decision 2 you picked just 1 graph, in d3 max k is 1 if in decision 2 you picked just 2 graphs, in d3 max k is 2 if in decision 3 you picked 3 graphs, in d3 max k is 3.
-
+gotta constrain here, because if in decision 2 you picked just 1 graph,
+in d3 max k is 1 if in decision 2 you picked just 2 graphs, in d3 max k
+is 2 if in decision 3 you picked 3 graphs, in d3 max k is 3.
 
 ``` r
 arch %>%
@@ -489,7 +472,6 @@ arch %>%
 
 Create the object `a1` so you can reuse it in later steps.
 
-
 ``` r
 a1 = enumerate_sf(n = c(3), .did = 1)
 ```
@@ -497,7 +479,6 @@ a1 = enumerate_sf(n = c(3), .did = 1)
 ### Step 41 – Create `a2`
 
 Create the object `a2` so you can reuse it in later steps.
-
 
 ``` r
 a2 = enumerate_adjacency(n = 3, k = 2, .did = 2, diag = TRUE) # but constrain later
@@ -507,7 +488,6 @@ a2 = enumerate_adjacency(n = 3, k = 2, .did = 2, diag = TRUE) # but constrain la
 
 Create the object `a3` so you can reuse it in later steps.
 
-
 ``` r
 a3 = enumerate_partition(n = 4, k = 3, .did = 3)
 ```
@@ -515,7 +495,6 @@ a3 = enumerate_partition(n = 4, k = 3, .did = 3)
 ### Step 43 – Create `arch`
 
 Create the object `arch` so you can reuse it in later steps.
-
 
 ``` r
 arch = expand_grid(
@@ -525,38 +504,55 @@ arch = expand_grid(
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** Which libraries does Step 1 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "15_enumeration_structures.R"))` from the Console or press the Source button while the script is active.
+It attaches archr, dplyr and tidyr, ensuring their functions are
+available before you execute the downstream code.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** After Step 6, what does `parta` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It creates `parta` that filters rows to the cases of interest, and
+enumerates architecture combinations with `archr` helpers. which
+instruments. Create the object `parta` so you can reuse it in later
+steps.
 
 </details>
 
-**Learning Check 3.** When you import data in this workshop, what should you inspect right after the read call?
+**Learning Check 3.** After Step 7, what does `partb` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Check the tibble in the Environment pane (or print it) to confirm column names and types look correct.
+It creates `partb` that filters rows to the cases of interest, and
+enumerates architecture combinations with `archr` helpers. Create the
+object `partb` so you can reuse it in later steps.
 
 </details>
 
-**Learning Check 4.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 4.** After Step 8, what does `constrained` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It creates `constrained` that stacks results from multiple scenarios.
+constrained architecture. Create the object `constrained` so you can
+reuse it in later steps.
 
 </details>

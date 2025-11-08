@@ -1,36 +1,43 @@
----
-title: "[17] Sampling strategies for architectures Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `17_enumeration_sampling_strategies.R` and unpacks the workshop on sampling strategies for architectures. You will see how it advances the Enumeration sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `17_enumeration_sampling_strategies.R` and
+unpacks the workshop on sampling strategies for architectures. You will
+see how it advances the Enumeration sequence while building confidence
+with base R and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `17_enumeration_sampling_strategies.R` within the Enumeration module.
-- Connect the topic "Sampling strategies for architectures" to systems architecting decisions.
-- Load packages with `library()` and verify they attach without warnings.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Navigate the script `17_enumeration_sampling_strategies.R` within the
+  Enumeration module.
+- Connect the topic “Sampling strategies for architectures” to systems
+  architecting decisions.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Leverage `apply`/`purrr` tools for vectorised evaluations.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Run the Code Block]
+    B[Run the Code Block] --> C[Run the Code Block (Step 16)]
+    C[Run the Code Block (Step 16)] --> D[Clear Objects]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
 What if we need to do full factorial enumeration?
-
 
 ``` r
 library(dplyr)
@@ -41,8 +48,7 @@ library(purrr)
 
 ### Step 2 – Run the Code Block
 
-The `tidyr` way ########################.
-
+The `tidyr` way \########################.
 
 ``` r
 expand_grid(
@@ -56,7 +62,6 @@ expand_grid(
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 c("no" = 0, "yes" = 1)
 c(0, 1)
@@ -64,8 +69,7 @@ c(0, 1)
 
 ### Step 4 – Run the Code Block
 
-The `archr` way ########################.
-
+The `archr` way \########################.
 
 ``` r
 enumerate_sf(n = c(2,2,3))
@@ -74,7 +78,6 @@ enumerate_sf(n = c(2,2,3))
 ### Step 5 – Create `eor`
 
 Alternatives for each decision.
-
 
 ``` r
 eor = c("no" = 0, "yes" = 1)
@@ -87,7 +90,6 @@ fuel = c("cryogenic" = 0, "storable" = 1, "N/A" = 2)
 
 List to contain the architectures.
 
-
 ``` r
 archs = list()
 # Counter for the number of architectures
@@ -96,8 +98,8 @@ n_archs = 0
 
 ### Step 7 – Loop Through Values
 
-For decision 1... Iterate over values to apply the same logic to each item.
-
+For decision 1… Iterate over values to apply the same logic to each
+item.
 
 ``` r
 for(i in eor){
@@ -115,8 +117,7 @@ for(i in eor){
 
 ### Step 8 – Run the Code Block
 
-Let's look at this weird list object archs.
-
+Let’s look at this weird list object archs.
 
 ``` r
 archs
@@ -124,8 +125,8 @@ archs
 
 ### Step 9 – Run the Code Block
 
-the base-R way... ###################### Turn each item into a matrix, the bind the rows together.
-
+the base-R way… \###################### Turn each item into a matrix,
+the bind the rows together.
 
 ``` r
 do.call(rbind, lapply(archs, matrix, ncol = 3))
@@ -135,7 +136,6 @@ do.call(rbind, lapply(archs, matrix, ncol = 3))
 
 Attach dplyr to make its functions available.
 
-
 ``` r
 library(dplyr)
 library(purrr)
@@ -143,8 +143,8 @@ library(purrr)
 
 ### Step 11 – Practice the Pipe
 
-We can use the purrr package for that. We could say, for each item in this list archs,.
-
+We can use the purrr package for that. We could say, for each item in
+this list archs,.
 
 ``` r
 archs %>%
@@ -156,8 +156,8 @@ archs %>%
 
 ### Step 12 – Clear Objects
 
-clear environment. Remove objects from the environment to prevent name clashes.
-
+clear environment. Remove objects from the environment to prevent name
+clashes.
 
 ``` r
 rm(list = ls())
@@ -165,8 +165,8 @@ rm(list = ls())
 
 ### Step 13 – Create `arch1`
 
-For example... say we make 1 standard form decision then 2 binary decisions.
-
+For example… say we make 1 standard form decision then 2 binary
+decisions.
 
 ``` r
 arch1 = expand_grid(
@@ -180,7 +180,6 @@ arch1
 
 say we make 2 binary decisions then 1 standard form decisions.
 
-
 ``` r
 arch2 = expand_grid(
   enumerate_binary(n = 2, .did = 1),
@@ -192,7 +191,6 @@ arch2 = expand_grid(
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 arch2
 ```
@@ -201,15 +199,15 @@ arch2
 
 Still produces the same number of architectures.
 
-
 ``` r
 nrow(arch1) == nrow(arch2)
 ```
 
 ### Step 17 – Create `arch3`
 
-But then suppose that there's a dependency constraint in the next decision... where if the standard form decision == 2, then decision 4 != 0.
-
+But then suppose that there’s a dependency constraint in the next
+decision… where if the standard form decision == 2, then decision 4 !=
+0.
 
 ``` r
 arch3 = expand_grid(
@@ -225,15 +223,14 @@ arch3 = expand_grid(
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 arch3
 ```
 
 ### Step 19 – Create `arch4`
 
-That matters! Be sure to do THAT in sequence before adding more decisions. Eg.
-
+That matters! Be sure to do THAT in sequence before adding more
+decisions. Eg.
 
 ``` r
 arch4 = expand_grid(arch3, enumerate_binary(n = 4, .did = 5))
@@ -241,8 +238,8 @@ arch4 = expand_grid(arch3, enumerate_binary(n = 4, .did = 5))
 
 ### Step 20 – Create `arch5`
 
-Or in total... Create the object `arch5` so you can reuse it in later steps.
-
+Or in total… Create the object `arch5` so you can reuse it in later
+steps.
 
 ``` r
 arch5 = arch1 = expand_grid(
@@ -260,7 +257,6 @@ arch5 = arch1 = expand_grid(
 ### Step 21 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 arch5
@@ -282,7 +278,6 @@ arch6 = arch1 = expand_grid(
 
 Still makes same number of architectures.
 
-
 ``` r
 nrow(arch5) == nrow(arch6)
 ```
@@ -291,36 +286,55 @@ nrow(arch5) == nrow(arch6)
 
 Clean up! Remove objects from the environment to prevent name clashes.
 
-
 ``` r
 rm(list = ls())
 ```
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** Which libraries does Step 1 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "17_enumeration_sampling_strategies.R"))` from the Console or press the Source button while the script is active.
+It attaches dplyr, tidyr, archr and purrr, ensuring their functions are
+available before you execute the downstream code.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** After Step 2, what does `eor` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It creates `eor`. The `tidyr` way \########################.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** After Step 6, what does `archs` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It creates `archs`. List to contain the architectures.
+
+</details>
+
+**Learning Check 4.** After Step 7, what does `n_archs` capture?
+
+<details>
+<summary>
+Show answer
+</summary>
+
+It creates `n_archs`. For decision 1… Iterate over values to apply the
+same logic to each item.
 
 </details>

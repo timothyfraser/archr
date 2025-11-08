@@ -1,37 +1,44 @@
----
-title: "[45] Transportation optimization case Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `45_optimization_transportation_case.R` and unpacks the workshop on transportation optimization case. You will see how it advances the Optimization sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `45_optimization_transportation_case.R` and
+unpacks the workshop on transportation optimization case. You will see
+how it advances the Optimization sequence while building confidence with
+base R and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `45_optimization_transportation_case.R` within the Optimization module.
-- Connect the topic "Transportation optimization case" to systems architecting decisions.
-- Load packages with `library()` and verify they attach without warnings.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Navigate the script `45_optimization_transportation_case.R` within the
+  Optimization module.
+- Connect the topic “Transportation optimization case” to systems
+  architecting decisions.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Define custom functions to package repeatable logic.
 - Iterate on visualisations built with `ggplot2`.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Run the Code Block]
+    B[Run the Code Block] --> C[Define bit2int()]
+    C[Define bit2int()] --> D[Start a ggplot]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
 Attach dplyr to make its functions available.
-
 
 ``` r
 library(dplyr)
@@ -42,7 +49,6 @@ library(rmoo)
 ### Step 2 – Define `get_emissions()`
 
 300,000 tons of CO2e in Tompkins county.
-
 
 ``` r
 get_emissions = function(d1,d2,d3){
@@ -60,7 +66,6 @@ get_emissions = function(d1,d2,d3){
 
 What is our highest possible emissions level?
 
-
 ``` r
   max = 300000
   # What is our lowest possible emissions level?
@@ -69,8 +74,7 @@ What is our highest possible emissions level?
 
 ### Step 4 – Create `rescaled`
 
-Let's rescale this so that... 1 = most emissions; 0 = least emissions.
-
+Let’s rescale this so that… 1 = most emissions; 0 = least emissions.
 
 ``` r
   rescaled = (output - min) / (max - min)
@@ -78,8 +82,8 @@ Let's rescale this so that... 1 = most emissions; 0 = least emissions.
 
 ### Step 5 – Create `output`
 
-Let's rescale this so that high means 'better' 1 = least emissions; 0 = most emissions.
-
+Let’s rescale this so that high means ‘better’ 1 = least emissions; 0 =
+most emissions.
 
 ``` r
   output = 1 - rescaled
@@ -89,7 +93,6 @@ Let's rescale this so that high means 'better' 1 = least emissions; 0 = most emi
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
   return(output)
 }
@@ -97,8 +100,8 @@ Execute the block and pay attention to the output it produces.
 
 ### Step 7 – Define `get_riders()`
 
-Create the helper function `get_riders()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_riders()` so you can reuse it throughout
+the workshop.
 
 ``` r
 get_riders = function(d1,d2){
@@ -113,8 +116,7 @@ get_riders = function(d1,d2){
 
 ### Step 8 – Create `max`
 
-Highest possible # of riders.
-
+Highest possible \# of riders.
 
 ``` r
   max = 10000 + 5000 + 10000
@@ -124,8 +126,7 @@ Highest possible # of riders.
 
 ### Step 9 – Create `rescaled`
 
-Let's rescale this so that... 1 = most riders; 0 = least riders.
-
+Let’s rescale this so that… 1 = most riders; 0 = least riders.
 
 ``` r
   rescaled = (output - min) / (max - min)
@@ -135,7 +136,6 @@ Let's rescale this so that... 1 = most riders; 0 = least riders.
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
   return(rescaled)
 ```
@@ -144,15 +144,14 @@ Execute the block and pay attention to the output it produces.
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 }
 ```
 
 ### Step 12 – Define `bit2int()`
 
-Create the helper function `bit2int()` so you can reuse it throughout the workshop.
-
+Create the helper function `bit2int()` so you can reuse it throughout
+the workshop.
 
 ``` r
 bit2int = function(x){
@@ -166,8 +165,8 @@ bit2int = function(x){
 
 ### Step 13 – Define `f1()`
 
-Create the helper function `f1()` so you can reuse it throughout the workshop.
-
+Create the helper function `f1()` so you can reuse it throughout the
+workshop.
 
 ``` r
 f1 = function(x, nobj = 2, ...){
@@ -182,7 +181,6 @@ f1 = function(x, nobj = 2, ...){
 
 Create the object `m2` so you can reuse it in later steps.
 
-
 ``` r
   m2 = get_riders(d1 = xhat[1], d2 = xhat[2])
   # Format as a matrix
@@ -194,7 +192,6 @@ Create the object `m2` so you can reuse it in later steps.
 ### Step 15 – Create `o`
 
 Create the object `o` so you can reuse it in later steps.
-
 
 ``` r
 o = rmoo(
@@ -208,7 +205,6 @@ o = rmoo(
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 data = o@solution %>%
   as_tibble() %>%
@@ -221,7 +217,6 @@ data = o@solution %>%
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
 
-
 ``` r
 ggplot() +
   geom_point(data = data, mapping = aes(x = riders, y = emissions))
@@ -229,47 +224,50 @@ ggplot() +
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** What role does the helper `get_emissions()`
+defined in Step 2 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "45_optimization_transportation_case.R"))` from the Console or press the Source button while the script is active.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** What role does the helper `get_riders()` defined
+in Step 7 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** What role does the helper `bit2int()` defined in
+Step 12 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 4.** What role does the helper `f1()` defined in Step
+13 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
-
-</details>
-
-**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
-
-<details>
-<summary>Show answer</summary>
-
-Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+It packages reusable logic needed by later steps.
 
 </details>

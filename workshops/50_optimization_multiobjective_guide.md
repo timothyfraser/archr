@@ -1,35 +1,42 @@
----
-title: "[50] Multiobjective optimization tutorial Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `50_optimization_multiobjective.R` and unpacks the workshop on multiobjective optimization tutorial. You will see how it advances the Optimization sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `50_optimization_multiobjective.R` and unpacks
+the workshop on multiobjective optimization tutorial. You will see how
+it advances the Optimization sequence while building confidence with
+base R and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `50_optimization_multiobjective.R` within the Optimization module.
-- Connect the topic "Multiobjective optimization tutorial" to systems architecting decisions.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Navigate the script `50_optimization_multiobjective.R` within the
+  Optimization module.
+- Connect the topic “Multiobjective optimization tutorial” to systems
+  architecting decisions.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Define custom functions to package repeatable logic.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Define bit2int()] --> B[Create xhat]
+    B[Create xhat] --> C[Create xnew1]
+    C[Create xnew1] --> D[Run the Code Block]
+```
 
 ## Application
 
 ### Step 1 – Define `bit2int()`
 
-Create the helper function `bit2int()` so you can reuse it throughout the workshop.
-
+Create the helper function `bit2int()` so you can reuse it throughout
+the workshop.
 
 ``` r
 bit2int = function(x){
@@ -38,7 +45,6 @@ bit2int = function(x){
 ### Step 2 – Create `d1`
 
 Create the object `d1` so you can reuse it in later steps.
-
 
 ``` r
   d1 = binary2decimal(x[1:2])
@@ -59,15 +65,14 @@ Create the object `d1` so you can reuse it in later steps.
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 bit2int(c(0,0,1,0,1,1,1,0,0,0,1,1,1,1,1))
 ```
 
 ### Step 4 – Define `revise_bit()`
 
-Create the helper function `revise_bit()` so you can reuse it throughout the workshop.
-
+Create the helper function `revise_bit()` so you can reuse it throughout
+the workshop.
 
 ``` r
 revise_bit = function(x){
@@ -77,8 +82,7 @@ revise_bit = function(x){
 
 ### Step 5 – Create `xhat`
 
-1. Transform bits into integer alternatives.
-
+1.  Transform bits into integer alternatives.
 
 ``` r
   xhat = bit2int(x)
@@ -86,8 +90,8 @@ revise_bit = function(x){
 
 ### Step 6 – Create `d1`
 
-Get decisions. Create the object `d1` so you can reuse it in later steps.
-
+Get decisions. Create the object `d1` so you can reuse it in later
+steps.
 
 ``` r
   d1 = xhat[1]
@@ -105,15 +109,14 @@ Get decisions. Create the object `d1` so you can reuse it in later steps.
 
 Structural Constraints Constraint 1: d1 != 3.
 
-
 ``` r
   constraint1 = d1 == 3
 ```
 
 ### Step 8 – Run the Code Block
 
-Structural Constraints Resample from available options for d1 if so: [0,1,2].
-
+Structural Constraints Resample from available options for d1 if so:
+\[0,1,2\].
 
 ``` r
   if(constraint1 == TRUE){  d1 = sample(x = c(0,1,2), size = 1) }
@@ -121,8 +124,7 @@ Structural Constraints Resample from available options for d1 if so: [0,1,2].
 
 ### Step 9 – Create `xnew1`
 
-4. convert new integer vector back into binary vector.
-
+4.  convert new integer vector back into binary vector.
 
 ``` r
   xnew1 = decimal2binary(x = d1, length = 2)
@@ -140,15 +142,14 @@ Structural Constraints Resample from available options for d1 if so: [0,1,2].
 
 Bundle as a vector.
 
-
 ``` r
   xnew = c(xnew1, xnew2, xnew3, xnew4, xnew5, xnew6, xnew7, xnew8, xnew9)
 ```
 
 ### Step 11 – Run the Code Block
 
-Return output. Execute the block and pay attention to the output it produces.
-
+Return output. Execute the block and pay attention to the output it
+produces.
 
 ``` r
   return(xnew)
@@ -159,7 +160,6 @@ Return output. Execute the block and pay attention to the output it produces.
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 bit2int()
 c(0,0,1,0,1,1,1,0,0,0,1,1,1,1,1) %>%
@@ -168,29 +168,50 @@ c(0,0,1,0,1,1,1,0,0,0,1,1,1,1,1) %>%
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** What role does the helper `bit2int()` defined in
+Step 1 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "50_optimization_multiobjective.R"))` from the Console or press the Source button while the script is active.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 2.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 2.** What role does the helper `revise_bit()` defined
+in Step 4 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 3.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 3.** After Step 2, what does `d1` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+It creates `d1` that returns the assembled object, and threads the
+result through a dplyr pipeline. Create the object `d1` so you can reuse
+it in later steps.
+
+</details>
+
+**Learning Check 4.** After Step 5, what does `xhat` capture?
+
+<details>
+<summary>
+Show answer
+</summary>
+
+It creates `xhat`. 1. Transform bits into integer alternatives.
 
 </details>

@@ -1,37 +1,44 @@
----
-title: "[47] Green space optimization case Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `47_optimization_green_space_case.R` and unpacks the workshop on green space optimization case. You will see how it advances the Optimization sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `47_optimization_green_space_case.R` and
+unpacks the workshop on green space optimization case. You will see how
+it advances the Optimization sequence while building confidence with
+base R and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `47_optimization_green_space_case.R` within the Optimization module.
-- Connect the topic "Green space optimization case" to systems architecting decisions.
-- Load packages with `library()` and verify they attach without warnings.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Navigate the script `47_optimization_green_space_case.R` within the
+  Optimization module.
+- Connect the topic “Green space optimization case” to systems
+  architecting decisions.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Define custom functions to package repeatable logic.
 - Iterate on visualisations built with `ggplot2`.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Run the Code Block]
+    B[Run the Code Block] --> C[Run the Code Block (Step 21)]
+    C[Run the Code Block (Step 21)] --> D[Run the Code Block (Step 31)]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
-Load packages ####. Attach dplyr to make its functions available.
-
+Load packages \####. Attach dplyr to make its functions available.
 
 ``` r
 library(dplyr)
@@ -42,8 +49,8 @@ library(ggplot2)
 
 ### Step 2 – Create `e`
 
-enumerate ###############. Create the object `e` so you can reuse it in later steps.
-
+enumerate \###############. Create the object `e` so you can reuse it in
+later steps.
 
 ``` r
 e = expand_grid(
@@ -114,15 +121,14 @@ e = expand_grid(
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 e %>% glimpse()
 ```
 
 ### Step 4 – Practice the Pipe
 
-To take a stratified sample stratifying by d2, We'll need to concatenate its multiple columns into one column, like this.
-
+To take a stratified sample stratifying by d2, We’ll need to concatenate
+its multiple columns into one column, like this.
 
 ``` r
 e = e %>%
@@ -138,8 +144,8 @@ sample %>% glimpse()
 
 ### Step 5 – Define `get_duration()`
 
-Create the helper function `get_duration()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_duration()` so you can reuse it
+throughout the workshop.
 
 ``` r
 get_duration = function(d3,d4,d8, d9){
@@ -162,8 +168,8 @@ get_duration = function(d3,d4,d8, d9){
 
 ### Step 6 – Define `get_cost()`
 
-Create the helper function `get_cost()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_cost()` so you can reuse it throughout
+the workshop.
 
 ``` r
 get_cost = function(d3,d5,d8,d6a1b1,d6a1b2,d6a2b1,d6a2b2,d6a3b1,d6a3b2){
@@ -191,8 +197,10 @@ get_cost = function(d3,d5,d8,d6a1b1,d6a1b2,d6a2b1,d6a2b2,d6a3b1,d6a3b2){
 
 ### Step 7 – Define `get_walkability()`
 
-SubFunction: perf_metric_walkability Inputs: d1 = Location Output: metric (evaluation of the walkability score per architecture) Define the performance metric function for Transportation Emissions The larger the value, the larger the benefit.
-
+SubFunction: perf_metric_walkability Inputs: d1 = Location Output:
+metric (evaluation of the walkability score per architecture) Define the
+performance metric function for Transportation Emissions The larger the
+value, the larger the benefit.
 
 ``` r
 get_walkability <- function(d1){
@@ -212,8 +220,10 @@ get_walkability <- function(d1){
 
 ### Step 8 – Define `get_traveltimes()`
 
-SubFunction: perf_metric_traveltimes Inputs: d5 = Street Traffic d7 = Speed Limit Output: metric (evaluation of the travel times score per architecture) Define the performance metric function for Transportation Emissions The larger the value, the larger the benefit.
-
+SubFunction: perf_metric_traveltimes Inputs: d5 = Street Traffic d7 =
+Speed Limit Output: metric (evaluation of the travel times score per
+architecture) Define the performance metric function for Transportation
+Emissions The larger the value, the larger the benefit.
 
 ``` r
 get_traveltimes <- function(d5, d7){
@@ -229,8 +239,7 @@ get_traveltimes <- function(d5, d7){
 
 ### Step 9 – Create `m7`
 
-Recode decision #7 for emissions metric.
-
+Recode decision \#7 for emissions metric.
 
 ``` r
   m7 = case_when(d7 == 0 ~ 0.9, # 10 MPH
@@ -246,8 +255,11 @@ Recode decision #7 for emissions metric.
 
 ### Step 10 – Define `get_emissions()`
 
-SubFunction: perf_metric_emissions Inputs: d4 = Space Allocation d5 = Street Traffic d7 = Speed Limit Output: metric (evaluation of the emissions score per architecture) Define the performance metric function for Transportation Emissions The larger the value, the larger the benefit.
-
+SubFunction: perf_metric_emissions Inputs: d4 = Space Allocation d5 =
+Street Traffic d7 = Speed Limit Output: metric (evaluation of the
+emissions score per architecture) Define the performance metric function
+for Transportation Emissions The larger the value, the larger the
+benefit.
 
 ``` r
 get_emissions <- function(d4, d5, d7){
@@ -274,7 +286,6 @@ get_emissions <- function(d4, d5, d7){
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
                  TRUE ~ 0) # Else condition
   # Calculate the overall metric
@@ -285,8 +296,8 @@ Execute the block and pay attention to the output it produces.
 
 ### Step 12 – Practice the Pipe
 
-mutate() method ####################. Use the `%>%` operator to pass each result to the next tidyverse verb.
-
+mutate() method \####################. Use the `%>%` operator to pass
+each result to the next tidyverse verb.
 
 ``` r
 sample = sample %>%
@@ -306,7 +317,6 @@ sample = sample %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 sample = sample %>%
   mutate(d6 = paste0(d6_a1_b1, d6_a1_b2, d6_a2_b1, d6_a2_b2, d6_a3_b1, d6_a3_b2))
@@ -316,7 +326,6 @@ sample = sample %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 sample %>% glimpse()
 # OR
@@ -324,8 +333,8 @@ sample %>% glimpse()
 
 ### Step 15 – Define `evaluate()`
 
-unlist(sample[1, 1:16]). Create the helper function `evaluate()` so you can reuse it throughout the workshop.
-
+unlist(sample\[1, 1:16\]). Create the helper function `evaluate()` so
+you can reuse it throughout the workshop.
 
 ``` r
 evaluate = function(int){
@@ -335,8 +344,7 @@ evaluate = function(int){
 
 ### Step 16 – Create `d1`
 
-Take a vector 'int' of integers and get decision values.
-
+Take a vector ‘int’ of integers and get decision values.
 
 ``` r
   d1 = int[1]
@@ -353,8 +361,8 @@ Take a vector 'int' of integers and get decision values.
 
 ### Step 17 – Create `duration`
 
-Get metrics. Create the object `duration` so you can reuse it in later steps.
-
+Get metrics. Create the object `duration` so you can reuse it in later
+steps.
 
 ``` r
   duration = get_duration(d3 = d3, d4 = d4, d8 = d8, d9 = d9)
@@ -368,7 +376,6 @@ Get metrics. Create the object `duration` so you can reuse it in later steps.
 
 Create the object `walk` so you can reuse it in later steps.
 
-
 ``` r
   walk = get_walkability(d1 = d1)
   travel = get_traveltimes(d5 = d5, d7 = d7)
@@ -378,7 +385,6 @@ Create the object `walk` so you can reuse it in later steps.
 ### Step 19 – Create `output`
 
 Turn into a matrix.
-
 
 ``` r
   output = matrix(
@@ -392,7 +398,6 @@ Turn into a matrix.
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
   return(output)
 }
@@ -400,8 +405,7 @@ Execute the block and pay attention to the output it produces.
 
 ### Step 21 – Run the Code Block
 
-Let's try and evaluate a few.
-
+Let’s try and evaluate a few.
 
 ``` r
 evaluate(int = e[150,1:16])
@@ -409,8 +413,7 @@ evaluate(int = e[150,1:16])
 
 ### Step 22 – Run the Code Block
 
-HELPER FUNCTIONS ########################### Load functions.
-
+HELPER FUNCTIONS \########################### Load functions.
 
 ``` r
 source("workshops/00_entropy_utilities.R")
@@ -424,7 +427,6 @@ source("workshops/00_sensitivity_connectivity_utilities.R")
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 sample %>%
   glimpse()
@@ -433,7 +435,6 @@ sample %>%
 ### Step 24 – Practice the Pipe
 
 Is that architecture good?
-
 
 ``` r
 sample = sample %>% 
@@ -444,7 +445,6 @@ sample = sample %>%
 
 Does that architecture have a certain feature?
 
-
 ``` r
 sample = sample %>%
   # If location = businesses ^& traffic = 2-way
@@ -453,8 +453,8 @@ sample = sample %>%
 
 ### Step 26 – Run the Code Block
 
-Information gain! Execute the block and pay attention to the output it produces.
-
+Information gain! Execute the block and pay attention to the output it
+produces.
 
 ``` r
 ig(good = sample$good, feature = sample$feature)
@@ -463,7 +463,6 @@ ig(good = sample$good, feature = sample$feature)
 ### Step 27 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -476,7 +475,6 @@ ggplot() +
 ### Step 28 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -492,7 +490,6 @@ ggplot() +
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
 
-
 ``` r
 ggplot() +
   geom_jitter(
@@ -506,8 +503,7 @@ ggplot() +
 
 ### Step 30 – Practice the Pipe
 
-TRANSFORM DIFFICULT VARIABLES ########################################.
-
+TRANSFORM DIFFICULT VARIABLES \########################################.
 
 ``` r
 e = e %>% 
@@ -519,8 +515,9 @@ e %>% select(d6) %>% sample_n(size = 5)
 
 ### Step 31 – Run the Code Block
 
-Allows you to do sensitivity analysis on tricky metrics, by turning them into, essentially, a standard form problem with many discrete categories.
-
+Allows you to do sensitivity analysis on tricky metrics, by turning them
+into, essentially, a standard form problem with many discrete
+categories.
 
 ``` r
 sensitivity(data = e, decision_i = 'd6', metric = 'cost')
@@ -529,47 +526,51 @@ connectivity(data = e, decision_i = 'd6', decisions = c("d1","d3", "d6"), metric
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** What role does the helper `get_duration()` defined
+in Step 5 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "47_optimization_green_space_case.R"))` from the Console or press the Source button while the script is active.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** What role does the helper `get_cost()` defined in
+Step 6 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It encapsulates the conditional cost schedule so you can reuse it
+whenever you mutate architecture rows.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** What role does the helper `get_walkability()`
+defined in Step 7 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 4.** What role does the helper `get_traveltimes()`
+defined in Step 8 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
-
-</details>
-
-**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
-
-<details>
-<summary>Show answer</summary>
-
-Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+It packages reusable logic needed by later steps.
 
 </details>

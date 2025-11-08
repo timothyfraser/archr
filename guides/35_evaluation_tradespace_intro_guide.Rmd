@@ -27,6 +27,23 @@ This tutorial complements `35_evaluation_tradespace_intro.R` and unpacks the wor
 - Define custom functions to package repeatable logic.
 - Iterate on visualisations built with `ggplot2`.
 
+## Process Overview
+
+
+
+
+
+
+
+
+
+```mermaid
+flowchart LR
+    A[Load Packages] --> B[Run the Code Block]
+    B[Run the Code Block] --> C[Practice the Pipe]
+    C[Practice the Pipe] --> D[Start a ggplot]
+```
+
 ## Application
 
 ### Step 1 – Load Packages
@@ -580,47 +597,48 @@ ggplot() +
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+
+
+
+
+
+
+
+
+
+**Learning Check 1.** What role does the helper `get_cost()` defined in Step 3 play in this workflow?
 
 <details>
 <summary>Show answer</summary>
 
-Use `source(file.path("workshops", "35_evaluation_tradespace_intro.R"))` from the Console or press the Source button while the script is active.
+It encapsulates the conditional cost schedule so you can reuse it whenever you mutate architecture rows.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** What role does the helper `get_benefit()` defined in Step 4 play in this workflow?
 
 <details>
 <summary>Show answer</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** What role does the helper `get_reliability()` defined in Step 5 play in this workflow?
 
 <details>
 <summary>Show answer</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 4.** Which libraries does Step 1 attach, and why do you run that chunk before others?
 
 <details>
 <summary>Show answer</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
-
-</details>
-
-**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
-
-<details>
-<summary>Show answer</summary>
-
-Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+It attaches dplyr, archr and ggplot2, ensuring their functions are available before you execute the downstream code.
 
 </details>

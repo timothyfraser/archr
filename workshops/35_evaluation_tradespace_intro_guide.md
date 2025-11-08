@@ -1,38 +1,45 @@
----
-title: "[35] Tradespace introduction Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `35_evaluation_tradespace_intro.R` and unpacks the workshop on tradespace introduction. You will see how it advances the Evaluation sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `35_evaluation_tradespace_intro.R` and unpacks
+the workshop on tradespace introduction. You will see how it advances
+the Evaluation sequence while building confidence with base R and
+tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `35_evaluation_tradespace_intro.R` within the Evaluation module.
-- Connect the topic "Tradespace introduction" to systems architecting decisions.
+- Navigate the script `35_evaluation_tradespace_intro.R` within the
+  Evaluation module.
+- Connect the topic “Tradespace introduction” to systems architecting
+  decisions.
 - Install any required packages highlighted with `install.packages()`.
-- Load packages with `library()` and verify they attach without warnings.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Define custom functions to package repeatable logic.
 - Iterate on visualisations built with `ggplot2`.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Run the Code Block]
+    B[Run the Code Block] --> C[Practice the Pipe]
+    C[Practice the Pipe] --> D[Start a ggplot]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
 Attach dplyr to make its functions available.
-
 
 ``` r
 library(dplyr)
@@ -44,15 +51,14 @@ library(ggplot2)
 
 Create the object `archs` so you can reuse it in later steps.
 
-
 ``` r
 archs = enumerate_binary(n = 5, .id = TRUE)
 ```
 
 ### Step 3 – Define `get_cost()`
 
-Cost metric function. Create the helper function `get_cost()` so you can reuse it throughout the workshop.
-
+Cost metric function. Create the helper function `get_cost()` so you can
+reuse it throughout the workshop.
 
 ``` r
 get_cost = function(d1,d2,d3,d4,d5){
@@ -68,8 +74,8 @@ get_cost = function(d1,d2,d3,d4,d5){
 
 ### Step 4 – Define `get_benefit()`
 
-Benefit metric function. Create the helper function `get_benefit()` so you can reuse it throughout the workshop.
-
+Benefit metric function. Create the helper function `get_benefit()` so
+you can reuse it throughout the workshop.
 
 ``` r
 get_benefit = function(d1,d2,d3,d4,d5){
@@ -86,8 +92,8 @@ get_benefit = function(d1,d2,d3,d4,d5){
 
 ### Step 5 – Define `get_reliability()`
 
-Reliability metric function. Create the helper function `get_reliability()` so you can reuse it throughout the workshop.
-
+Reliability metric function. Create the helper function
+`get_reliability()` so you can reuse it throughout the workshop.
 
 ``` r
 get_reliability = function(t = 100, d1,d2,d3,d4,d5){
@@ -116,7 +122,6 @@ get_reliability = function(t = 100, d1,d2,d3,d4,d5){
 
 Create the object `output` so you can reuse it in later steps.
 
-
 ``` r
   output = p1*p2*p3*p4*p5
   return(output)
@@ -125,8 +130,10 @@ Create the object `output` so you can reuse it in later steps.
 
 ### Step 7 – Practice the Pipe
 
-2. METRICS ###########################################################################. Use the `%>%` operator to pass each result to the next tidyverse verb.
-
+2.  METRICS
+    \###########################################################################.
+    Use the `%>%` operator to pass each result to the next tidyverse
+    verb.
 
 ``` r
 archs = archs %>% mutate(cost = get_cost(d1,d2,d3,d4,d5))
@@ -138,15 +145,15 @@ archs = archs %>% mutate(reliability = get_reliability(t = 1000, d1,d2,d3,d4,d5)
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 archs
 ```
 
 ### Step 9 – Load Packages
 
-3. PAIRWISE CORRELATION PLOT ######################################################### install.packages("GGally").
-
+3.  PAIRWISE CORRELATION PLOT
+    \#########################################################
+    install.packages(“GGally”).
 
 ``` r
 library(GGally)
@@ -159,7 +166,6 @@ archs %>%
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 ?ggpairs
 # https://ggobi.github.io/ggally/articles/ggpairs.html
@@ -168,7 +174,6 @@ Execute the block and pay attention to the output it produces.
 ### Step 11 – Create `gg1`
 
 Create the object `gg1` so you can reuse it in later steps.
-
 
 ``` r
 gg1 = ggplot() + geom_point(data = archs, mapping = aes(x = benefit, y = cost)) + theme_bw()
@@ -181,7 +186,6 @@ ggarrange(gg1,gg2,gg3, nrow = 1)
 ### Step 12 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 lines = archs %>%
@@ -208,7 +212,6 @@ lines = archs %>%
 
 Create the object `gg` so you can reuse it in later steps.
 
-
 ``` r
 gg = ggplot() +
   theme_bw() +
@@ -225,7 +228,6 @@ gg # view it
 
 Add labels. Create the object `gg` so you can reuse it in later steps.
 
-
 ``` r
 gg = gg + 
   labs(title = "Metrics for N = 32 architectures",
@@ -237,8 +239,8 @@ gg
 
 ### Step 15 – Create `gg`
 
-Relabel axis values. Create the object `gg` so you can reuse it in later steps.
-
+Relabel axis values. Create the object `gg` so you can reuse it in later
+steps.
 
 ``` r
 gg = gg + 
@@ -256,7 +258,6 @@ gg
 
 Add a nice border.
 
-
 ``` r
 gg = gg + 
   theme_classic() +
@@ -267,15 +268,14 @@ gg = gg +
 
 View it! Execute the block and pay attention to the output it produces.
 
-
 ``` r
 gg
 ```
 
 ### Step 18 – Run the Code Block
 
-5. Radar ########################################################## Don't recommend.
-
+5.  Radar \##########################################################
+    Don’t recommend.
 
 ``` r
 gg + coord_polar()
@@ -283,8 +283,8 @@ gg + coord_polar()
 
 ### Step 19 – Load Packages
 
-6. K-Means ########################################################. Attach broom to make its functions available.
-
+6.  K-Means \########################################################.
+    Attach broom to make its functions available.
 
 ``` r
 library(broom)
@@ -293,7 +293,6 @@ library(broom)
 ### Step 20 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 k = archs %>%
@@ -308,7 +307,6 @@ k = archs %>%
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 k
 ```
@@ -317,7 +315,6 @@ k
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 k$cluster
 # Easy way to extract values in a data.frame
@@ -325,8 +322,8 @@ k$cluster
 
 ### Step 23 – Practice the Pipe
 
-Cluster means. Use the `%>%` operator to pass each result to the next tidyverse verb.
-
+Cluster means. Use the `%>%` operator to pass each result to the next
+tidyverse verb.
 
 ``` r
 k %>% broom::tidy()
@@ -334,8 +331,8 @@ k %>% broom::tidy()
 
 ### Step 24 – Practice the Pipe
 
-Clustering Model statistics. Use the `%>%` operator to pass each result to the next tidyverse verb.
-
+Clustering Model statistics. Use the `%>%` operator to pass each result
+to the next tidyverse verb.
 
 ``` r
 k %>% broom::glance()
@@ -344,7 +341,6 @@ k %>% broom::glance()
 ### Step 25 – Practice the Pipe
 
 Update with cluster id.
-
 
 ``` r
 archs = archs %>%
@@ -356,7 +352,6 @@ archs = archs %>%
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 archs
 ```
@@ -364,7 +359,6 @@ archs
 ### Step 27 – Create `gg1`
 
 Create the object `gg1` so you can reuse it in later steps.
-
 
 ``` r
 gg1 = ggplot() +
@@ -380,7 +374,6 @@ gg1
 
 Create the object `gg2` so you can reuse it in later steps.
 
-
 ``` r
 gg2 = ggplot() +
   theme_bw() +
@@ -393,7 +386,6 @@ gg2 = ggplot() +
 
 Create the object `gg3` so you can reuse it in later steps.
 
-
 ``` r
 gg3 = ggpubr::ggarrange(gg1,gg2, common.legend = TRUE)
 ```
@@ -402,15 +394,14 @@ gg3 = ggpubr::ggarrange(gg1,gg2, common.legend = TRUE)
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 gg3
 ```
 
 ### Step 31 – Practice the Pipe
 
-Get pareto front. Use the `%>%` operator to pass each result to the next tidyverse verb.
-
+Get pareto front. Use the `%>%` operator to pass each result to the next
+tidyverse verb.
 
 ``` r
 archs = archs %>%
@@ -421,7 +412,6 @@ archs = archs %>%
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 archs
 ```
@@ -429,7 +419,6 @@ archs
 ### Step 33 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -443,7 +432,6 @@ ggplot() +
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 archs = archs %>%
   mutate(pareto = pareto(x = cost, y = benefit))
@@ -452,7 +440,6 @@ archs = archs %>%
 ### Step 35 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -466,7 +453,6 @@ ggplot() +
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 archs = archs %>%
   mutate(pareto = pareto(x = cost, y = reliability))
@@ -475,7 +461,6 @@ archs = archs %>%
 ### Step 37 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -489,7 +474,6 @@ ggplot() +
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 archr::get_arm
 ```
@@ -498,7 +482,6 @@ archr::get_arm
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 ?archr::get_arm
 ```
@@ -506,7 +489,6 @@ Execute the block and pay attention to the output it produces.
 ### Step 40 – Practice the Pipe
 
 Driving Features of being in the Pareto Front.
-
 
 ``` r
 archs %>%
@@ -518,7 +500,6 @@ archs %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 archs %>%
   select(d1, d2, front = pareto) %>%
@@ -527,8 +508,8 @@ archs %>%
 
 ### Step 42 – Practice the Pipe
 
-Multiple features. Use the `%>%` operator to pass each result to the next tidyverse verb.
-
+Multiple features. Use the `%>%` operator to pass each result to the
+next tidyverse verb.
 
 ``` r
 archs %>%
@@ -539,7 +520,6 @@ archs %>%
 ### Step 43 – Practice the Pipe
 
 Driving Features of being in Cluster 1.
-
 
 ``` r
 archs %>%
@@ -553,7 +533,6 @@ archs %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 archs %>%
   #mutate(cluster2 = cluster == 1) %>%
@@ -566,7 +545,6 @@ archs %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 viz = archs %>%
   select(d1, d2, d3, d4, d5, pareto) %>%
@@ -577,7 +555,6 @@ viz = archs %>%
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
 
-
 ``` r
 ggplot() +
   geom_col(data = viz, mapping = aes(x = did, y = lift_f_p))
@@ -586,7 +563,6 @@ ggplot() +
 ### Step 47 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 viz2 = archs %>%
@@ -600,7 +576,6 @@ viz2 = archs %>%
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
 
-
 ``` r
 ggplot() +
   geom_col(data = viz2, mapping = aes(x = did, y = lift_f_p))
@@ -609,7 +584,6 @@ ggplot() +
 ### Step 49 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -620,7 +594,6 @@ ggplot() +
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
 
-
 ``` r
 ggplot() +
   geom_col(data = viz2, mapping = aes(x = reorder(did, -lift_f_p), y = lift_f_p,
@@ -630,47 +603,52 @@ ggplot() +
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** What role does the helper `get_cost()` defined in
+Step 3 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "35_evaluation_tradespace_intro.R"))` from the Console or press the Source button while the script is active.
+It encapsulates the conditional cost schedule so you can reuse it
+whenever you mutate architecture rows.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** What role does the helper `get_benefit()` defined
+in Step 4 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** What role does the helper `get_reliability()`
+defined in Step 5 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 4.** Which libraries does Step 1 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
-
-</details>
-
-**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
-
-<details>
-<summary>Show answer</summary>
-
-Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+It attaches dplyr, archr and ggplot2, ensuring their functions are
+available before you execute the downstream code.
 
 </details>

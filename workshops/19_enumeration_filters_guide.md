@@ -1,37 +1,44 @@
----
-title: "[19] Filtering enumerated architectures Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `19_enumeration_filters.R` and unpacks the workshop on filtering enumerated architectures. You will see how it advances the Enumeration sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `19_enumeration_filters.R` and unpacks the
+workshop on filtering enumerated architectures. You will see how it
+advances the Enumeration sequence while building confidence with base R
+and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `19_enumeration_filters.R` within the Enumeration module.
-- Connect the topic "Filtering enumerated architectures" to systems architecting decisions.
-- Load packages with `library()` and verify they attach without warnings.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Navigate the script `19_enumeration_filters.R` within the Enumeration
+  module.
+- Connect the topic “Filtering enumerated architectures” to systems
+  architecting decisions.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Define custom functions to package repeatable logic.
 - Iterate on visualisations built with `ggplot2`.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Practice the Pipe]
+    B[Practice the Pipe] --> C[Define get_percentages()]
+    C[Define get_percentages()] --> D[Clear Objects]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
 Load packages. Attach dplyr to make its functions available.
-
 
 ``` r
 library(dplyr) # for data wrangling
@@ -41,8 +48,8 @@ library(ggpubr) # for combining plots
 
 ### Step 2 – Run the Code Block
 
-random sample from a uniform distribution -- 2 parameters min (a) and max (b).
-
+random sample from a uniform distribution – 2 parameters min (a) and max
+(b).
 
 ``` r
 runif(n = 5, min = 0, max = 10)
@@ -51,7 +58,6 @@ runif(n = 5, min = 0, max = 10)
 ### Step 3 – Create `data`
 
 Suppose we have 10000 architectures, each with an x, y, and z metrics.
-
 
 ``` r
 data = tibble(
@@ -67,7 +73,6 @@ data = tibble(
 
 Population. Create the object `g1` so you can reuse it in later steps.
 
-
 ``` r
 g1 = ggplot() +
   geom_point(data = data, mapping = aes(x = x, y = y, color = z),
@@ -76,8 +81,7 @@ g1 = ggplot() +
 
 ### Step 5 – Run the Code Block
 
-The whole population would look like this...
-
+The whole population would look like this…
 
 ``` r
 g1
@@ -87,7 +91,6 @@ g1
 
 Pure Random Sample Use sample_n() to sample 100 architectures.
 
-
 ``` r
 sample1 = data %>%
   sample_n(size = 1000)
@@ -95,8 +98,7 @@ sample1 = data %>%
 
 ### Step 7 – Create `g2`
 
-A purely random sample would look like this...
-
+A purely random sample would look like this…
 
 ``` r
 g2 = ggplot() +
@@ -108,7 +110,6 @@ g2 = ggplot() +
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 g2
 ```
@@ -116,7 +117,6 @@ g2
 ### Step 9 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 sample2 = data %>%
@@ -127,7 +127,6 @@ sample2 = data %>%
 ### Step 10 – Create `g3`
 
 Create the object `g3` so you can reuse it in later steps.
-
 
 ``` r
 g3 = ggplot() +
@@ -140,15 +139,13 @@ library(ggpubr)
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 ggarrange(g2,g3, nrow = 1)
 ```
 
 ### Step 12 – Define `get_percentages()`
 
-Can be hard to compare visually, but let's check them numerically...
-
+Can be hard to compare visually, but let’s check them numerically…
 
 ``` r
 get_percentages = function(x, did = "d2"){
@@ -159,7 +156,6 @@ get_percentages = function(x, did = "d2"){
 ### Step 13 – Practice the Pipe
 
 Get the tally per alternative.
-
 
 ``` r
   tally = tibble(altid = x) %>%
@@ -181,7 +177,6 @@ Get the tally per alternative.
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
   return(percentages)
 }
@@ -189,8 +184,7 @@ Execute the block and pay attention to the output it produces.
 
 ### Step 15 – Run the Code Block
 
-What's the breakdown by our 3 stratifying variables?
-
+What’s the breakdown by our 3 stratifying variables?
 
 ``` r
 get_percentages(x = sample2$x_quarters)
@@ -202,7 +196,6 @@ get_percentages(x = sample2$z)
 
 Compare that to the pure random sample.
 
-
 ``` r
 get_percentages(x = sample1$x_quarters)
 get_percentages(x = sample1$y_quarters)
@@ -213,54 +206,59 @@ get_percentages(x = sample1$z)
 
 Clean up! Remove objects from the environment to prevent name clashes.
 
-
 ``` r
 rm(list = ls())
 ```
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** What role does the helper `get_percentages()`
+defined in Step 12 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "19_enumeration_filters.R"))` from the Console or press the Source button while the script is active.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** Which libraries does Step 1 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It attaches dplyr, ggplot2 and ggpubr, ensuring their functions are
+available before you execute the downstream code.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** After Step 3, what does `data` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It creates `data` that adds derived columns, and builds a tibble of
+scenario data. Suppose we have 10000 architectures, each with an x, y,
+and z metrics.
 
 </details>
 
-**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 4.** After Step 4, what does `g1` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
-
-</details>
-
-**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
-
-<details>
-<summary>Show answer</summary>
-
-Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+It creates `g1` that initialises a ggplot visualisation, and layers
+geoms onto the plot. Population. Create the object `g1` so you can reuse
+it in later steps.
 
 </details>

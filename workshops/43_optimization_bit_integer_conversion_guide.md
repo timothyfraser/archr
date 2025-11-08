@@ -1,35 +1,41 @@
----
-title: "[43] Bit-integer conversion utilities Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `43_optimization_bit_integer_conversion.R` and unpacks the workshop on bit-integer conversion utilities. You will see how it advances the Optimization sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `43_optimization_bit_integer_conversion.R` and
+unpacks the workshop on bit-integer conversion utilities. You will see
+how it advances the Optimization sequence while building confidence with
+base R and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `43_optimization_bit_integer_conversion.R` within the Optimization module.
-- Connect the topic "Bit-integer conversion utilities" to systems architecting decisions.
-- Load packages with `library()` and verify they attach without warnings.
+- Navigate the script `43_optimization_bit_integer_conversion.R` within
+  the Optimization module.
+- Connect the topic “Bit-integer conversion utilities” to systems
+  architecting decisions.
+- Load packages with `library()` and verify they attach without
+  warnings.
 - Define custom functions to package repeatable logic.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Create d1_1]
+    B[Create d1_1] --> C[Create d3]
+    C[Create d3] --> D[Run the Code Block]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
 Load GA package. Attach GA to make its functions available.
-
 
 ``` r
 library(GA)
@@ -39,15 +45,13 @@ library(GA)
 
 Test out our binary2decimal() function from GA.
 
-
 ``` r
 binary2decimal(x = c(1,1))
 ```
 
 ### Step 3 – Define `bit2int()`
 
-Let's try to code this up!
-
+Let’s try to code this up!
 
 ``` r
 bit2int = function(x){
@@ -59,7 +63,6 @@ bit2int = function(x){
 
 Decision 1 Converted to xhat.
 
-
 ``` r
   d1_1 = binary2decimal(x = x[1])
   d1_2 = binary2decimal(x = x[2])
@@ -69,8 +72,7 @@ Decision 1 Converted to xhat.
 
 ### Step 5 – Run the Code Block
 
-If all of decision 1 options are 0, then FAIL Reject if...
-
+If all of decision 1 options are 0, then FAIL Reject if…
 
 ``` r
   if(d1_1 == 0 & d1_2 == 0 & d1_3 == 0 & d1_4 == 0){  return(NA)   }
@@ -79,7 +81,6 @@ If all of decision 1 options are 0, then FAIL Reject if...
 ### Step 6 – Create `d2`
 
 Decision 2. Create the object `d2` so you can reuse it in later steps.
-
 
 ``` r
   d2 = binary2decimal(x[5:6])
@@ -92,7 +93,6 @@ Decision 2. Create the object `d2` so you can reuse it in later steps.
 
 Decision 3. Create the object `d3` so you can reuse it in later steps.
 
-
 ``` r
   d3 = binary2decimal(x[7:8])
   # Reject if...
@@ -104,7 +104,6 @@ Decision 3. Create the object `d3` so you can reuse it in later steps.
 
 Bundle! Create the object `xhat` so you can reuse it in later steps.
 
-
 ``` r
   xhat = c(d1_1, d1_2, d1_3, d1_4, d2, d3)
   return(xhat)
@@ -115,7 +114,6 @@ Bundle! Create the object `xhat` so you can reuse it in later steps.
 
 An invalid option returns NA.
 
-
 ``` r
 bit2int(x = c(0,0,0,0, 1,1, 1,1))
 # A valid option returns the integer string
@@ -124,29 +122,50 @@ bit2int(x = c(0,0,0,1, 1,1, 1,1))
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** What role does the helper `bit2int()` defined in
+Step 3 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "43_optimization_bit_integer_conversion.R"))` from the Console or press the Source button while the script is active.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** Which libraries does Step 1 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It attaches GA, ensuring their functions are available before you
+execute the downstream code.
 
 </details>
 
-**Learning Check 3.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 3.** After Step 4, what does `d1_1` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+It creates `d1_1`. Decision 1 Converted to xhat.
+
+</details>
+
+**Learning Check 4.** After Step 6, what does `d2` capture?
+
+<details>
+<summary>
+Show answer
+</summary>
+
+It creates `d2` that returns the assembled object. Decision 2. Create
+the object `d2` so you can reuse it in later steps.
 
 </details>

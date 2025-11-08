@@ -23,6 +23,23 @@ This tutorial complements `27_evaluation_utility_functions.R` and unpacks the wo
 - Connect the topic "Utility function design" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
 
+## Process Overview
+
+
+
+
+
+
+
+
+
+```mermaid
+flowchart LR
+    A[Load Packages] --> B[Create u_pay]
+    B[Create u_pay] --> C[Create w_e]
+    C[Create w_e] --> D[Clear Objects]
+```
+
 ## Application
 
 ### Step 1 – Load Packages
@@ -183,29 +200,48 @@ rm(list = ls())
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+
+
+
+
+
+
+
+
+
+**Learning Check 1.** Which libraries does Step 1 attach, and why do you run that chunk before others?
 
 <details>
 <summary>Show answer</summary>
 
-Use `source(file.path("workshops", "27_evaluation_utility_functions.R"))` from the Console or press the Source button while the script is active.
+It attaches dplyr and ggplot2, ensuring their functions are available before you execute the downstream code.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** After Step 2, what does `p_fail` capture?
 
 <details>
 <summary>Show answer</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It creates `p_fail`. Define probabilities. Create the object `p_fail` so you can reuse it in later steps.
 
 </details>
 
-**Learning Check 3.** In your own words, what key idea does the topic "Utility function design" reinforce?
+**Learning Check 3.** After Step 3, what does `pay_min` capture?
 
 <details>
 <summary>Show answer</summary>
 
-It highlights how utility function design supports the overall systems architecting process in this course.
+It creates `pay_min`. Define utility function for pay Choose what means min utility (0) for you.
+
+</details>
+
+**Learning Check 4.** After Step 4, what does `pay_works` capture?
+
+<details>
+<summary>Show answer</summary>
+
+It creates `pay_works`. Calculate utility of drone working (by rescaling).
 
 </details>

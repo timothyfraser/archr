@@ -1,39 +1,46 @@
----
-title: "[18] Visualization of enumeration results Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `18_enumeration_visualization.R` and unpacks the workshop on visualization of enumeration results. You will see how it advances the Enumeration sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `18_enumeration_visualization.R` and unpacks
+the workshop on visualization of enumeration results. You will see how
+it advances the Enumeration sequence while building confidence with base
+R and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `18_enumeration_visualization.R` within the Enumeration module.
-- Connect the topic "Visualization of enumeration results" to systems architecting decisions.
+- Navigate the script `18_enumeration_visualization.R` within the
+  Enumeration module.
+- Connect the topic “Visualization of enumeration results” to systems
+  architecting decisions.
 - Install any required packages highlighted with `install.packages()`.
-- Load packages with `library()` and verify they attach without warnings.
+- Load packages with `library()` and verify they attach without
+  warnings.
 - Export results to disk so you can reuse them across workshops.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Define custom functions to package repeatable logic.
 - Iterate on visualisations built with `ggplot2`.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Run the Code Block]
+    B[Run the Code Block] --> C[Define get_percentages()]
+    C[Define get_percentages()] --> D[Clear Objects]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
 Load packages. Attach dplyr to make its functions available.
-
 
 ``` r
 library(dplyr)
@@ -44,8 +51,8 @@ library(archr)
 
 ### Step 2 – Practice the Pipe
 
-Suppose you have a decision, but you can only **sample 2 out of 4 alternatives.** You can use sample_n() from dplyr for that.
-
+Suppose you have a decision, but you can only **sample 2 out of 4
+alternatives.** You can use sample_n() from dplyr for that.
 
 ``` r
 enumerate_sf(n = c(4)) %>%
@@ -55,7 +62,6 @@ enumerate_sf(n = c(4)) %>%
 ### Step 3 – Create `arch`
 
 Get your full architectural space.
-
 
 ``` r
 arch = expand_grid(
@@ -69,15 +75,14 @@ arch = expand_grid(
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 arch %>% glimpse()
 ```
 
 ### Step 5 – Practice the Pipe
 
-You can take a random sample directly, but it may cause issues - always important to check representativeness.
-
+You can take a random sample directly, but it may cause issues - always
+important to check representativeness.
 
 ``` r
 mini = arch %>%
@@ -88,7 +93,6 @@ mini = arch %>%
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 mini
 ```
@@ -96,7 +100,6 @@ mini
 ### Step 7 – Create `part1`
 
 Create the object `part1` so you can reuse it in later steps.
-
 
 ``` r
 part1 = expand_grid(
@@ -114,7 +117,6 @@ part1 = expand_grid(
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 part2 = part1 %>%
   # Get the full grid of those options and
@@ -131,7 +133,6 @@ part2 = part1 %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 part3 = part2 %>%
   # Expand out for d4...
@@ -145,7 +146,6 @@ part3 = part2 %>%
 ### Step 10 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 part4 = part3 %>%
@@ -162,8 +162,9 @@ part4 = part3 %>%
 
 ### Step 11 – Practice the Pipe
 
-BY STRATA ################### For each strata (a set of unique d1-d2-d3-d4_1-d4_2-d4_3 values) sample 25 rows (akin to grabbing 25 paths).
-
+BY STRATA \################### For each strata (a set of unique
+d1-d2-d3-d4_1-d4_2-d4_3 values) sample 25 rows (akin to grabbing 25
+paths).
 
 ``` r
 arch %>%
@@ -174,7 +175,6 @@ arch %>%
 ### Step 12 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 arch %>%
@@ -198,7 +198,6 @@ arch %>%
 
 Attach dplyr to make its functions available.
 
-
 ``` r
 library(dplyr)
 library(archr)
@@ -208,7 +207,6 @@ library(archr)
 
 Create the object `data` so you can reuse it in later steps.
 
-
 ``` r
 data = enumerate_sf(n = c(2, 4, 3))
 ```
@@ -216,7 +214,6 @@ data = enumerate_sf(n = c(2, 4, 3))
 ### Step 15 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 a = data %>%
@@ -227,7 +224,6 @@ a = data %>%
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 a # view it
 ```
@@ -235,7 +231,6 @@ a # view it
 ### Step 17 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 b = data %>%
@@ -247,7 +242,6 @@ b = data %>%
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 b # view it
 ```
@@ -255,7 +249,6 @@ b # view it
 ### Step 19 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 c = data %>%
@@ -267,15 +260,14 @@ c = data %>%
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 c # view it
 ```
 
 ### Step 21 – Practice the Pipe
 
-For the moment though, let's just take 10000 samples, just as a demonstration.
-
+For the moment though, let’s just take 10000 samples, just as a
+demonstration.
 
 ``` r
 mini = arch %>%
@@ -284,8 +276,7 @@ mini = arch %>%
 
 ### Step 22 – Practice the Pipe
 
-Let's get the count of population traits...
-
+Let’s get the count of population traits…
 
 ``` r
 arch %>%
@@ -297,7 +288,6 @@ arch %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 pop = arch %>%
   group_by(did = "d1", altid = d1) %>%
@@ -306,8 +296,7 @@ pop = arch %>%
 
 ### Step 24 – Practice the Pipe
 
-Let's get the count of the sample traits...
-
+Let’s get the count of the sample traits…
 
 ``` r
 sample = mini %>%
@@ -317,8 +306,7 @@ sample = mini %>%
 
 ### Step 25 – Create `stat`
 
-Let's stack them together and label by type...
-
+Let’s stack them together and label by type…
 
 ``` r
 stat = bind_rows(
@@ -329,8 +317,7 @@ stat = bind_rows(
 
 ### Step 26 – Practice the Pipe
 
-Finally, let's turn those counts into percentages.
-
+Finally, let’s turn those counts into percentages.
 
 ``` r
 stat = stat %>%
@@ -346,7 +333,6 @@ stat = stat %>%
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 stat
 ```
@@ -354,7 +340,6 @@ stat
 ### Step 28 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -365,7 +350,6 @@ ggplot() +
 ### Step 29 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -378,7 +362,6 @@ ggplot() +
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
 
-
 ``` r
 ggplot() +
   geom_col(data = stat, 
@@ -390,7 +373,6 @@ ggplot() +
 ### Step 31 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -406,8 +388,7 @@ ggplot() +
 
 ### Step 32 – Start a ggplot
 
-And let's visualize it!
-
+And let’s visualize it!
 
 ``` r
 ggplot() +
@@ -421,8 +402,8 @@ ggplot() +
 
 ### Step 33 – Define `get_percentages()`
 
-Create the helper function `get_percentages()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_percentages()` so you can reuse it
+throughout the workshop.
 
 ``` r
 get_percentages = function(x){ 
@@ -438,15 +419,14 @@ get_percentages = function(x){
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 get_percentages(x = mini$d1)
 ```
 
 ### Step 35 – Define `get_percentages()`
 
-Create the helper function `get_percentages()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_percentages()` so you can reuse it
+throughout the workshop.
 
 ``` r
 get_percentages = function(x, did = "d1"){ 
@@ -460,7 +440,6 @@ get_percentages = function(x, did = "d1"){
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
   tally = tally %>% 
     mutate(did = did)
@@ -469,7 +448,6 @@ Use the `%>%` operator to pass each result to the next tidyverse verb.
 ### Step 37 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
   return(tally) 
@@ -480,15 +458,14 @@ Execute the block and pay attention to the output it produces.
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 get_percentages(x = mini$d2, did = "d2")
 ```
 
 ### Step 39 – Define `get_percentages()`
 
-Create the helper function `get_percentages()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_percentages()` so you can reuse it
+throughout the workshop.
 
 ``` r
 get_percentages = function(x, did = "d1"){ 
@@ -502,7 +479,6 @@ get_percentages = function(x, did = "d1"){
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
   tally = tally %>% 
     mutate(did = did)
@@ -511,7 +487,6 @@ Use the `%>%` operator to pass each result to the next tidyverse verb.
 ### Step 41 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
   percentages = tally %>% 
@@ -523,7 +498,6 @@ Use the `%>%` operator to pass each result to the next tidyverse verb.
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
   return(percentages) 
 }
@@ -533,15 +507,14 @@ Execute the block and pay attention to the output it produces.
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 get_percentages(x = mini$d2, did = "d2")
 ```
 
 ### Step 44 – Define `get_percentages()`
 
-Create the helper function `get_percentages()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_percentages()` so you can reuse it
+throughout the workshop.
 
 ``` r
 get_percentages = function(x, did = "d2"){
@@ -552,7 +525,6 @@ get_percentages = function(x, did = "d2"){
 ### Step 45 – Practice the Pipe
 
 Get the tally per alternative.
-
 
 ``` r
   tally = tibble(altid = x) %>%
@@ -574,7 +546,6 @@ Get the tally per alternative.
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
   return(percentages)
 }
@@ -584,7 +555,6 @@ Execute the block and pay attention to the output it produces.
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 get_percentages(x = mini$d2, did = "d2")
 # You can also do it like this...
@@ -593,8 +563,8 @@ mini %>% with(d1) %>% get_percentages(did = "d1")
 
 ### Step 48 – Create `stat2`
 
-We even do a bunch, and bind them atop each other. For example, here's the sample.
-
+We even do a bunch, and bind them atop each other. For example, here’s
+the sample.
 
 ``` r
 stat2 = bind_rows(
@@ -615,15 +585,14 @@ stat2 = bind_rows(
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 stat2
 ```
 
 ### Step 50 – Create `stat3`
 
-We could even do the whole thing at once, for both sample and population.
-
+We could even do the whole thing at once, for both sample and
+population.
 
 ``` r
 stat3 = bind_rows(
@@ -660,15 +629,13 @@ stat3 = bind_rows(
 
 Check it! Execute the block and pay attention to the output it produces.
 
-
 ``` r
 stat3
 ```
 
 ### Step 52 – Start a ggplot
 
-Let's try and visualize that now!
-
+Let’s try and visualize that now!
 
 ``` r
 ggplot() +
@@ -680,7 +647,6 @@ ggplot() +
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
 
-
 ``` r
 ggplot() +
   geom_col(data = stat3 %>% 
@@ -691,8 +657,8 @@ ggplot() +
 
 ### Step 54 – Load Packages
 
-You can use the ggpubr package and its ggarrange() function for this install.packages("ggpubr").
-
+You can use the ggpubr package and its ggarrange() function for this
+install.packages(“ggpubr”).
 
 ``` r
 library(ggpubr)
@@ -700,8 +666,8 @@ library(ggpubr)
 
 ### Step 55 – Define `get_viz()`
 
-Create the helper function `get_viz()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_viz()` so you can reuse it throughout
+the workshop.
 
 ``` r
 get_viz = function(data){
@@ -724,7 +690,6 @@ get_viz = function(data){
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 g1 = stat3 %>% filter(did == "d1") %>% get_viz()
 g2 = stat3 %>% filter(did == "d2") %>% get_viz()
@@ -736,7 +701,6 @@ ggmany = ggpubr::ggarrange(g1,g2,g3, nrow = 1)
 ### Step 57 – Run the Code Block
 
 And save to file with ggsave() from ggplot.
-
 
 ``` r
 ggsave(
@@ -752,54 +716,57 @@ ggsave(
 
 Clean up! Remove objects from the environment to prevent name clashes.
 
-
 ``` r
 rm(list = ls())
 ```
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** What role does the helper `get_percentages()`
+defined in Step 33 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "18_enumeration_visualization.R"))` from the Console or press the Source button while the script is active.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** What role does the helper `get_viz()` defined in
+Step 55 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** Which libraries does Step 1 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It attaches dplyr, tidyr, ggplot2 and archr, ensuring their functions
+are available before you execute the downstream code.
 
 </details>
 
-**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 4.** After Step 3, what does `arch` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
-
-</details>
-
-**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
-
-<details>
-<summary>Show answer</summary>
-
-Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+It creates `arch` that enumerates architecture combinations with `archr`
+helpers. Get your full architectural space.
 
 </details>

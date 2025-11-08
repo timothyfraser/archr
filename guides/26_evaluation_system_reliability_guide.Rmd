@@ -23,6 +23,23 @@ This tutorial complements `26_evaluation_system_reliability.R` and unpacks the w
 - Connect the topic "System reliability evaluation" to systems architecting decisions.
 - Load packages with `library()` and verify they attach without warnings.
 
+## Process Overview
+
+
+
+
+
+
+
+
+
+```mermaid
+flowchart LR
+    A[Load Packages] --> B[Create r_c]
+    B[Create r_c] --> C[Create overall_reliability]
+    C[Create overall_reliability] --> D[Clear Objects]
+```
+
 ## Application
 
 ### Step 1 – Load Packages
@@ -171,29 +188,48 @@ rm(list = ls())
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+
+
+
+
+
+
+
+
+
+**Learning Check 1.** Which libraries does Step 1 attach, and why do you run that chunk before others?
 
 <details>
 <summary>Show answer</summary>
 
-Use `source(file.path("workshops", "26_evaluation_system_reliability.R"))` from the Console or press the Source button while the script is active.
+It attaches dplyr and ggplot2, ensuring their functions are available before you execute the downstream code.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** After Step 2, what does `r_a` capture?
 
 <details>
 <summary>Show answer</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It creates `r_a`. Suppose at time t = 100 hours...
 
 </details>
 
-**Learning Check 3.** In your own words, what key idea does the topic "System reliability evaluation" reinforce?
+**Learning Check 3.** After Step 3, what does `t` capture?
 
 <details>
 <summary>Show answer</summary>
 
-It highlights how system reliability evaluation supports the overall systems architecting process in this course.
+It creates `t`. My coffee shop's system has 3 serially-connected components: A = coffee maker (MTTF = 500 hours) B = bean grinder (MTTF = 5000 hours) C = dishwasher (MTTF = 1000 hours) What's the probability the system survives 100 hours?
+
+</details>
+
+**Learning Check 4.** After Step 5, what does `r_b` capture?
+
+<details>
+<summary>Show answer</summary>
+
+It creates `r_b`. Reliability of B (bean grinder) by time t.
 
 </details>

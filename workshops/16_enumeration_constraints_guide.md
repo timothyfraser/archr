@@ -1,35 +1,42 @@
----
-title: "[16] Enumeration with constraints Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `16_enumeration_constraints.R` and unpacks the workshop on enumeration with constraints. You will see how it advances the Enumeration sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `16_enumeration_constraints.R` and unpacks the
+workshop on enumeration with constraints. You will see how it advances
+the Enumeration sequence while building confidence with base R and
+tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `16_enumeration_constraints.R` within the Enumeration module.
-- Connect the topic "Enumeration with constraints" to systems architecting decisions.
-- Load packages with `library()` and verify they attach without warnings.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Navigate the script `16_enumeration_constraints.R` within the
+  Enumeration module.
+- Connect the topic “Enumeration with constraints” to systems
+  architecting decisions.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Create decision1]
+    B[Create decision1] --> C[Create part2]
+    C[Create part2] --> D[Create arch]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
 Attach dplyr to make its functions available.
-
 
 ``` r
 library(dplyr)
@@ -41,7 +48,6 @@ library(archr)
 ### Step 2 – Create `decision1`
 
 D1: Get a donut (Binary: 0, 1)?
-
 
 ``` r
 decision1 = enumerate_binary(n = 1, .did = 1)
@@ -59,7 +65,6 @@ decision2b = enumerate_sf(n = c(4), .did = 2) %>%
 
 Create the object `part1` so you can reuse it in later steps.
 
-
 ``` r
 part1 = expand_grid(
   decision1 %>% filter(d1 == 0),
@@ -70,7 +75,6 @@ part1 = expand_grid(
 ### Step 4 – Create `part2`
 
 Create the object `part2` so you can reuse it in later steps.
-
 
 ``` r
 part2 = expand_grid(
@@ -83,7 +87,6 @@ part2 = expand_grid(
 
 Create the object `arch` so you can reuse it in later steps.
 
-
 ``` r
 arch = bind_rows(
   part1, part2
@@ -92,29 +95,53 @@ arch = bind_rows(
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** Which libraries does Step 1 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "16_enumeration_constraints.R"))` from the Console or press the Source button while the script is active.
+It attaches dplyr, readr, tidyr and archr, ensuring their functions are
+available before you execute the downstream code.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** After Step 2, what does `decision1` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It creates `decision1` that adds derived columns, and selects a focused
+set of columns. D1: Get a donut (Binary: 0, 1)?
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** After Step 3, what does `part1` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It creates `part1` that filters rows to the cases of interest, and
+threads the result through a dplyr pipeline. Create the object `part1`
+so you can reuse it in later steps.
+
+</details>
+
+**Learning Check 4.** After Step 4, what does `part2` capture?
+
+<details>
+<summary>
+Show answer
+</summary>
+
+It creates `part2` that filters rows to the cases of interest, and
+threads the result through a dplyr pipeline. Create the object `part2`
+so you can reuse it in later steps.
 
 </details>

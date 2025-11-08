@@ -1,35 +1,41 @@
----
-title: "[00] Sensitivity and connectivity utilities Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `00_sensitivity_connectivity_utilities.R` and unpacks the workshop on sensitivity and connectivity utilities. You will see how it advances the Evaluation sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `00_sensitivity_connectivity_utilities.R` and
+unpacks the workshop on sensitivity and connectivity utilities. You will
+see how it advances the Evaluation sequence while building confidence
+with base R and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `00_sensitivity_connectivity_utilities.R` within the Evaluation module.
-- Connect the topic "Sensitivity and connectivity utilities" to systems architecting decisions.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Navigate the script `00_sensitivity_connectivity_utilities.R` within
+  the Evaluation module.
+- Connect the topic “Sensitivity and connectivity utilities” to systems
+  architecting decisions.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Define custom functions to package repeatable logic.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Define me()] --> B[Define me_ij()]
+    B[Define me_ij()] --> C[Practice the Pipe]
+    C[Practice the Pipe] --> D[Run the Code Block]
+```
 
 ## Application
 
 ### Step 1 – Define `me()`
 
-FUNCTIONS ############################### Calculate main effect.
-
+FUNCTIONS \############################### Calculate main effect.
 
 ``` r
 me = function(data, decision = "d2", value = 1, metric = "m1"){
@@ -56,7 +62,6 @@ me = function(data, decision = "d2", value = 1, metric = "m1"){
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
   return(output)
 }
@@ -65,7 +70,6 @@ Execute the block and pay attention to the output it produces.
 ### Step 3 – Define `sensitivity()`
 
 Beginning attempt at a sensitivity.
-
 
 ``` r
 sensitivity = function(data, decision_i = "d2", metric = "m1"){
@@ -79,7 +83,6 @@ sensitivity = function(data, decision_i = "d2", metric = "m1"){
 
 Create a table to hold my results.
 
-
 ``` r
   holder = tibble(values = values, me = NA_real_)
   for(i in 1:length(values)){
@@ -91,7 +94,6 @@ Create a table to hold my results.
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
   s = holder %>%
     summarize(stat = mean(abs(me)))
@@ -101,7 +103,6 @@ Use the `%>%` operator to pass each result to the next tidyverse verb.
 
 Create the object `output` so you can reuse it in later steps.
 
-
 ``` r
   output = s$stat
   return(output)    
@@ -110,8 +111,8 @@ Create the object `output` so you can reuse it in later steps.
 
 ### Step 7 – Define `me_ij()`
 
-Create the helper function `me_ij()` so you can reuse it throughout the workshop.
-
+Create the helper function `me_ij()` so you can reuse it throughout the
+workshop.
 
 ``` r
 me_ij = function(data, decision_i, value_i, decision_j, value_j, metric = "m1", notj = FALSE){
@@ -125,7 +126,6 @@ me_ij = function(data, decision_i, value_i, decision_j, value_j, metric = "m1", 
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
   data1 = data %>%
     select(any_of(c(di = decision_i, dj = decision_j, m = metric)))
@@ -134,7 +134,6 @@ Use the `%>%` operator to pass each result to the next tidyverse verb.
 ### Step 9 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
   if(notj == TRUE){ 
@@ -149,7 +148,6 @@ Execute the block and pay attention to the output it produces.
 ### Step 10 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
   output = data1 %>%
@@ -167,7 +165,6 @@ Use the `%>%` operator to pass each result to the next tidyverse verb.
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
   return(output)
 }
@@ -175,8 +172,8 @@ Execute the block and pay attention to the output it produces.
 
 ### Step 12 – Define `sensitivity_ij()`
 
-Create the helper function `sensitivity_ij()` so you can reuse it throughout the workshop.
-
+Create the helper function `sensitivity_ij()` so you can reuse it
+throughout the workshop.
 
 ``` r
 sensitivity_ij = function(data, decision_i, decision_j, value_j, metric, notj = FALSE){
@@ -186,7 +183,6 @@ sensitivity_ij = function(data, decision_i, decision_j, value_j, metric, notj = 
 ### Step 13 – Practice the Pipe
 
 Get all values of decision i.
-
 
 ``` r
   data %>%
@@ -212,8 +208,8 @@ Get all values of decision i.
 
 ### Step 14 – Define `connectivity_ij()`
 
-Create the helper function `connectivity_ij()` so you can reuse it throughout the workshop.
-
+Create the helper function `connectivity_ij()` so you can reuse it
+throughout the workshop.
 
 ``` r
 connectivity_ij = function(data, decision_i, decision_j = "d2", metric = "m1"){
@@ -236,7 +232,6 @@ connectivity_ij = function(data, decision_i, decision_j = "d2", metric = "m1"){
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
   output = data1 %>%
     # For each...
@@ -253,7 +248,6 @@ Use the `%>%` operator to pass each result to the next tidyverse verb.
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
   return(output)
 }
@@ -263,7 +257,6 @@ Execute the block and pay attention to the output it produces.
 
 Get total connectivity of decision i.
 
-
 ``` r
 connectivity = function(data, decision_i = "d3", decisions = c("d1", "d2", "d3"), metric = "m1"){
 ```
@@ -271,7 +264,6 @@ connectivity = function(data, decision_i = "d3", decisions = c("d1", "d2", "d3")
 ### Step 18 – Create `other_decisions`
 
 Get the other decisions.
-
 
 ``` r
   other_decisions = decisions[!decisions %in% decision_i]
@@ -299,7 +291,6 @@ Get the other decisions.
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
   return(output)
 }
@@ -307,29 +298,50 @@ Execute the block and pay attention to the output it produces.
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** What role does the helper `me()` defined in Step 1
+play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "00_sensitivity_connectivity_utilities.R"))` from the Console or press the Source button while the script is active.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 2.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 2.** What role does the helper `sensitivity()` defined
+in Step 3 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 3.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 3.** What role does the helper `me_ij()` defined in
+Step 7 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+It packages reusable logic needed by later steps.
+
+</details>
+
+**Learning Check 4.** What role does the helper `sensitivity_ij()`
+defined in Step 12 play in this workflow?
+
+<details>
+<summary>
+Show answer
+</summary>
+
+It packages reusable logic needed by later steps.
 
 </details>

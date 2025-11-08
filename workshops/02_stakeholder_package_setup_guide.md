@@ -1,34 +1,37 @@
----
-title: "[02] R package installation checklist Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `02_stakeholder_package_setup.R` and unpacks the workshop on r package installation checklist. You will see how it advances the Stakeholder Analysis sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `02_stakeholder_package_setup.R` and unpacks
+the workshop on r package installation checklist. You will see how it
+advances the Stakeholder Analysis sequence while building confidence
+with base R and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `02_stakeholder_package_setup.R` within the Stakeholder Analysis module.
-- Connect the topic "R package installation checklist" to systems architecting decisions.
+- Navigate the script `02_stakeholder_package_setup.R` within the
+  Stakeholder Analysis module.
+- Connect the topic “R package installation checklist” to systems
+  architecting decisions.
 - Install any required packages highlighted with `install.packages()`.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Install Packages]
+```
 
 ## Application
 
 ### Step 1 – Install Packages
 
 List of packages installed.
-
 
 ``` r
 install.packages(c(
@@ -48,29 +51,43 @@ install.packages(c(
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** Which packages do you install in Step 1, and what
+must you verify before moving on?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "02_stakeholder_package_setup.R"))` from the Console or press the Source button while the script is active.
+Step 1 installs dplyr, readr, tidyr, stringr, purrr, igraph, tidygraph,
+ggraph, ggplot2, viridis, ggpubr, GA, rmoo, texreg, broom and gtools, so
+make sure each package finishes installing without errors before
+continuing.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** Which script should you keep open while running
+this guide?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+Navigate the script `02_stakeholder_package_setup.R` within the
+Stakeholder Analysis module.
 
 </details>
 
-**Learning Check 3.** In your own words, what key idea does the topic "R package installation checklist" reinforce?
+**Learning Check 3.** How does the guide ask you to connect the
+highlighted topic back to systems architecting?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It highlights how r package installation checklist supports the overall systems architecting process in this course.
+Connect the topic “R package installation checklist” to systems
+architecting decisions.
 
 </details>
