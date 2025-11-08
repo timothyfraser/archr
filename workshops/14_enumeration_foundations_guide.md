@@ -1,0 +1,186 @@
+---
+title: "[14] Enumeration tutorial foundations Guide"
+output:
+  md_document:
+    variant: gfm
+output_dir: ../workshops
+knitr:
+  opts_knit:
+    root.dir: ..
+---
+
+This tutorial complements `14_enumeration_foundations.R` and unpacks the workshop on enumeration tutorial foundations. You will see how it advances the Enumeration sequence while building confidence with base R and tidyverse tooling.
+
+## Setup
+
+- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+
+## Skills
+
+- Navigate the script `14_enumeration_foundations.R` within the Enumeration module.
+- Connect the topic "Enumeration tutorial foundations" to systems architecting decisions.
+- Load packages with `library()` and verify they attach without warnings.
+- Import data files with `readr` helpers and inspect the resulting objects.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+
+## Application
+
+### Step 1 – Load Packages
+
+Load packages. Attach dplyr to make its functions available.
+
+
+``` r
+library(dplyr) # data wrangling
+library(readr) # read_csv etc.
+library(tidyr) # expand_grid(), etc.
+library(archr) # enumerate_binary(), etc.
+```
+
+### Step 2 – Run the Code Block
+
+How would we make binary decisions?
+
+
+``` r
+enumerate_binary(n = 2)
+enumerate_binary(n = 2, .id = TRUE)
+enumerate_binary(n = 4)
+enumerate_binary(n = 16)
+```
+
+### Step 3 – Practice the Pipe
+
+How many rows (architectures) in a 16-binary-decision architectural space?
+
+
+``` r
+enumerate_binary(n = 16) %>% nrow()
+```
+
+### Step 4 – Run the Code Block
+
+What about standard form decisions?
+
+
+``` r
+enumerate_sf(n = c(2, 3))
+enumerate_sf(n = c(2, 3, 4))
+enumerate_sf(n = c(2, 3, 4), .id = TRUE)
+```
+
+### Step 5 – Run the Code Block
+
+How about downselecting? n is the number of choices, k is the MAX number of items you can select.
+
+
+``` r
+enumerate_ds(n = 2, k = 1)
+enumerate_ds(n = 2, k = 1)
+enumerate_ds(n = 5, k = 3)
+```
+
+### Step 6 – Run the Code Block
+
+Want to check the documentation? Use ?function_name or ?package_name::function_name It will show up in the 'Help' menu Works for ANY package. Most of archr's functions have at least some documentation.
+
+
+``` r
+?enumerate_ds
+# Try it for mutate!
+?dplyr::mutate
+```
+
+### Step 7 – Run the Code Block
+
+Can we replicate enumerate_binary() using dplyr and tidyr functions? Yes! expand_grid() is a magical function that builds a grid of every possible combination of the items you supply it.
+
+
+``` r
+expand_grid(
+  tibble(d1 = c(0, 1)),
+  tibble(d2 = c(0, 1))
+)
+# Compare with enumerate_binary() - it's the same!
+enumerate_binary(n = 2)
+```
+
+### Step 8 – Run the Code Block
+
+Can work for standard form too.
+
+
+``` r
+expand_grid(
+  tibble(d1 = c(0, 1)),
+  tibble(d2 = c(0, 1, 2))
+)
+# Check it!
+enumerate_sf(n = c(2,3))
+```
+
+### Step 9 – Run the Code Block
+
+Can also do creative combinations like this, which replicates the d2-d3 data.frame for each item in the d1 data.frame.
+
+
+``` r
+expand_grid(
+  tibble(d1 = c(0, 1)),
+  tibble(d2 = c(0, 0, 0),
+         d3 = c(0, 2, 3))
+)
+```
+
+### Step 10 – Run the Code Block
+
+More flexible usage! Execute the block and pay attention to the output it produces.
+
+
+``` r
+expand_grid(
+  enumerate_binary(n = 2),
+  # You'll need to 'rename' your columns to avoid errors
+  enumerate_sf(n = c(2,3)) %>% select(d3 = 1, d4 = 2)
+)
+```
+
+## Learning Checks
+
+**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+<details>
+<summary>Show answer</summary>
+
+Use `source(file.path("workshops", "14_enumeration_foundations.R"))` from the Console or press the Source button while the script is active.
+
+</details>
+
+**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+
+<details>
+<summary>Show answer</summary>
+
+Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+
+</details>
+
+**Learning Check 3.** When you import data in this workshop, what should you inspect right after the read call?
+
+<details>
+<summary>Show answer</summary>
+
+Check the tibble in the Environment pane (or print it) to confirm column names and types look correct.
+
+</details>
+
+**Learning Check 4.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+
+<details>
+<summary>Show answer</summary>
+
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+
+</details>

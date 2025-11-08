@@ -1,0 +1,654 @@
+---
+title: "[46] Time series optimization case Guide"
+output:
+  md_document:
+    variant: gfm
+output_dir: ../workshops
+knitr:
+  opts_knit:
+    root.dir: ..
+---
+
+This tutorial complements `46_optimization_time_series_case.R` and unpacks the workshop on time series optimization case. You will see how it advances the Optimization sequence while building confidence with base R and tidyverse tooling.
+
+## Setup
+
+- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+
+## Skills
+
+- Navigate the script `46_optimization_time_series_case.R` within the Optimization module.
+- Connect the topic "Time series optimization case" to systems architecting decisions.
+- Load packages with `library()` and verify they attach without warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Define custom functions to package repeatable logic.
+- Iterate on visualisations built with `ggplot2`.
+- Leverage `apply`/`purrr` tools for vectorised evaluations.
+- Experiment with optimisation searches powered by the `GA` package.
+
+## Application
+
+### Step 1 – Load Packages
+
+Attach dplyr to make its functions available.
+
+
+``` r
+library(dplyr) # for data wrangling
+library(purrr) # for tidy iteration
+library(ggplot2) # for visualization
+library(GA) # for genetic algorithms
+library(rmoo) # for multi-objective optimization
+```
+
+### Step 2 – Define `get_emissions()`
+
+functions ############################################# 300,000 tons of CO2e in Tompkins county.
+
+
+``` r
+get_emissions = function(t,d1,d2,d3){
+  # Suppose that the impact of each policy changes over time,
+  # because of varying demand and emissions factors.
+```
+
+### Step 3 – Create `m1`
+
+If I enact a congestion toll.
+
+
+``` r
+  m1 = case_when(d1 == 1 ~ 100000*sqrt(t), TRUE ~ 0)
+  # If I buy more buses
+  m2 = case_when(d2 == 1 ~ 30000*t^(1/3), TRUE ~ 0)
+  # If I invest in jetpacks,
+  m3 = case_when(d3 == 1 ~ 5000*sin(t), TRUE ~ 0)
+  # Get remaining emissions
+  output = 300000 - (m1+m2+m3)
+```
+
+### Step 4 – Create `max`
+
+Let's give a wide berth. What is our highest possible emissions level?
+
+
+``` r
+  max = 400000
+  # What is our lowest possible emissions level?
+  min = 0
+```
+
+### Step 5 – Create `rescaled`
+
+Let's rescale this so that... 1 = most emissions; 0 = least emissions.
+
+
+``` r
+  rescaled = (output - min) / (max - min)
+```
+
+### Step 6 – Create `output`
+
+Let's rescale this so that high means 'better' 1 = least emissions; 0 = most emissions.
+
+
+``` r
+  output = 1 - rescaled
+```
+
+### Step 7 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+  return(output)
+}
+```
+
+### Step 8 – Define `get_riders()`
+
+Create the helper function `get_riders()` so you can reuse it throughout the workshop.
+
+
+``` r
+get_riders = function(t,d1,d2){
+  # Suppose that the impact on bus ridership varies over time due to changing demand, etc.
+  # base # of bus riders = 10,000 people
+  # If congestion toll
+  m1 = case_when(d1 == 1 ~ 5000*sin(t) + 2000*t^2, TRUE ~ 0)
+  # If I buy more buses
+  m2 = case_when(d2 == 1 ~ 10000*sin(t) + 1000*t, TRUE ~ 0)
+  # Get resulting total # of bus riders
+  output =10000 + (m1 + m2)
+```
+
+### Step 9 – Create `max`
+
+Highest possible # of riders.
+
+
+``` r
+  max = 100000
+  # Lowest possible # of riders
+  min = 0
+```
+
+### Step 10 – Create `rescaled`
+
+Let's rescale this so that... 1 = most riders; 0 = least riders.
+
+
+``` r
+  rescaled = (output - min) / (max - min)
+```
+
+### Step 11 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+  return(rescaled)
+```
+
+### Step 12 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+}
+```
+
+### Step 13 – Define `bit2int()`
+
+Create the helper function `bit2int()` so you can reuse it throughout the workshop.
+
+
+``` r
+bit2int = function(x){
+  xhat1 = binary2decimal(x == x[1])
+  xhat2 = binary2decimal(x == x[2])
+  xhat3 = binary2decimal(x == x[3])
+  output = c(xhat1,xhat2,xhat3)
+  return(output)
+}
+```
+
+### Step 14 – Define `f1()`
+
+Notice that f1 is also in terms of t now.
+
+
+``` r
+f1 = function(x, nobj = 2, t = 1, ...){
+  # Get our bits vector x
+  # turn it into integer vector xhat
+  xhat = bit2int(x)
+  # Get our metrics
+  m1 = get_emissions(t= t, d1 = xhat[1], d2 = xhat[2], d3 = xhat[3])
+```
+
+### Step 15 – Create `m2`
+
+Create the object `m2` so you can reuse it in later steps.
+
+
+``` r
+  m2 = get_riders(t = t, d1 = xhat[1], d2 = xhat[2])
+  # Format as a matrix
+  output = matrix(c(m1,m2), nrow = 1)
+  return(output)
+}
+```
+
+### Step 16 – Create `results`
+
+Create the object `results` so you can reuse it in later steps.
+
+
+``` r
+results = tibble()
+for(t in 1:5){
+```
+
+### Step 17 – Practice the Pipe
+
+Add a new t argument, setting t equal to t in the for loop.
+
+
+``` r
+  fnew = f1 %>% purrr::partial(t = t)
+```
+
+### Step 18 – Create `o`
+
+Create the object `o` so you can reuse it in later steps.
+
+
+``` r
+  o = rmoo(
+    fitness = fnew,
+    type = "binary", algorithm = "NSGA-III",
+    lower = c(0,0,0), upper = c(1,1,1), monitor = TRUE, summary = TRUE,
+    nObj = 2, nBits = 3, popSize = 50, maxiter = 100
+  )
+```
+
+### Step 19 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+
+``` r
+  data = o@solution %>%
+    as_tibble() %>%
+    select(d1 = x1, d2 = x2, d3 = x3) %>%
+    mutate(emissions = get_emissions(t = t, d1 = d1, d2 = d2, d3 = d3),
+           riders = get_riders(t = t, d1 = d1, d2 = d2)) %>%
+    # Add the year
+    mutate(t = t)
+```
+
+### Step 20 – Create `results`
+
+Bind them together... Create the object `results` so you can reuse it in later steps.
+
+
+``` r
+  results = bind_rows(results, data)
+}
+# View results
+results
+```
+
+### Step 21 – Start a ggplot
+
+View change in pareto optimal architectures' metrics over time.
+
+
+``` r
+ggplot() +
+  geom_point(data = results, mapping = aes(x = riders, y = emissions, color = t), size = 5)
+```
+
+### Step 22 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+
+``` r
+ggplot() +
+  geom_point(data = results, mapping = aes(x = riders, y = emissions, color = t), size = 5) +
+  facet_wrap(~t)
+```
+
+### Step 23 – Define `f2()`
+
+Notice that f2 is also in terms of t now.
+
+
+``` r
+f2 = function(x, nobj = 2, t = 1, ...){
+  # Get our bits vector x
+  # turn it into integer vector xhat
+  xhat = bit2int(x)
+```
+
+### Step 24 – Practice the Pipe
+
+*****Get our metrics, summed cumulatively from time 1 to time t*****.
+
+
+``` r
+  m1 = get_emissions(t= 1:t, d1 = xhat[1], d2 = xhat[2], d3 = xhat[3]) %>% sum()
+  m2 = get_riders(t = 1:t, d1 = xhat[1], d2 = xhat[2]) %>% sum()
+```
+
+### Step 25 – Create `output`
+
+Format as a matrix.
+
+
+``` r
+  output = matrix(c(m1,m2), nrow = 1)
+  return(output)
+}
+```
+
+### Step 26 – Create `results2`
+
+Run optimization iteratively. Create the object `results2` so you can reuse it in later steps.
+
+
+``` r
+results2 = tibble()
+for(t in 5:5){
+```
+
+### Step 27 – Practice the Pipe
+
+Add a new t argument, setting t equal to t in the for loop.
+
+
+``` r
+  fnew = f2 %>% purrr::partial(t = t)
+```
+
+### Step 28 – Create `o`
+
+Create the object `o` so you can reuse it in later steps.
+
+
+``` r
+  o = rmoo(
+    fitness = fnew,
+    type = "binary", algorithm = "NSGA-III",
+    lower = c(0,0,0), upper = c(1,1,1), monitor = TRUE, summary = TRUE,
+    nObj = 2, nBits = 3, popSize = 50, maxiter = 100
+  )
+```
+
+### Step 29 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+
+``` r
+  data = o@solution %>%
+    as_tibble() %>%
+    select(d1 = x1, d2 = x2, d3 = x3) %>%
+    group_by(d1,d2,d3) %>%
+    mutate(emissions = get_emissions(t = 1:t, d1 = d1, d2 = d2, d3 = d3) %>% sum(),
+           riders = get_riders(t = 1:t, d1 = d1, d2 = d2) %>% sum()) %>%
+    ungroup() %>%
+    # Add the year
+    mutate(t = t)
+```
+
+### Step 30 – Create `results2`
+
+Bind them together... Create the object `results2` so you can reuse it in later steps.
+
+
+``` r
+  results2 = bind_rows(results2, data)
+}
+# View results
+results2 = results2 %>%
+  mutate(group = paste0(d1,d2,d3))
+```
+
+### Step 31 – Start a ggplot
+
+This makes each architecture a path through the tradespace Let's view the two main architectures as they progress through the tradespace.
+
+
+``` r
+ggplot() +
+  geom_label(
+    data = results2, mapping = aes(x = riders, y = emissions,
+                                   label = t, group = group, color = group)
+  )
+```
+
+### Step 32 – Create `results2`
+
+Run optimization iteratively. Create the object `results2` so you can reuse it in later steps.
+
+
+``` r
+results2 = tibble()
+for(t in 1:5){
+```
+
+### Step 33 – Practice the Pipe
+
+Add a new t argument, setting t equal to t in the for loop.
+
+
+``` r
+  fnew = f2 %>% purrr::partial(t = t)
+```
+
+### Step 34 – Create `o`
+
+Create the object `o` so you can reuse it in later steps.
+
+
+``` r
+  o = rmoo(
+    fitness = fnew,
+    type = "binary", algorithm = "NSGA-III",
+    lower = c(0,0,0), upper = c(1,1,1), monitor = TRUE, summary = TRUE,
+    nObj = 2, nBits = 3, popSize = 50, maxiter = 100
+  )
+```
+
+### Step 35 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+
+``` r
+  data = o@solution %>%
+    as_tibble() %>%
+    select(d1 = x1, d2 = x2, d3 = x3) %>%
+    group_by(d1,d2,d3) %>%
+    mutate(emissions = get_emissions(t = 1:t, d1 = d1, d2 = d2, d3 = d3) %>% sum(),
+           riders = get_riders(t = 1:t, d1 = d1, d2 = d2) %>% sum()) %>%
+    ungroup() %>%
+    # Add the year
+    mutate(t = t)
+```
+
+### Step 36 – Create `results2`
+
+Bind them together... Create the object `results2` so you can reuse it in later steps.
+
+
+``` r
+  results2 = bind_rows(results2, data)
+}
+# View results
+results2 = results2 %>%
+  mutate(group = paste0(d1,d2,d3))
+```
+
+### Step 37 – Start a ggplot
+
+This makes each architecture a path through the tradespace Let's view the two main architectures as they progress through the tradespace.
+
+
+``` r
+ggplot() +
+  geom_label(
+    data = results2, mapping = aes(x = riders, y = emissions,
+                                   label = t, group = group, color = group)
+  )
+```
+
+### Step 38 – Define `f3()`
+
+Notice that f3 has 1 objective now, in terms of time t.
+
+
+``` r
+f3 = function(x, nobj = 1, t = 1, ...){
+  # Get our bits vector x
+  # turn it into integer vector xhat
+  xhat = bit2int(x)
+```
+
+### Step 39 – Practice the Pipe
+
+Get our metrics, cumulatively summed.
+
+
+``` r
+  m1 = get_emissions(t= 1:t, d1 = xhat[1], d2 = xhat[2], d3 = xhat[3]) %>% sum()
+  m2 = get_riders(t = 1:t, d1 = xhat[1], d2 = xhat[2]) %>% sum()
+```
+
+### Step 40 – Create `output`
+
+Get the minimum metric value.
+
+
+``` r
+  output = matrix(min(c(m1,m2)), nrow = 1)
+  return(output)
+}
+```
+
+### Step 41 – Create `results3`
+
+This time, we'll run it for just the 5th time period, showing minimum cumulative metrics by the 5th year.
+
+
+``` r
+results3 = tibble()
+for(t in 5:5){
+```
+
+### Step 42 – Practice the Pipe
+
+Add a new t argument, setting t equal to t in the for loop.
+
+
+``` r
+  fnew = f3 %>% purrr::partial(t = t)
+```
+
+### Step 43 – Create `o`
+
+Run this algorithm for just 1 time step.
+
+
+``` r
+  o = rmoo(
+    fitness = fnew,
+    type = "binary", algorithm = "NSGA-III",
+    lower = c(0,0,0), upper = c(1,1,1), monitor = TRUE, summary = TRUE,
+    nObj = 2, nBits = 3, popSize = 50, maxiter = 100
+  )
+```
+
+### Step 44 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+
+``` r
+  data = o@solution %>%
+    as_tibble() %>%
+    select(d1 = x1, d2 = x2, d3 = x3) %>%
+    group_by(d1,d2,d3) %>%
+    mutate(emissions = get_emissions(t = 1:t, d1 = d1, d2 = d2, d3 = d3) %>% sum(),
+           riders = get_riders(t = 1:t, d1 = d1, d2 = d2) %>% sum()) %>%
+    ungroup() %>%
+    # Add the year
+    mutate(t = t)
+```
+
+### Step 45 – Create `results3`
+
+Bind them together... Create the object `results3` so you can reuse it in later steps.
+
+
+``` r
+  results3 = bind_rows(results3, data)
+```
+
+### Step 46 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+}
+# View results
+results3 = results3 %>%
+  mutate(group = paste0(d1,d2,d3))
+```
+
+### Step 47 – Run the Code Block
+
+These are the architectures that produces the highest min cumulative metrics kind of silly - shows almost all possible combinations, but still valid.
+
+
+``` r
+results3
+```
+
+### Step 48 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+
+``` r
+ggplot() +
+  geom_label(
+    data = results3, mapping = aes(x = riders, y = emissions,
+                                   label = t, group = group, color = group)
+  )
+```
+
+### Step 49 – Clear Objects
+
+Remove objects from the environment to prevent name clashes.
+
+
+``` r
+rm(list = ls())
+```
+
+## Learning Checks
+
+**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+<details>
+<summary>Show answer</summary>
+
+Use `source(file.path("workshops", "46_optimization_time_series_case.R"))` from the Console or press the Source button while the script is active.
+
+</details>
+
+**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+
+<details>
+<summary>Show answer</summary>
+
+Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+
+</details>
+
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+
+<details>
+<summary>Show answer</summary>
+
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+
+</details>
+
+**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+
+<details>
+<summary>Show answer</summary>
+
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+
+</details>
+
+**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
+
+<details>
+<summary>Show answer</summary>
+
+Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+
+</details>
