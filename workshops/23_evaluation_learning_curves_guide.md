@@ -1,36 +1,44 @@
----
-title: "[23] Learning curve analysis Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `23_evaluation_learning_curves.R` and unpacks the workshop on learning curve analysis. You will see how it advances the Evaluation sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `23_evaluation_learning_curves.R` and unpacks
+the workshop on learning curve analysis. You will see how it advances
+the Evaluation sequence while building confidence with base R and
+tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `23_evaluation_learning_curves.R` within the Evaluation module.
-- Connect the topic "Learning curve analysis" to systems architecting decisions.
-- Load packages with `library()` and verify they attach without warnings.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Navigate the script `23_evaluation_learning_curves.R` within the
+  Evaluation module.
+- Connect the topic “Learning curve analysis” to systems architecting
+  decisions.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Iterate on visualisations built with `ggplot2`.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Create x]
+    B[Create x] --> C[Start a ggplot]
+    C[Start a ggplot] --> D[Clear Objects]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
-Learning Curves ########################################### Load packages.
-
+Learning Curves \########################################### Load
+packages.
 
 ``` r
 library(dplyr)
@@ -41,7 +49,6 @@ library(ggplot2)
 
 Learning Curve Formula: Y = aX^b suppose a 80% learning curve.
 
-
 ``` r
 s <- 0.80
 ```
@@ -49,7 +56,6 @@ s <- 0.80
 ### Step 3 – Create `gains`
 
 means each time quantity doubles, you gain 20% in efficiency.
-
 
 ``` r
 gains <- 1 - s
@@ -59,15 +65,13 @@ gains <- 1 - s
 
 Calculate the slope of the learning curve.
 
-
 ``` r
 b <- log(s) / log(2.00)
 ```
 
 ### Step 5 – Create `a`
 
-If it takes 30 hours to make tool A at the beginning...
-
+If it takes 30 hours to make tool A at the beginning…
 
 ``` r
 a <- 30
@@ -77,15 +81,13 @@ a <- 30
 
 What happens if we make tool A many times?
 
-
 ``` r
 x <- c(1, 2, 5, 10, 20, 50, 100, 150, 200)
 ```
 
 ### Step 7 – Create `y`
 
-Our slope suggests that the average time to make Tool A becomes...
-
+Our slope suggests that the average time to make Tool A becomes…
 
 ``` r
 y <- a * x^b
@@ -94,8 +96,7 @@ y
 
 ### Step 8 – Create `data`
 
-Let's plot that learning curve!
-
+Let’s plot that learning curve!
 
 ``` r
 data = tibble(x, y)
@@ -103,8 +104,8 @@ data = tibble(x, y)
 
 ### Step 9 – Start a ggplot
 
-Visualize it! Initialize a ggplot so you can layer geoms and customise aesthetics.
-
+Visualize it! Initialize a ggplot so you can layer geoms and customise
+aesthetics.
 
 ``` r
 ggplot() +
@@ -115,7 +116,6 @@ ggplot() +
 ### Step 10 – Create `data2`
 
 Create the object `data2` so you can reuse it in later steps.
-
 
 ``` r
 data2 = bind_rows(
@@ -138,7 +138,6 @@ data2 = bind_rows(
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
 
-
 ``` r
 ggplot() +
   geom_line(data = data2, 
@@ -152,7 +151,6 @@ ggplot() +
 ### Step 12 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 data3 = tibble(s = c(0.80, 0.85, 0.90, 0.92, 0.97, 0.99)) %>%
@@ -170,15 +168,14 @@ data3 = tibble(s = c(0.80, 0.85, 0.90, 0.92, 0.97, 0.99)) %>%
 
 View it! Execute the block and pay attention to the output it produces.
 
-
 ``` r
 data3
 ```
 
 ### Step 14 – Start a ggplot
 
-Visualize it! Initialize a ggplot so you can layer geoms and customise aesthetics.
-
+Visualize it! Initialize a ggplot so you can layer geoms and customise
+aesthetics.
 
 ``` r
 ggplot() +
@@ -196,45 +193,56 @@ ggplot() +
 
 Z. Done! Clear environment.
 
-
 ``` r
 rm(list = ls())
 ```
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** Which libraries does Step 1 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "23_evaluation_learning_curves.R"))` from the Console or press the Source button while the script is active.
+It attaches dplyr and ggplot2, ensuring their functions are available
+before you execute the downstream code.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** After Step 2, what does `s` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It creates `s`. Learning Curve Formula: Y = aX^b suppose a 80% learning
+curve.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** After Step 3, what does `gains` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It creates `gains`. means each time quantity doubles, you gain 20% in
+efficiency.
 
 </details>
 
-**Learning Check 4.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
+**Learning Check 4.** After Step 4, what does `b` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+It creates `b`. Calculate the slope of the learning curve.
 
 </details>

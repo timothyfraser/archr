@@ -23,6 +23,23 @@ This tutorial complements `40_evaluation_entropy_insights.R` and unpacks the wor
 - Connect the topic "Entropy and tradespace insights" to systems architecting decisions.
 - Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
 
+## Process Overview
+
+
+
+
+
+
+
+
+
+```mermaid
+flowchart LR
+    A[Run the Code Block] --> B[Run the Code Block (Step 6)]
+    B[Run the Code Block (Step 6)] --> C[Run the Code Block (Step 12)]
+    C[Run the Code Block (Step 12)] --> D[Practice the Pipe]
+```
+
 ## Application
 
 ### Step 1 – Run the Code Block
@@ -193,29 +210,48 @@ archs %>%
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+
+
+
+
+
+
+
+
+
+**Learning Check 1.** After Step 3, what does `features` capture?
 
 <details>
 <summary>Show answer</summary>
 
-Use `source(file.path("workshops", "40_evaluation_entropy_insights.R"))` from the Console or press the Source button while the script is active.
+It creates `features` that builds a tibble of scenario data. Create the object `features` so you can reuse it in later steps.
 
 </details>
 
-**Learning Check 2.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 2.** After Step 8, what does `a` capture?
 
 <details>
 <summary>Show answer</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It creates `a` that builds a tibble of scenario data. Suppose we have a sample of architectures.
 
 </details>
 
-**Learning Check 3.** In your own words, what key idea does the topic "Entropy and tradespace insights" reinforce?
+**Learning Check 3.** After Step 13, what does `archs` capture?
 
 <details>
 <summary>Show answer</summary>
 
-It highlights how entropy and tradespace insights supports the overall systems architecting process in this course.
+It creates `archs` that adds derived columns, and threads the result through a dplyr pipeline. Is that architecture good?
+
+</details>
+
+**Learning Check 4.** What should you verify after chaining the pipeline in Step 15?
+
+<details>
+<summary>Show answer</summary>
+
+Verify each transformation in the pipeline behaves as intended so the final object reflects the described goal, namely to use the `%>%` operator to pass each result to the next tidyverse verb.
 
 </details>

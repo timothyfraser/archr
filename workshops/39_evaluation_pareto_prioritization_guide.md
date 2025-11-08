@@ -1,37 +1,45 @@
----
-title: "[39] Pareto prioritization workshop Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `39_evaluation_pareto_prioritization.R` and unpacks the workshop on pareto prioritization workshop. You will see how it advances the Evaluation sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `39_evaluation_pareto_prioritization.R` and
+unpacks the workshop on pareto prioritization workshop. You will see how
+it advances the Evaluation sequence while building confidence with base
+R and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `39_evaluation_pareto_prioritization.R` within the Evaluation module.
-- Connect the topic "Pareto prioritization workshop" to systems architecting decisions.
+- Navigate the script `39_evaluation_pareto_prioritization.R` within the
+  Evaluation module.
+- Connect the topic “Pareto prioritization workshop” to systems
+  architecting decisions.
 - Install any required packages highlighted with `install.packages()`.
-- Load packages with `library()` and verify they attach without warnings.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Iterate on visualisations built with `ggplot2`.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Start a ggplot]
+    B[Start a ggplot] --> C[Practice the Pipe]
+    C[Practice the Pipe] --> D[Run the Code Block]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
-0. SETUP ##################################. Attach dplyr to make its functions available.
-
+0.  SETUP \##################################. Attach dplyr to make its
+    functions available.
 
 ``` r
 library(dplyr)
@@ -45,8 +53,10 @@ source("workshops/08_architecting_metric_design.R")
 
 ### Step 2 – Run the Code Block
 
-Here's a new function - it's actually the same as archr::pareto(), just with a light adjustment to the very last line. archr::pareto() turns the pareto rank into TRUE/FALSE this pareto_rank() function just returns the raw pareto ranks.
-
+Here’s a new function - it’s actually the same as archr::pareto(), just
+with a light adjustment to the very last line. archr::pareto() turns the
+pareto rank into TRUE/FALSE this pareto_rank() function just returns the
+raw pareto ranks.
 
 ``` r
 source("workshops/00_pareto_rank_utilities.R")
@@ -54,8 +64,7 @@ source("workshops/00_pareto_rank_utilities.R")
 
 ### Step 3 – Practice the Pipe
 
-Let's get the pareto front (TRUE / FALSE).
-
+Let’s get the pareto front (TRUE / FALSE).
 
 ``` r
 archs = archs %>% mutate(front = pareto(x = cost, y = -benefit))
@@ -67,15 +76,14 @@ archs = archs %>% mutate(rank = pareto_rank(x = cost, y = -benefit))
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 archs %>% glimpse()
 ```
 
 ### Step 5 – Start a ggplot
 
-Visualize! Initialize a ggplot so you can layer geoms and customise aesthetics.
-
+Visualize! Initialize a ggplot so you can layer geoms and customise
+aesthetics.
 
 ``` r
 ggplot() +
@@ -95,7 +103,6 @@ ggplot() +
 ### Step 6 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -121,8 +128,7 @@ ggplot() +
 
 ### Step 7 – Practice the Pipe
 
-Let's get the pareto front (TRUE / FALSE).
-
+Let’s get the pareto front (TRUE / FALSE).
 
 ``` r
 archs = archs %>% mutate(front = pareto(x = cost, y = -benefit))
@@ -133,7 +139,6 @@ archs = archs %>% mutate(rank = pareto_rank(x = cost, y = -benefit))
 ### Step 8 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -155,8 +160,7 @@ ggplot() +
 
 ### Step 9 – Practice the Pipe
 
-Let's get the pareto front (TRUE / FALSE).
-
+Let’s get the pareto front (TRUE / FALSE).
 
 ``` r
 archs = archs %>% mutate(front = pareto(x = cost, y = -benefit))
@@ -164,8 +168,7 @@ archs = archs %>% mutate(front = pareto(x = cost, y = -benefit))
 
 ### Step 10 – Practice the Pipe
 
-Then, let's get the pareto rank (0, 1,2,3,... infinity).
-
+Then, let’s get the pareto rank (0, 1,2,3,… infinity).
 
 ``` r
 archs = archs %>% mutate(rank = pareto_rank(x = cost, y = -benefit))
@@ -173,8 +176,8 @@ archs = archs %>% mutate(rank = pareto_rank(x = cost, y = -benefit))
 
 ### Step 11 – Start a ggplot
 
-Plot the raw scores - only a good idea if you have a small number of architectures.
-
+Plot the raw scores - only a good idea if you have a small number of
+architectures.
 
 ``` r
 ggplot() +
@@ -187,7 +190,6 @@ ggplot() +
 ### Step 12 – Start a ggplot
 
 You could even try something like earlier, but with labels.
-
 
 ``` r
 ggplot() +
@@ -218,8 +220,7 @@ ggplot() +
 
 ### Step 13 – Practice the Pipe
 
-Let's get the pareto front (TRUE / FALSE).
-
+Let’s get the pareto front (TRUE / FALSE).
 
 ``` r
 archs = archs %>% mutate(front = pareto(x = cost, y = -benefit))
@@ -229,8 +230,7 @@ archs = archs %>% mutate(rank = pareto_rank(x = cost, y = -benefit))
 
 ### Step 14 – Practice the Pipe
 
-Create an upper threshold line... when rank = 0.
-
+Create an upper threshold line… when rank = 0.
 
 ``` r
 line0 = archs %>%
@@ -242,8 +242,7 @@ line0 = archs %>%
 
 ### Step 15 – Practice the Pipe
 
-when rank < 5.
-
+when rank \< 5.
 
 ``` r
 line5 = archs %>%
@@ -255,8 +254,7 @@ line5 = archs %>%
 
 ### Step 16 – Practice the Pipe
 
-when rank < 10.
-
+when rank \< 10.
 
 ``` r
 line10 = archs %>%
@@ -270,15 +268,14 @@ line10 = archs %>%
 
 Bundle them into one data.frame.
 
-
 ``` r
 lines = bind_rows(line0, line5, line10)
 ```
 
 ### Step 18 – Start a ggplot
 
-Visualize! Initialize a ggplot so you can layer geoms and customise aesthetics.
-
+Visualize! Initialize a ggplot so you can layer geoms and customise
+aesthetics.
 
 ``` r
 ggplot() +
@@ -295,8 +292,7 @@ ggplot() +
 
 ### Step 19 – Practice the Pipe
 
-Let's get the pareto front (TRUE / FALSE).
-
+Let’s get the pareto front (TRUE / FALSE).
 
 ``` r
 archs = archs %>% mutate(front = pareto(x = cost, y = -benefit))
@@ -306,8 +302,7 @@ archs = archs %>% mutate(rank = pareto_rank(x = cost, y = -benefit))
 
 ### Step 20 – Practice the Pipe
 
-Create an upper threshold line... when rank = 0.
-
+Create an upper threshold line… when rank = 0.
 
 ``` r
 line0 = archs %>%
@@ -336,8 +331,8 @@ line10plus = archs %>%
 
 ### Step 21 – Start a ggplot
 
-Visualize! Initialize a ggplot so you can layer geoms and customise aesthetics.
-
+Visualize! Initialize a ggplot so you can layer geoms and customise
+aesthetics.
 
 ``` r
 ggplot() +
@@ -348,7 +343,6 @@ ggplot() +
 ### Step 22 – Run the Code Block
 
 Atop them, plot a bunch of lines Start with the largest area.
-
 
 ``` r
   geom_ribbon(
@@ -386,38 +380,53 @@ Atop them, plot a bunch of lines Start with the largest area.
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** Which packages do you install in Step 12, and what
+must you verify before moving on?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "39_evaluation_pareto_prioritization.R"))` from the Console or press the Source button while the script is active.
+Step 12 installs viridis, so make sure each package finishes installing
+without errors before continuing.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** Which libraries does Step 1 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It attaches dplyr, archr and ggplot2, ensuring their functions are
+available before you execute the downstream code.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** After Step 3, what does `archs` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It creates `archs` that adds derived columns, and threads the result
+through a dplyr pipeline. Let’s get the pareto front (TRUE / FALSE).
 
 </details>
 
-**Learning Check 4.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
+**Learning Check 4.** After Step 5, what does `x` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+It creates `x` that filters rows to the cases of interest, and
+initialises a ggplot visualisation. Visualize! Initialize a ggplot so
+you can layer geoms and customise aesthetics.
 
 </details>

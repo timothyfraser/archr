@@ -1,34 +1,40 @@
----
-title: "[00] Pareto ranking helpers Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `00_pareto_rank_utilities.R` and unpacks the workshop on pareto ranking helpers. You will see how it advances the Evaluation sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `00_pareto_rank_utilities.R` and unpacks the
+workshop on pareto ranking helpers. You will see how it advances the
+Evaluation sequence while building confidence with base R and tidyverse
+tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `00_pareto_rank_utilities.R` within the Evaluation module.
-- Connect the topic "Pareto ranking helpers" to systems architecting decisions.
+- Navigate the script `00_pareto_rank_utilities.R` within the Evaluation
+  module.
+- Connect the topic “Pareto ranking helpers” to systems architecting
+  decisions.
 - Define custom functions to package repeatable logic.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Define pareto_rank()] --> B[Create n_arch]
+    B[Create n_arch] --> C[Loop Through Values]
+    C[Loop Through Values] --> D[Create p]
+```
 
 ## Application
 
 ### Step 1 – Define `pareto_rank()`
 
-Create the helper function `pareto_rank()` so you can reuse it throughout the workshop.
-
+Create the helper function `pareto_rank()` so you can reuse it
+throughout the workshop.
 
 ``` r
 pareto_rank = function(x = NULL, y = NULL, m = NULL){
@@ -36,8 +42,7 @@ pareto_rank = function(x = NULL, y = NULL, m = NULL){
 
 ### Step 2 – Run the Code Block
 
-If m is missing but x and y are provided...
-
+If m is missing but x and y are provided…
 
 ``` r
   if(is.null(m)){
@@ -55,15 +60,14 @@ If m is missing but x and y are provided...
 
 Get length of input matrix.
 
-
 ``` r
   n_arch = nrow(m);
 ```
 
 ### Step 4 – Create `domination_counter`
 
-Create the object `domination_counter` so you can reuse it in later steps.
-
+Create the object `domination_counter` so you can reuse it in later
+steps.
 
 ``` r
   domination_counter = rep(0, n_arch)
@@ -72,8 +76,7 @@ Create the object `domination_counter` so you can reuse it in later steps.
 
 ### Step 5 – Loop Through Values
 
-For each row in the matrix...
-
+For each row in the matrix…
 
 ``` r
   for(i in 1:n_arch){
@@ -104,7 +107,6 @@ For each row in the matrix...
 
 If any cases remain **non-dominated**.
 
-
 ``` r
   p = domination_counter
   #p = domination_counter == 0
@@ -114,29 +116,49 @@ If any cases remain **non-dominated**.
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** What role does the helper `pareto_rank()` defined
+in Step 1 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "00_pareto_rank_utilities.R"))` from the Console or press the Source button while the script is active.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 2.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 2.** After Step 2, what does `m` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+It creates `m`. If m is missing but x and y are provided…
 
 </details>
 
-**Learning Check 3.** In your own words, what key idea does the topic "Pareto ranking helpers" reinforce?
+**Learning Check 3.** After Step 3, what does `n_arch` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It highlights how pareto ranking helpers supports the overall systems architecting process in this course.
+It creates `n_arch`. Get length of input matrix.
+
+</details>
+
+**Learning Check 4.** After Step 4, what does `domination_counter`
+capture?
+
+<details>
+<summary>
+Show answer
+</summary>
+
+It creates `domination_counter`. Create the object `domination_counter`
+so you can reuse it in later steps.
 
 </details>

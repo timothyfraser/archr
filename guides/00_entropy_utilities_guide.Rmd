@@ -24,6 +24,23 @@ This tutorial complements `00_entropy_utilities.R` and unpacks the workshop on i
 - Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
 - Define custom functions to package repeatable logic.
 
+## Process Overview
+
+
+
+
+
+
+
+
+
+```mermaid
+flowchart LR
+    A[Define h()] --> B[Practice the Pipe]
+    B[Practice the Pipe] --> C[Practice the Pipe (Step 11)]
+    C[Practice the Pipe (Step 11)] --> D[Run the Code Block]
+```
+
 ## Application
 
 ### Step 1 – Define `h()`
@@ -178,29 +195,48 @@ Execute the block and pay attention to the output it produces.
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+
+
+
+
+
+
+
+
+
+**Learning Check 1.** What role does the helper `h()` defined in Step 1 play in this workflow?
 
 <details>
 <summary>Show answer</summary>
 
-Use `source(file.path("workshops", "00_entropy_utilities.R"))` from the Console or press the Source button while the script is active.
+It computes the Shannon entropy of a probability vector so you can quantify baseline uncertainty.
 
 </details>
 
-**Learning Check 2.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 2.** What role does the helper `j()` defined in Step 2 play in this workflow?
 
 <details>
 <summary>Show answer</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It calculates the joint entropy across the `xy` distribution to feed later comparisons.
 
 </details>
 
-**Learning Check 3.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 3.** What role does the helper `i()` defined in Step 3 play in this workflow?
 
 <details>
 <summary>Show answer</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+It evaluates mutual information by contrasting the joint distribution with the product of marginals.
+
+</details>
+
+**Learning Check 4.** What role does the helper `ig()` defined in Step 4 play in this workflow?
+
+<details>
+<summary>Show answer</summary>
+
+It orchestrates the information-gain workflow, collecting probabilities, entropy splits, and a tidy summary.
 
 </details>

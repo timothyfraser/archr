@@ -1,36 +1,43 @@
----
-title: "[08] Metric design walkthrough Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `08_architecting_metric_design.R` and unpacks the workshop on metric design walkthrough. You will see how it advances the Architecting Systems sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `08_architecting_metric_design.R` and unpacks
+the workshop on metric design walkthrough. You will see how it advances
+the Architecting Systems sequence while building confidence with base R
+and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `08_architecting_metric_design.R` within the Architecting Systems module.
-- Connect the topic "Metric design walkthrough" to systems architecting decisions.
-- Load packages with `library()` and verify they attach without warnings.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Navigate the script `08_architecting_metric_design.R` within the
+  Architecting Systems module.
+- Connect the topic “Metric design walkthrough” to systems architecting
+  decisions.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Define custom functions to package repeatable logic.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Define get_cost()]
+    B[Define get_cost()] --> C[Define get_reliability()]
+    C[Define get_reliability()] --> D[Practice the Pipe]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
 Attach dplyr to make its functions available.
-
 
 ``` r
 library(dplyr)
@@ -41,15 +48,14 @@ library(archr)
 
 Create the object `archs` so you can reuse it in later steps.
 
-
 ``` r
 archs = enumerate_binary(n = 5, .id = TRUE)
 ```
 
 ### Step 3 – Define `get_cost()`
 
-Cost metric function. Create the helper function `get_cost()` so you can reuse it throughout the workshop.
-
+Cost metric function. Create the helper function `get_cost()` so you can
+reuse it throughout the workshop.
 
 ``` r
 get_cost = function(d1,d2,d3,d4,d5){
@@ -65,8 +71,8 @@ get_cost = function(d1,d2,d3,d4,d5){
 
 ### Step 4 – Define `get_benefit()`
 
-Benefit metric function. Create the helper function `get_benefit()` so you can reuse it throughout the workshop.
-
+Benefit metric function. Create the helper function `get_benefit()` so
+you can reuse it throughout the workshop.
 
 ``` r
 get_benefit = function(d1,d2,d3,d4,d5){
@@ -83,8 +89,8 @@ get_benefit = function(d1,d2,d3,d4,d5){
 
 ### Step 5 – Define `get_reliability()`
 
-Reliability metric function. Create the helper function `get_reliability()` so you can reuse it throughout the workshop.
-
+Reliability metric function. Create the helper function
+`get_reliability()` so you can reuse it throughout the workshop.
 
 ``` r
 get_reliability = function(t = 100, d1,d2,d3,d4,d5){
@@ -113,7 +119,6 @@ get_reliability = function(t = 100, d1,d2,d3,d4,d5){
 
 Create the object `output` so you can reuse it in later steps.
 
-
 ``` r
   output = p1*p2*p3*p4*p5
   return(output)
@@ -122,8 +127,10 @@ Create the object `output` so you can reuse it in later steps.
 
 ### Step 7 – Practice the Pipe
 
-2. METRICS ###########################################################################. Use the `%>%` operator to pass each result to the next tidyverse verb.
-
+2.  METRICS
+    \###########################################################################.
+    Use the `%>%` operator to pass each result to the next tidyverse
+    verb.
 
 ``` r
 archs = archs %>% mutate(cost = get_cost(d1,d2,d3,d4,d5))
@@ -133,38 +140,52 @@ archs = archs %>% mutate(reliability = get_reliability(t = 1000, d1,d2,d3,d4,d5)
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** What role does the helper `get_cost()` defined in
+Step 3 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "08_architecting_metric_design.R"))` from the Console or press the Source button while the script is active.
+It encapsulates the conditional cost schedule so you can reuse it
+whenever you mutate architecture rows.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** What role does the helper `get_benefit()` defined
+in Step 4 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** What role does the helper `get_reliability()`
+defined in Step 5 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 4.** Which libraries does Step 1 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+It attaches dplyr and archr, ensuring their functions are available
+before you execute the downstream code.
 
 </details>

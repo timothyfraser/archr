@@ -26,6 +26,23 @@ This tutorial complements `45_optimization_transportation_case.R` and unpacks th
 - Define custom functions to package repeatable logic.
 - Iterate on visualisations built with `ggplot2`.
 
+## Process Overview
+
+
+
+
+
+
+
+
+
+```mermaid
+flowchart LR
+    A[Load Packages] --> B[Run the Code Block]
+    B[Run the Code Block] --> C[Define bit2int()]
+    C[Define bit2int()] --> D[Start a ggplot]
+```
+
 ## Application
 
 ### Step 1 – Load Packages
@@ -212,47 +229,48 @@ ggplot() +
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+
+
+
+
+
+
+
+
+
+**Learning Check 1.** What role does the helper `get_emissions()` defined in Step 2 play in this workflow?
 
 <details>
 <summary>Show answer</summary>
 
-Use `source(file.path("workshops", "45_optimization_transportation_case.R"))` from the Console or press the Source button while the script is active.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** What role does the helper `get_riders()` defined in Step 7 play in this workflow?
 
 <details>
 <summary>Show answer</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** What role does the helper `bit2int()` defined in Step 12 play in this workflow?
 
 <details>
 <summary>Show answer</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 4.** What role does the helper `f1()` defined in Step 13 play in this workflow?
 
 <details>
 <summary>Show answer</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
-
-</details>
-
-**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
-
-<details>
-<summary>Show answer</summary>
-
-Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+It packages reusable logic needed by later steps.
 
 </details>

@@ -1,36 +1,43 @@
----
-title: "[28] Pareto fronts exploration Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `28_evaluation_pareto_fronts.R` and unpacks the workshop on pareto fronts exploration. You will see how it advances the Evaluation sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `28_evaluation_pareto_fronts.R` and unpacks
+the workshop on pareto fronts exploration. You will see how it advances
+the Evaluation sequence while building confidence with base R and
+tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `28_evaluation_pareto_fronts.R` within the Evaluation module.
-- Connect the topic "Pareto fronts exploration" to systems architecting decisions.
-- Load packages with `library()` and verify they attach without warnings.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Navigate the script `28_evaluation_pareto_fronts.R` within the
+  Evaluation module.
+- Connect the topic “Pareto fronts exploration” to systems architecting
+  decisions.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Iterate on visualisations built with `ggplot2`.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Practice the Pipe]
+    B[Practice the Pipe] --> C[Start a ggplot]
+    C[Start a ggplot] --> D[Clear Objects]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
-SETUP ################################# Load packages.
-
+SETUP \################################# Load packages.
 
 ``` r
 library(dplyr)
@@ -43,8 +50,8 @@ donuts
 
 ### Step 2 – Create `m`
 
-PARETO FRONT ############################ Make a table m we'll build Enumerate architectures, including an .id.
-
+PARETO FRONT \############################ Make a table m we’ll build
+Enumerate architectures, including an .id.
 
 ``` r
 m = enumerate_binary(n = nrow(donuts), .id = TRUE)
@@ -54,7 +61,6 @@ m = enumerate_binary(n = nrow(donuts), .id = TRUE)
 
 Record the architectures as a matrix.
 
-
 ``` r
 a = m %>% select(-id) %>% as.matrix()
 ```
@@ -62,7 +68,6 @@ a = m %>% select(-id) %>% as.matrix()
 ### Step 4 – Practice the Pipe
 
 Add in columns for total metrics.
-
 
 ``` r
 m = m %>% 
@@ -77,8 +82,8 @@ m = m %>%
 
 ### Step 5 – Practice the Pipe
 
-View last five. Use the `%>%` operator to pass each result to the next tidyverse verb.
-
+View last five. Use the `%>%` operator to pass each result to the next
+tidyverse verb.
 
 ``` r
 m %>% select(id, benefit, cost) %>% tail(5)
@@ -87,7 +92,6 @@ m %>% select(id, benefit, cost) %>% tail(5)
 ### Step 6 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -98,7 +102,6 @@ ggplot() +
 
 Get the ids of the pareto front with pareto().
 
-
 ``` r
 m = m %>%
   mutate(front = pareto(x = cost, y = -benefit))
@@ -108,7 +111,6 @@ m = m %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 m %>% select(id, cost, benefit, front)
 # ?archr::pareto()
@@ -117,7 +119,6 @@ m %>% select(id, cost, benefit, front)
 ### Step 9 – Start a ggplot
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
-
 
 ``` r
 ggplot() +
@@ -130,8 +131,8 @@ ggplot() +
 
 ### Step 10 – Practice the Pipe
 
-Thresholds ##################################### Show just a slice of the architectures based on thresholds.
-
+Thresholds \##################################### Show just a slice of
+the architectures based on thresholds.
 
 ``` r
 m %>% 
@@ -141,7 +142,6 @@ m %>%
 ### Step 11 – Start a ggplot
 
 Add those thresholds for context usinge geom_hline and geom_vline!
-
 
 ``` r
 ggplot() +
@@ -158,7 +158,6 @@ ggplot() +
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 m
 ```
@@ -167,45 +166,59 @@ m
 
 Cleanup ! Remove objects from the environment to prevent name clashes.
 
-
 ``` r
 rm(list = ls())
 ```
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** Which libraries does Step 1 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "28_evaluation_pareto_fronts.R"))` from the Console or press the Source button while the script is active.
+It attaches dplyr, archr and ggplot2, ensuring their functions are
+available before you execute the downstream code.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** After Step 2, what does `m` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It creates `m` that enumerates architecture combinations with `archr`
+helpers. PARETO FRONT \############################ Make a table m we’ll
+build Enumerate architectures, including an .id.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** After Step 3, what does `a` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It creates `a` that selects a focused set of columns, and threads the
+result through a dplyr pipeline. Record the architectures as a matrix.
 
 </details>
 
-**Learning Check 4.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
+**Learning Check 4.** After Step 9, what does `color` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+It creates `color` that filters rows to the cases of interest, and
+initialises a ggplot visualisation. Initialize a ggplot so you can layer
+geoms and customise aesthetics.
 
 </details>

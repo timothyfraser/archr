@@ -26,6 +26,23 @@ This tutorial complements `10_architecting_ahp_archr_demo.R` and unpacks the wor
 - Import data files with `readr` helpers and inspect the resulting objects.
 - Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
 
+## Process Overview
+
+
+
+
+
+
+
+
+
+```mermaid
+flowchart LR
+    A[Install Packages] --> B[Create url_alt]
+    B[Create url_alt] --> C[Practice the Pipe]
+    C[Practice the Pipe] --> D[Run the Code Block]
+```
+
 ## Application
 
 ### Step 1 – Install Packages
@@ -108,38 +125,48 @@ ahp$consistency
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+
+
+
+
+
+
+
+
+
+**Learning Check 1.** Which packages do you install in Step 1, and what must you verify before moving on?
 
 <details>
 <summary>Show answer</summary>
 
-Use `source(file.path("workshops", "10_architecting_ahp_archr_demo.R"))` from the Console or press the Source button while the script is active.
+Step 1 installs source, so make sure each package finishes installing without errors before continuing.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** Which libraries does Step 2 attach, and why do you run that chunk before others?
 
 <details>
 <summary>Show answer</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It attaches archr, dplyr and readr, ensuring their functions are available before you execute the downstream code.
 
 </details>
 
-**Learning Check 3.** When you import data in this workshop, what should you inspect right after the read call?
+**Learning Check 3.** After Step 3, what does `url_alt` capture?
 
 <details>
 <summary>Show answer</summary>
 
-Check the tibble in the Environment pane (or print it) to confirm column names and types look correct.
+It creates `url_alt`. Use archr's get_sheet function.
 
 </details>
 
-**Learning Check 4.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 4.** After Step 4, what does `url_cri` capture?
 
 <details>
 <summary>Show answer</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It creates `url_cri`. Create the object `url_cri` so you can reuse it in later steps.
 
 </details>

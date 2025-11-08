@@ -1,36 +1,43 @@
----
-title: "[51] Advanced search techniques Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `51_optimization_advanced_search.R` and unpacks the workshop on advanced search techniques. You will see how it advances the Optimization sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `51_optimization_advanced_search.R` and
+unpacks the workshop on advanced search techniques. You will see how it
+advances the Optimization sequence while building confidence with base R
+and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `51_optimization_advanced_search.R` within the Optimization module.
-- Connect the topic "Advanced search techniques" to systems architecting decisions.
-- Load packages with `library()` and verify they attach without warnings.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Navigate the script `51_optimization_advanced_search.R` within the
+  Optimization module.
+- Connect the topic “Advanced search techniques” to systems architecting
+  decisions.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Define custom functions to package repeatable logic.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Run the Code Block]
+    B[Run the Code Block] --> C[Create d1]
+    C[Create d1] --> D[Run the Code Block (Step 22)]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
 Attach dplyr to make its functions available.
-
 
 ``` r
 library(dplyr)
@@ -44,15 +51,14 @@ library(rmoo)
 
 Make our architectural matrix 3 elements ordered; pick 2.
 
-
 ``` r
 a1 = enumerate_permutation(n = 3, k = 2, .did = 1)
 ```
 
 ### Step 3 – Define `evaluate()`
 
-1.1 METRICS #################################. Create the helper function `evaluate()` so you can reuse it throughout the workshop.
-
+1.1 METRICS \#################################. Create the helper
+function `evaluate()` so you can reuse it throughout the workshop.
 
 ``` r
 evaluate = function(t = 1000, d1_1, d1_2){
@@ -65,7 +71,6 @@ evaluate = function(t = 1000, d1_1, d1_2){
 
 Get cost. Create the object `c1_1` so you can reuse it in later steps.
 
-
 ``` r
   c1_1 = case_when(d1_1 == 0 ~ 5, d1_1 == 1 ~ 10, d1_1 == 2 ~ 15)
   c1_2 = case_when(d1_2 == 0 ~ 2, d1_2 == 1 ~ 3, d1_2 == 2 ~ 5)
@@ -74,8 +79,8 @@ Get cost. Create the object `c1_1` so you can reuse it in later steps.
 
 ### Step 5 – Create `b1_1`
 
-Get benefit. Create the object `b1_1` so you can reuse it in later steps.
-
+Get benefit. Create the object `b1_1` so you can reuse it in later
+steps.
 
 ``` r
   b1_1 = case_when(d1_1 == 0 ~ 1000, d1_1 == 1 ~ 300, d1_1 == 2 ~ 2000)
@@ -85,8 +90,8 @@ Get benefit. Create the object `b1_1` so you can reuse it in later steps.
 
 ### Step 6 – Create `lambda1_1`
 
-Get joint reliability. Create the object `lambda1_1` so you can reuse it in later steps.
-
+Get joint reliability. Create the object `lambda1_1` so you can reuse it
+in later steps.
 
 ``` r
   lambda1_1 = case_when(
@@ -107,7 +112,6 @@ Get joint reliability. Create the object `lambda1_1` so you can reuse it in late
 
 Create the object `m` so you can reuse it in later steps.
 
-
 ``` r
   m = matrix(c(cost, benefit, reliability), ncol = 3)
   return(m)
@@ -118,15 +122,14 @@ Create the object `m` so you can reuse it in later steps.
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 evaluate(t = 1000, d1_1 = 0, d1_2 = 1)
 ```
 
 ### Step 9 – Define `int2bin()`
 
-Optional - convert from int to bin Let's write a int2bin() function for a permutation case.
-
+Optional - convert from int to bin Let’s write a int2bin() function for
+a permutation case.
 
 ``` r
 int2bin = function(int){
@@ -141,8 +144,7 @@ int2bin(int = c(2,1))
 
 ### Step 10 – Define `bin2int()`
 
-Let's write a bin2int() function for a permutation case.
-
+Let’s write a bin2int() function for a permutation case.
 
 ``` r
 bin2int = function(x){
@@ -158,15 +160,15 @@ bin2int = function(x){
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 bin2int(x = c(1,0,0,1))
 ```
 
 ### Step 12 – Define `revise_permutation()`
 
-Let's write a function that will fix improper permutations By identifying pairs have the same rank and randomly replacing one of their values iteratively until the ordering is valid.
-
+Let’s write a function that will fix improper permutations By
+identifying pairs have the same rank and randomly replacing one of their
+values iteratively until the ordering is valid.
 
 ``` r
 revise_permutation = function(ints = c(1,1), k = 2, vals = c(0,1,2)){
@@ -204,7 +206,6 @@ revise_permutation = function(ints = c(1,1), k = 2, vals = c(0,1,2)){
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 enumerate_permutation(n = 3, k = 2)
 revise_permutation(ints = c(1,1), k = 2, vals = c(0,1,2))
@@ -212,8 +213,7 @@ revise_permutation(ints = c(1,1), k = 2, vals = c(0,1,2))
 
 ### Step 14 – Define `revise_bit()`
 
-Let's write a revise_bit function.
-
+Let’s write a revise_bit function.
 
 ``` r
 revise_bit = function(x){
@@ -228,7 +228,6 @@ revise_bit = function(x){
 
 Get values for our permutation decisions.
 
-
 ``` r
   d1 = xhat[1:2]
 ```
@@ -237,7 +236,6 @@ Get values for our permutation decisions.
 
 REVISE STRUCTURALLY IMPOSSIBLE DECISION VALUES.
 
-
 ``` r
   if(d1[1] == 3){ d1[1] <- sample(x = c(0,1,2), size = 1) }
   if(d1[2] == 3){ d1[2] <- sample(x = c(0,1,2), size = 1) }
@@ -245,8 +243,9 @@ REVISE STRUCTURALLY IMPOSSIBLE DECISION VALUES.
 
 ### Step 17 – Create `d1`
 
-REVISE ORDER Check how many unique values there are. There should only ever be k = 2. eg. (0,1) (1,0), (2,1), etc. k = 2; n = 2; so vals = c(0,1,2) Randomly fix the ordering of pairs of values until it works.
-
+REVISE ORDER Check how many unique values there are. There should only
+ever be k = 2. eg. (0,1) (1,0), (2,1), etc. k = 2; n = 2; so vals =
+c(0,1,2) Randomly fix the ordering of pairs of values until it works.
 
 ``` r
   d1 = revise_permutation(ints = d1, k = 2, vals = c(0,1,2))
@@ -256,7 +255,6 @@ REVISE ORDER Check how many unique values there are. There should only ever be k
 
 Bundle all values back into integer vector.
 
-
 ``` r
   xhat = c(d1)
 ```
@@ -264,7 +262,6 @@ Bundle all values back into integer vector.
 ### Step 19 – Create `output`
 
 Convert interger vector BACK into binary ecotr.
-
 
 ``` r
   output = int2bin(xhat)
@@ -276,7 +273,6 @@ Convert interger vector BACK into binary ecotr.
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 revise_bit(x = c(1,1,1,0)) # invalid; gets fixed
 revise_bit(x = c(1,0,1,0)) # invalid; gets fixed
@@ -285,8 +281,7 @@ revise_bit(x = c(1,0,0,1)) # already good; doesn't change
 
 ### Step 21 – Define `f1()`
 
-4. FITNESS FUNCTION ######################################.
-
+4.  FITNESS FUNCTION \######################################.
 
 ``` r
 f1 = function(x, nobj = 3, ...){
@@ -304,7 +299,6 @@ f1 = function(x, nobj = 3, ...){
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 f1(x = c(0,0,0,0))
 f1(x = c(1,0,0,1))
@@ -312,38 +306,50 @@ f1(x = c(1,0,0,1))
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** What role does the helper `evaluate()` defined in
+Step 3 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "51_optimization_advanced_search.R"))` from the Console or press the Source button while the script is active.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** What role does the helper `int2bin()` defined in
+Step 9 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** What role does the helper `bin2int()` defined in
+Step 10 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 4.** What role does the helper `revise_permutation()`
+defined in Step 12 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+It packages reusable logic needed by later steps.
 
 </details>

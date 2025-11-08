@@ -1,39 +1,48 @@
----
-title: "[04] Workshop 1 R fundamentals Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `04_stakeholder_r_basics_workshop.R` and unpacks the workshop on workshop 1 r fundamentals. You will see how it advances the Stakeholder Analysis sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `04_stakeholder_r_basics_workshop.R` and
+unpacks the workshop on workshop 1 r fundamentals. You will see how it
+advances the Stakeholder Analysis sequence while building confidence
+with base R and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `04_stakeholder_r_basics_workshop.R` within the Stakeholder Analysis module.
-- Connect the topic "Workshop 1 R fundamentals" to systems architecting decisions.
+- Navigate the script `04_stakeholder_r_basics_workshop.R` within the
+  Stakeholder Analysis module.
+- Connect the topic “Workshop 1 R fundamentals” to systems architecting
+  decisions.
 - Install any required packages highlighted with `install.packages()`.
-- Load packages with `library()` and verify they attach without warnings.
-- Import data files with `readr` helpers and inspect the resulting objects.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Import data files with `readr` helpers and inspect the resulting
+  objects.
 - Export results to disk so you can reuse them across workshops.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Define custom functions to package repeatable logic.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Try Arithmetic] --> B[Clear Objects]
+    B[Clear Objects] --> C[Practice the Pipe]
+    C[Practice the Pipe] --> D[Clear Objects (Step 84)]
+```
 
 ## Application
 
 ### Step 1 – Try Arithmetic
 
-addition. Evaluate a quick arithmetic expression to observe R's console output.
-
+addition. Evaluate a quick arithmetic expression to observe R’s console
+output.
 
 ``` r
 1 + 1
@@ -41,8 +50,8 @@ addition. Evaluate a quick arithmetic expression to observe R's console output.
 
 ### Step 2 – Create `x`
 
-make object 'x'. Create the object `x` so you can reuse it in later steps.
-
+make object ‘x’. Create the object `x` so you can reuse it in later
+steps.
 
 ``` r
 x = 2
@@ -52,15 +61,14 @@ x = 2
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 x + 2
 ```
 
 ### Step 4 – Create `y`
 
-make new objects. Create the object `y` so you can reuse it in later steps.
-
+make new objects. Create the object `y` so you can reuse it in later
+steps.
 
 ``` r
 y = x + 2
@@ -69,8 +77,8 @@ y
 
 ### Step 5 – Remove Objects
 
-Remove specific objects. Delete specific objects so you can redefine them cleanly.
-
+Remove specific objects. Delete specific objects so you can redefine
+them cleanly.
 
 ``` r
 remove(x,y)
@@ -80,8 +88,8 @@ rm(list = ls())
 
 ### Step 6 – Install Packages
 
-Install. Install dplyr, readr, ggplot2 so the rest of the workshop can run.
-
+Install. Install dplyr, readr, ggplot2 so the rest of the workshop can
+run.
 
 ``` r
 install.packages(c("dplyr", "readr", "ggplot2"))
@@ -90,7 +98,6 @@ install.packages(c("dplyr", "readr", "ggplot2"))
 ### Step 7 – Load Packages
 
 Load packages. Attach dplyr to make its functions available.
-
 
 ``` r
 library(dplyr)
@@ -102,7 +109,6 @@ library(ggplot2)
 
 Create the object `myvec` so you can reuse it in later steps.
 
-
 ``` r
 myvec = c(1,2,3,4)
 ```
@@ -110,7 +116,6 @@ myvec = c(1,2,3,4)
 ### Step 9 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 myvec
@@ -120,7 +125,6 @@ myvec
 
 Create the object `myrow` so you can reuse it in later steps.
 
-
 ``` r
 myrow = matrix( c(1,2,3,4), nrow = 1)
 ```
@@ -128,7 +132,6 @@ myrow = matrix( c(1,2,3,4), nrow = 1)
 ### Step 11 – Create `mycol`
 
 Create the object `mycol` so you can reuse it in later steps.
-
 
 ``` r
 mycol = matrix( c(1,2,3,4), ncol = 1)
@@ -138,7 +141,6 @@ mycol = matrix( c(1,2,3,4), ncol = 1)
 
 Create a matrix to practice element-wise and matrix operations.
 
-
 ``` r
 matrix(c(myrow, myrow, myrow), byrow = TRUE, ncol = 4)
 ```
@@ -147,7 +149,6 @@ matrix(c(myrow, myrow, myrow), byrow = TRUE, ncol = 4)
 
 Create a matrix to practice element-wise and matrix operations.
 
-
 ``` r
 matrix(c(mycol, mycol, mycol), byrow = FALSE, ncol = 3)
 ```
@@ -155,7 +156,6 @@ matrix(c(mycol, mycol, mycol), byrow = FALSE, ncol = 3)
 ### Step 14 – Build a Data Frame
 
 Construct a small data frame that you can manipulate later.
-
 
 ``` r
 data.frame(
@@ -169,7 +169,6 @@ data.frame(
 
 Create a matrix to practice element-wise and matrix operations.
 
-
 ``` r
 matrix(c(1,2,3, 4,5,6, 7,8,9), byrow = TRUE, nrow = 3, ncol = 3)
 ```
@@ -177,7 +176,6 @@ matrix(c(1,2,3, 4,5,6, 7,8,9), byrow = TRUE, nrow = 3, ncol = 3)
 ### Step 16 – Create `mymat3`
 
 Create the object `mymat3` so you can reuse it in later steps.
-
 
 ``` r
 mymat3 = matrix(
@@ -193,7 +191,6 @@ mymat3 = matrix(
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 mymat3^2
 ```
@@ -201,7 +198,6 @@ mymat3^2
 ### Step 18 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 mymat3*2
@@ -211,7 +207,6 @@ mymat3*2
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 mymat3 + mymat3
 ```
@@ -220,7 +215,6 @@ mymat3 + mymat3
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 mymat3 %*% mymat3
 ```
@@ -228,7 +222,6 @@ mymat3 %*% mymat3
 ### Step 21 – Create `day`
 
 Create the object `day` so you can reuse it in later steps.
-
 
 ``` r
 day = c("M", "T", "W", "R", "F")
@@ -240,7 +233,6 @@ t = data.frame(day, temp)
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 t$day
 t$temp + 2
@@ -250,7 +242,6 @@ t$temp + 2
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 t$temp
 ```
@@ -258,7 +249,6 @@ t$temp
 ### Step 24 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 t$temp = t$temp + 2
@@ -268,7 +258,6 @@ t$temp = t$temp + 2
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 t$snow = c("yes", "no", "yes", "no", "no")
 ```
@@ -276,7 +265,6 @@ t$snow = c("yes", "no", "yes", "no", "no")
 ### Step 26 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 t$rain = c("yes", "no", "no", "no", NA)
@@ -286,7 +274,6 @@ t$rain = c("yes", "no", "no", "no", NA)
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 t[1:3, 2]
 ```
@@ -294,7 +281,6 @@ t[1:3, 2]
 ### Step 28 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 mymat3[1, 2:3]
@@ -304,15 +290,14 @@ mymat3[1, 2:3]
 
 Remove objects from the environment to prevent name clashes.
 
-
 ``` r
 rm(list = ls())
 ```
 
 ### Step 30 – Import CSV Data
 
-Load workshops/04_stakeholder_test_data.csv into a tibble you can explore in R.
-
+Load workshops/04_stakeholder_test_data.csv into a tibble you can
+explore in R.
 
 ``` r
 t = readr::read_csv("workshops/04_stakeholder_test_data.csv")
@@ -321,7 +306,6 @@ t = readr::read_csv("workshops/04_stakeholder_test_data.csv")
 ### Step 31 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 t$id
@@ -333,7 +317,6 @@ t$sale
 
 .rds - r data storage.
 
-
 ``` r
 m = readr::read_rds("workshops/04_stakeholder_test_data.rds")
 ```
@@ -342,15 +325,14 @@ m = readr::read_rds("workshops/04_stakeholder_test_data.rds")
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 m
 ```
 
 ### Step 34 – Save Data to CSV
 
-Export a tibble to workshops/04_stakeholder_test_data2.csv for later use.
-
+Export a tibble to workshops/04_stakeholder_test_data2.csv for later
+use.
 
 ``` r
 readr::write_csv(t, file = "workshops/04_stakeholder_test_data2.csv")
@@ -358,8 +340,8 @@ readr::write_csv(t, file = "workshops/04_stakeholder_test_data2.csv")
 
 ### Step 35 – Save Data to CSV
 
-Export a tibble to workshops/04_stakeholder_test_data2.csv for later use.
-
+Export a tibble to workshops/04_stakeholder_test_data2.csv for later
+use.
 
 ``` r
 write_csv(t, file = "workshops/04_stakeholder_test_data2.csv")
@@ -367,8 +349,8 @@ write_csv(t, file = "workshops/04_stakeholder_test_data2.csv")
 
 ### Step 36 – Save Data to RDS
 
-Store an object as workshops/04_stakeholder_test_data2.rds to preserve its structure.
-
+Store an object as workshops/04_stakeholder_test_data2.rds to preserve
+its structure.
 
 ``` r
 write_rds(as.matrix(t), file = "workshops/04_stakeholder_test_data2.rds")
@@ -378,15 +360,14 @@ write_rds(as.matrix(t), file = "workshops/04_stakeholder_test_data2.rds")
 
 Remove objects from the environment to prevent name clashes.
 
-
 ``` r
 rm(list = ls())
 ```
 
 ### Step 38 – Define `plusone()`
 
-Create the helper function `plusone()` so you can reuse it throughout the workshop.
-
+Create the helper function `plusone()` so you can reuse it throughout
+the workshop.
 
 ``` r
 plusone = function(inputs){ output = inputs; output }
@@ -401,7 +382,6 @@ plusone = function(inputs){
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 plusone(inputs = 2)
 ```
@@ -410,15 +390,14 @@ plusone(inputs = 2)
 
 Delete specific objects so you can redefine them cleanly.
 
-
 ``` r
 remove(plusone)
 ```
 
 ### Step 41 – Define `plusone()`
 
-Create the helper function `plusone()` so you can reuse it throughout the workshop.
-
+Create the helper function `plusone()` so you can reuse it throughout
+the workshop.
 
 ``` r
 plusone = function(x){  y = x + 1; return(y)   }
@@ -428,8 +407,8 @@ plusone(x = c(2,3))
 
 ### Step 42 – Define `plustwo()`
 
-Create the helper function `plustwo()` so you can reuse it throughout the workshop.
-
+Create the helper function `plustwo()` so you can reuse it throughout
+the workshop.
 
 ``` r
 plustwo = function(x){  y = x + 2; return(y)  } 
@@ -440,7 +419,6 @@ plustwo(x = c(2,3))
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 plustwo(plusone(x = 1))
 library(dplyr)
@@ -448,8 +426,8 @@ library(dplyr)
 
 ### Step 44 – Practice the Pipe
 
-pipeline. Use the `%>%` operator to pass each result to the next tidyverse verb.
-
+pipeline. Use the `%>%` operator to pass each result to the next
+tidyverse verb.
 
 ``` r
 %>%
@@ -460,7 +438,6 @@ pipeline. Use the `%>%` operator to pass each result to the next tidyverse verb.
 
 shortcut: ctl shift m.
 
-
 ``` r
 %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>%
 ```
@@ -468,7 +445,6 @@ shortcut: ctl shift m.
 ### Step 46 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 1 %>% plusone()
@@ -478,7 +454,6 @@ Use the `%>%` operator to pass each result to the next tidyverse verb.
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 1 %>% plusone(x = .)
 ```
@@ -487,7 +462,6 @@ Use the `%>%` operator to pass each result to the next tidyverse verb.
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 1 %>% plusone() %>% plustwo()
 ```
@@ -495,7 +469,6 @@ Use the `%>%` operator to pass each result to the next tidyverse verb.
 ### Step 49 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 1 %>% 
@@ -507,7 +480,6 @@ Use the `%>%` operator to pass each result to the next tidyverse verb.
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 1 %>% 
   # Take 1 and use plusone() on it
@@ -518,8 +490,7 @@ Use the `%>%` operator to pass each result to the next tidyverse verb.
 
 ### Step 51 – Create `sh`
 
-Let's make a table including...
-
+Let’s make a table including…
 
 ``` r
 sh = tibble(
@@ -535,8 +506,8 @@ sh = tibble(
 
 ### Step 52 – Run the Code Block
 
-stakeholders. Execute the block and pay attention to the output it produces.
-
+stakeholders. Execute the block and pay attention to the output it
+produces.
 
 ``` r
 sh
@@ -545,7 +516,6 @@ sh
 ### Step 53 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 sh2 = sh %>%
@@ -556,7 +526,6 @@ sh2 = sh %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 sh2 %>%
   summarize(total_value = sum(value, na.rm = TRUE))
@@ -566,7 +535,6 @@ sh2 %>%
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 summarize(sh2, total_value = sum(value, na.rm = TRUE))
 ```
@@ -575,7 +543,6 @@ summarize(sh2, total_value = sum(value, na.rm = TRUE))
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 sh2$value %>% sum(na.rm = TRUE)
 ```
@@ -583,7 +550,6 @@ sh2$value %>% sum(na.rm = TRUE)
 ### Step 57 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 sh2 %>%
@@ -596,7 +562,6 @@ sh2 %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 sh2 %>%
   group_by(type) %>%
@@ -606,7 +571,6 @@ sh2 %>%
 ### Step 59 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 sh2 %>%
@@ -619,7 +583,6 @@ sh2 %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 sh2 %>%
   group_by(type)
@@ -628,7 +591,6 @@ sh2 %>%
 ### Step 61 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 sh2 %>%
@@ -642,7 +604,6 @@ sh2 %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 sh2 %>%
   group_by(type) %>%
@@ -654,7 +615,6 @@ sh2 %>%
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 seq(from = min(sh2$value, na.rm = TRUE),
     to = max(sh2$value, na.rm = TRUE),
@@ -664,7 +624,6 @@ seq(from = min(sh2$value, na.rm = TRUE),
 ### Step 64 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 sh2 %>%
@@ -679,7 +638,6 @@ sh2 %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 sh2 %>%
   select(name, value)
@@ -688,7 +646,6 @@ sh2 %>%
 ### Step 66 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 sh2 %>%
@@ -699,7 +656,6 @@ sh2 %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 sh2 %>%
   slice(2)
@@ -708,7 +664,6 @@ sh2 %>%
 ### Step 68 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 sh2 %>%
@@ -719,7 +674,6 @@ sh2 %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 sh2 %>%
   slice(-c(1,2))
@@ -729,7 +683,6 @@ sh2 %>%
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 sh2[-c(1,2), ]
 ```
@@ -737,7 +690,6 @@ sh2[-c(1,2), ]
 ### Step 71 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 sh2 %>%
@@ -748,7 +700,6 @@ sh2 %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 sh2 %>% 
   filter(value > 0.5 |  type == "Problem")
@@ -757,7 +708,6 @@ sh2 %>%
 ### Step 73 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 sh2 %>% 
@@ -768,7 +718,6 @@ sh2 %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 sh2 %>%
   filter(is.na(value))
@@ -777,7 +726,6 @@ sh2 %>%
 ### Step 75 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 sh2 %>%
@@ -788,7 +736,6 @@ sh2 %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 sh2 %>%
   arrange(value)
@@ -798,7 +745,6 @@ sh2 %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 sh2 %>%
   arrange(desc(value))
@@ -807,7 +753,6 @@ sh2 %>%
 ### Step 78 – Create `stats`
 
 Lets make our stats table.
-
 
 ``` r
 stats = tibble(
@@ -820,7 +765,6 @@ stats = tibble(
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 stats
 ```
@@ -828,7 +772,6 @@ stats
 ### Step 80 – Run the Code Block
 
 Execute the block and pay attention to the output it produces.
-
 
 ``` r
 sh2
@@ -838,7 +781,6 @@ sh2
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 left_join(x = sh2, y = stats, by = "type")
 ```
@@ -846,7 +788,6 @@ left_join(x = sh2, y = stats, by = "type")
 ### Step 82 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 sh2 %>%
@@ -856,7 +797,6 @@ sh2 %>%
 ### Step 83 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 sh2 %>%
@@ -872,54 +812,58 @@ sh2 %>%
 
 Remove objects from the environment to prevent name clashes.
 
-
 ``` r
 rm(list = ls())
 ```
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** Which packages do you install in Step 6, and what
+must you verify before moving on?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "04_stakeholder_r_basics_workshop.R"))` from the Console or press the Source button while the script is active.
+Step 6 installs dplyr, readr and ggplot2, so make sure each package
+finishes installing without errors before continuing.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** What role does the helper `plusone()` defined in
+Step 38 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 3.** When you import data in this workshop, what should you inspect right after the read call?
+**Learning Check 3.** What role does the helper `plustwo()` defined in
+Step 42 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Check the tibble in the Environment pane (or print it) to confirm column names and types look correct.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 4.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 4.** Which libraries does Step 7 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
-
-</details>
-
-**Learning Check 5.** How can you build confidence that a newly defined function behaves as intended?
-
-<details>
-<summary>Show answer</summary>
-
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+It attaches dplyr, readr and ggplot2, ensuring their functions are
+available before you execute the downstream code.
 
 </details>

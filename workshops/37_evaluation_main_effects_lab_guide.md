@@ -1,37 +1,44 @@
----
-title: "[37] Main effects lab Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `37_evaluation_main_effects_lab.R` and unpacks the workshop on main effects lab. You will see how it advances the Evaluation sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `37_evaluation_main_effects_lab.R` and unpacks
+the workshop on main effects lab. You will see how it advances the
+Evaluation sequence while building confidence with base R and tidyverse
+tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `37_evaluation_main_effects_lab.R` within the Evaluation module.
-- Connect the topic "Main effects lab" to systems architecting decisions.
-- Load packages with `library()` and verify they attach without warnings.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Navigate the script `37_evaluation_main_effects_lab.R` within the
+  Evaluation module.
+- Connect the topic “Main effects lab” to systems architecting
+  decisions.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Define custom functions to package repeatable logic.
 - Iterate on visualisations built with `ggplot2`.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Practice the Pipe] --> B[Create me1]
+    B[Create me1] --> C[Create data]
+    C[Create data] --> D[Run the Code Block]
+```
 
 ## Application
 
 ### Step 1 – Practice the Pipe
 
 Enumerate Architectures Example from Slides in Class.
-
 
 ``` r
 data = enumerate_sf(n = c(2, 3, 2)) %>%
@@ -44,15 +51,14 @@ data = enumerate_sf(n = c(2, 3, 2)) %>%
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 data
 ```
 
 ### Step 3 – Define `me()`
 
-Calculate main effect. Create the helper function `me()` so you can reuse it throughout the workshop.
-
+Calculate main effect. Create the helper function `me()` so you can
+reuse it throughout the workshop.
 
 ``` r
 me = function(data, decision = "d2", value = 1, metric = "m1"){
@@ -79,7 +85,6 @@ me = function(data, decision = "d2", value = 1, metric = "m1"){
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
   return(output)
 }
@@ -89,7 +94,6 @@ Execute the block and pay attention to the output it produces.
 
 Get main effects for each level.
 
-
 ``` r
 me1 = me(data, decision = "d2", value = 1, metric = "m1")
 me2 = me(data, decision = "d2", value = 0, metric = "m1")
@@ -98,8 +102,8 @@ me3 = me(data, decision = "d2", value = 2, metric = "m1")
 
 ### Step 6 – Run the Code Block
 
-Calculate sensitivity. Execute the block and pay attention to the output it produces.
-
+Calculate sensitivity. Execute the block and pay attention to the output
+it produces.
 
 ``` r
 (abs(me1) + abs(me2) + abs(me3)) / 3
@@ -107,8 +111,8 @@ Calculate sensitivity. Execute the block and pay attention to the output it prod
 
 ### Step 7 – Run the Code Block
 
-I'd suggest you use the final versions of these functions developed in: 00_sensitivity_connectivity_utilities.R.
-
+I’d suggest you use the final versions of these functions developed in:
+00_sensitivity_connectivity_utilities.R.
 
 ``` r
 source("workshops/00_sensitivity_connectivity_utilities.R")
@@ -116,8 +120,8 @@ source("workshops/00_sensitivity_connectivity_utilities.R")
 
 ### Step 8 – Run the Code Block
 
-Let's try using this function to get sensitivity scores for every decision and metric.
-
+Let’s try using this function to get sensitivity scores for every
+decision and metric.
 
 ``` r
 sensitivity(data, decision_i = "d1", metric = "m1")
@@ -128,7 +132,6 @@ connectivity(data, decision_i = "d3", decisions = c("d1", "d2", "d3"), metric = 
 
 Attach dplyr to make its functions available.
 
-
 ``` r
 library(dplyr)
 library(ggplot2)
@@ -137,7 +140,6 @@ library(ggplot2)
 ### Step 10 – Create `data`
 
 Create the object `data` so you can reuse it in later steps.
-
 
 ``` r
 data = tibble(
@@ -156,7 +158,6 @@ data = tibble(
 
 Create the object `quandrants` so you can reuse it in later steps.
 
-
 ``` r
 quandrants = tibble(
   label = c("Q1", "Q2", "Q3", "Q4"),
@@ -169,7 +170,6 @@ quandrants = tibble(
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 divisions = data %>%
   summarize(sensitivity = (max(sensitivity) - 0) / 2,
@@ -179,7 +179,6 @@ divisions = data %>%
 ### Step 13 – Create `gg`
 
 Create the object `gg` so you can reuse it in later steps.
-
 
 ``` r
 gg = ggplot() +
@@ -223,7 +222,6 @@ gg = ggplot() +
 
 Split up into panels.
 
-
 ``` r
 gg + 
   facet_wrap(~metric, scales = "free")
@@ -231,47 +229,51 @@ gg +
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** What role does the helper `me()` defined in Step 3
+play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "37_evaluation_main_effects_lab.R"))` from the Console or press the Source button while the script is active.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** Which libraries does Step 9 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It attaches dplyr and ggplot2, ensuring their functions are available
+before you execute the downstream code.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** After Step 1, what does `data` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It creates `data` that adds derived columns, and enumerates architecture
+combinations with `archr` helpers. Enumerate Architectures Example from
+Slides in Class.
 
 </details>
 
-**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 4.** After Step 5, what does `me1` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
-
-</details>
-
-**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
-
-<details>
-<summary>Show answer</summary>
-
-Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+It creates `me1`. Get main effects for each level.
 
 </details>

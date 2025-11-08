@@ -25,6 +25,23 @@ This tutorial complements `30_evaluation_probability_practice.R` and unpacks the
 - Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
 - Iterate on visualisations built with `ggplot2`.
 
+## Process Overview
+
+
+
+
+
+
+
+
+
+```mermaid
+flowchart LR
+    A[Load Packages] --> B[Practice the Pipe]
+    B[Practice the Pipe] --> C[Run the Code Block]
+    C[Run the Code Block] --> D[Practice the Pipe (Step 27)]
+```
+
 ## Application
 
 ### Step 1 – Load Packages
@@ -309,38 +326,48 @@ rbinom(100, n, p) %>% sd()
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+
+
+
+
+
+
+
+
+
+**Learning Check 1.** Which libraries does Step 1 attach, and why do you run that chunk before others?
 
 <details>
 <summary>Show answer</summary>
 
-Use `source(file.path("workshops", "30_evaluation_probability_practice.R"))` from the Console or press the Source button while the script is active.
+It attaches dplyr, readr and ggplot2, ensuring their functions are available before you execute the downstream code.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** After Step 2, what does `cost` capture?
 
 <details>
 <summary>Show answer</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It creates `cost` that builds a tibble of scenario data. Import data! Cost distribution stats ($1000s) by subsystem.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** After Step 3, what does `time` capture?
 
 <details>
 <summary>Show answer</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It creates `time` that builds a tibble of scenario data. Time distribution stats (hours) by subsystem.
 
 </details>
 
-**Learning Check 4.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
+**Learning Check 4.** After Step 4, what does `bench` capture?
 
 <details>
 <summary>Show answer</summary>
 
-Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+It creates `bench`. pnorm, pexp, ppois, etc. - cumulative distribution rnorm, rexp, rpois, etc. - simulates times dnorm, dexp, dpois, etc - value of pdf Set parameters.
 
 </details>

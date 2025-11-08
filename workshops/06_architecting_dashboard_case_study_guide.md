@@ -1,35 +1,41 @@
----
-title: "[06] Dashboard architecture case study Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `06_architecting_dashboard_case_study.R` and unpacks the workshop on dashboard architecture case study. You will see how it advances the Architecting Systems sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `06_architecting_dashboard_case_study.R` and
+unpacks the workshop on dashboard architecture case study. You will see
+how it advances the Architecting Systems sequence while building
+confidence with base R and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `06_architecting_dashboard_case_study.R` within the Architecting Systems module.
-- Connect the topic "Dashboard architecture case study" to systems architecting decisions.
-- Load packages with `library()` and verify they attach without warnings.
+- Navigate the script `06_architecting_dashboard_case_study.R` within
+  the Architecting Systems module.
+- Connect the topic “Dashboard architecture case study” to systems
+  architecting decisions.
+- Load packages with `library()` and verify they attach without
+  warnings.
 - Define custom functions to package repeatable logic.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Define get_cost()]
+    B[Define get_cost()] --> C[Create metric]
+    C[Create metric] --> D[Run the Code Block]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
 Attach dplyr to make its functions available.
-
 
 ``` r
 library(dplyr)
@@ -40,7 +46,6 @@ library(archr)
 ### Step 2 – Create `a`
 
 Create the object `a` so you can reuse it in later steps.
-
 
 ``` r
 a = tibble(
@@ -57,7 +62,6 @@ a = tibble(
 
 **Option A: Super Specific** testing values d1 = 1; d2 = 1; d3 = 0.
 
-
 ``` r
 get_cost = function(d1,d2,d3){
   m1_cost = case_when(
@@ -71,7 +75,6 @@ get_cost = function(d1,d2,d3){
 
 Create the object `m2_hours` so you can reuse it in later steps.
 
-
 ``` r
   m2_hours = case_when(
     d2 == 0 ~ 10, # hours
@@ -81,8 +84,8 @@ Create the object `m2_hours` so you can reuse it in later steps.
 
 ### Step 5 – Create `m3_hours`
 
-m1_cost * m2_hours. Create the object `m3_hours` so you can reuse it in later steps.
-
+m1_cost \* m2_hours. Create the object `m3_hours` so you can reuse it in
+later steps.
 
 ``` r
   m3_hours = case_when(
@@ -93,8 +96,8 @@ m1_cost * m2_hours. Create the object `m3_hours` so you can reuse it in later st
 
 ### Step 6 – Create `metric`
 
-total cost. Create the object `metric` so you can reuse it in later steps.
-
+total cost. Create the object `metric` so you can reuse it in later
+steps.
 
 ``` r
   metric = m1_cost * (m2_hours + m3_hours)
@@ -105,7 +108,6 @@ total cost. Create the object `metric` so you can reuse it in later steps.
 ### Step 7 – Create `m1`
 
 likert scale - 3 point (low = 0, medium = 1, high = 2).
-
 
 ``` r
 m1 = case_when(
@@ -123,7 +125,6 @@ m2 = case_when(
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 m1 + m2
 mean(c(m1,m2)) # average cost on a 3 point scale from low = 0 to high = 2
@@ -131,29 +132,52 @@ mean(c(m1,m2)) # average cost on a 3 point scale from low = 0 to high = 2
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** What role does the helper `get_cost()` defined in
+Step 3 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "06_architecting_dashboard_case_study.R"))` from the Console or press the Source button while the script is active.
+It encapsulates the conditional cost schedule so you can reuse it
+whenever you mutate architecture rows.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** Which libraries does Step 1 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It attaches dplyr, readr and archr, ensuring their functions are
+available before you execute the downstream code.
 
 </details>
 
-**Learning Check 3.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 3.** After Step 2, what does `a` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+It creates `a` that builds a tibble of scenario data. Create the object
+`a` so you can reuse it in later steps.
+
+</details>
+
+**Learning Check 4.** After Step 4, what does `m2_hours` capture?
+
+<details>
+<summary>
+Show answer
+</summary>
+
+It creates `m2_hours` that encodes conditional logic with `case_when()`.
+Create the object `m2_hours` so you can reuse it in later steps.
 
 </details>

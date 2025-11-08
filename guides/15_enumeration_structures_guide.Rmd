@@ -27,6 +27,23 @@ This tutorial complements `15_enumeration_structures.R` and unpacks the workshop
 - Export results to disk so you can reuse them across workshops.
 - Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
 
+## Process Overview
+
+
+
+
+
+
+
+
+
+```mermaid
+flowchart LR
+    A[Load Packages] --> B[Practice the Pipe]
+    B[Practice the Pipe] --> C[Run the Code Block]
+    C[Run the Code Block] --> D[Create arch]
+```
+
 ## Application
 
 ### Step 1 – Load Packages
@@ -482,38 +499,48 @@ arch = expand_grid(
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+
+
+
+
+
+
+
+
+
+**Learning Check 1.** Which libraries does Step 1 attach, and why do you run that chunk before others?
 
 <details>
 <summary>Show answer</summary>
 
-Use `source(file.path("workshops", "15_enumeration_structures.R"))` from the Console or press the Source button while the script is active.
+It attaches archr, dplyr and tidyr, ensuring their functions are available before you execute the downstream code.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** After Step 6, what does `parta` capture?
 
 <details>
 <summary>Show answer</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It creates `parta` that filters rows to the cases of interest, and enumerates architecture combinations with `archr` helpers. which instruments. Create the object `parta` so you can reuse it in later steps.
 
 </details>
 
-**Learning Check 3.** When you import data in this workshop, what should you inspect right after the read call?
+**Learning Check 3.** After Step 7, what does `partb` capture?
 
 <details>
 <summary>Show answer</summary>
 
-Check the tibble in the Environment pane (or print it) to confirm column names and types look correct.
+It creates `partb` that filters rows to the cases of interest, and enumerates architecture combinations with `archr` helpers. Create the object `partb` so you can reuse it in later steps.
 
 </details>
 
-**Learning Check 4.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 4.** After Step 8, what does `constrained` capture?
 
 <details>
 <summary>Show answer</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It creates `constrained` that stacks results from multiple scenarios. constrained architecture. Create the object `constrained` so you can reuse it in later steps.
 
 </details>

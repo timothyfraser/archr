@@ -1,36 +1,44 @@
----
-title: "[13] Minimum sample sizing utility Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `13_enumeration_sample_sizing.R` and unpacks the workshop on minimum sample sizing utility. You will see how it advances the Enumeration sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `13_enumeration_sample_sizing.R` and unpacks
+the workshop on minimum sample sizing utility. You will see how it
+advances the Enumeration sequence while building confidence with base R
+and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `13_enumeration_sample_sizing.R` within the Enumeration module.
-- Connect the topic "Minimum sample sizing utility" to systems architecting decisions.
-- Load packages with `library()` and verify they attach without warnings.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Navigate the script `13_enumeration_sample_sizing.R` within the
+  Enumeration module.
+- Connect the topic “Minimum sample sizing utility” to systems
+  architecting decisions.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Define custom functions to package repeatable logic.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Define get_minsize()] --> B[Load Packages]
+    B[Load Packages] --> C[Run the Code Block]
+    C[Run the Code Block] --> D[Clear Objects]
+```
 
 ## Application
 
 ### Step 1 – Define `get_minsize()`
 
-Create the helper function `get_minsize()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_minsize()` so you can reuse it
+throughout the workshop.
 
 ``` r
 get_minsize = function(data, decisions = c("d1")){
@@ -41,7 +49,6 @@ get_minsize = function(data, decisions = c("d1")){
 ### Step 2 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
   data %>%
@@ -64,7 +71,6 @@ Use the `%>%` operator to pass each result to the next tidyverse verb.
 
 Attach dplyr to make its functions available.
 
-
 ``` r
 library(dplyr)
 library(tidyr)
@@ -75,15 +81,13 @@ library(archr)
 
 Create the object `a` so you can reuse it in later steps.
 
-
 ``` r
 a = enumerate_sf(n = c(2,5,4))
 ```
 
 ### Step 5 – Run the Code Block
 
-to count sample size needed...
-
+to count sample size needed…
 
 ``` r
 get_minsize(a, decisions = c("d1"))
@@ -95,45 +99,58 @@ get_minsize(a, decisions = c("d1", "d2", "d3"))
 
 Remove objects from the environment to prevent name clashes.
 
-
 ``` r
 rm(list = ls())
 ```
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** Which libraries does Step 1 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "13_enumeration_sample_sizing.R"))` from the Console or press the Source button while the script is active.
+It attaches dplyr and tidyr, ensuring their functions are available
+before you execute the downstream code.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** After Step 2, what does `cols` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It creates `cols` that computes summary statistics, and selects a
+focused set of columns. Use the `%>%` operator to pass each result to
+the next tidyverse verb.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** After Step 4, what does `a` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It creates `a` that enumerates architecture combinations with `archr`
+helpers. Create the object `a` so you can reuse it in later steps.
 
 </details>
 
-**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 4.** Why is Step 5 (‘Run the Code Block’) necessary in
+this guide?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+to count sample size needed…
 
 </details>

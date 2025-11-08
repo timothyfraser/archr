@@ -27,6 +27,23 @@ This tutorial complements `48_optimization_parking_garage_case.R` and unpacks th
 - Iterate on visualisations built with `ggplot2`.
 - Experiment with optimisation searches powered by the `GA` package.
 
+## Process Overview
+
+
+
+
+
+
+
+
+
+```mermaid
+flowchart LR
+    A[Load Packages] --> B[Define get_demand()]
+    B[Define get_demand()] --> C[Start a ggplot]
+    C[Start a ggplot] --> D[Start a ggplot (Step 15)]
+```
+
 ## Application
 
 ### Step 1 – Load Packages
@@ -236,47 +253,48 @@ ggplot() +
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+
+
+
+
+
+
+
+
+
+**Learning Check 1.** What role does the helper `get_npv()` defined in Step 2 play in this workflow?
 
 <details>
 <summary>Show answer</summary>
 
-Use `source(file.path("workshops", "48_optimization_parking_garage_case.R"))` from the Console or press the Source button while the script is active.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** What role does the helper `get_capacity()` defined in Step 3 play in this workflow?
 
 <details>
 <summary>Show answer</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** What role does the helper `get_usage()` defined in Step 4 play in this workflow?
 
 <details>
 <summary>Show answer</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 4.** What role does the helper `get_revenue()` defined in Step 5 play in this workflow?
 
 <details>
 <summary>Show answer</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
-
-</details>
-
-**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
-
-<details>
-<summary>Show answer</summary>
-
-Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+It packages reusable logic needed by later steps.
 
 </details>

@@ -1,37 +1,45 @@
----
-title: "[44] Exercise equipment optimization case Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `44_optimization_exercise_equipment_case.R` and unpacks the workshop on exercise equipment optimization case. You will see how it advances the Optimization sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `44_optimization_exercise_equipment_case.R`
+and unpacks the workshop on exercise equipment optimization case. You
+will see how it advances the Optimization sequence while building
+confidence with base R and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `44_optimization_exercise_equipment_case.R` within the Optimization module.
-- Connect the topic "Exercise equipment optimization case" to systems architecting decisions.
+- Navigate the script `44_optimization_exercise_equipment_case.R` within
+  the Optimization module.
+- Connect the topic “Exercise equipment optimization case” to systems
+  architecting decisions.
 - Install any required packages highlighted with `install.packages()`.
-- Load packages with `library()` and verify they attach without warnings.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Define custom functions to package repeatable logic.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Create output]
+    B[Create output] --> C[Load Packages (Step 15)]
+    C[Load Packages (Step 15)] --> D[Run the Code Block]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
-0. SETUP ########################################################## install.packages("tidyr").
-
+0.  SETUP \##########################################################
+    install.packages(“tidyr”).
 
 ``` r
 library(dplyr)
@@ -42,8 +50,8 @@ library(tidyr)
 
 ### Step 2 – Create `archs`
 
-archs = Hw3_decisions. Create the object `archs` so you can reuse it in later steps.
-
+archs = Hw3_decisions. Create the object `archs` so you can reuse it in
+later steps.
 
 ``` r
 archs <- expand_grid(
@@ -63,7 +71,6 @@ archs <- expand_grid(
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 archs <- archs %>% mutate(id = row_number())
 # 1. FUNCTIONS ##################################################
@@ -72,8 +79,12 @@ archs <- archs %>% mutate(id = row_number())
 
 ### Step 4 – Define `get_cost()`
 
-cost_metrics <- expand_grid( d1 = enumerate_sf(n = c(2), .did = 1), d2 = enumerate_sf(n = c(4), .did = 2), d3 = enumerate_sf(n = c(3), .did = 3), d4 = enumerate_sf(n = c(2), .did = 4), d5 = enumerate_sf(n = c(2), .did = 5), d6 = enumerate_sf(n = c(2), .did = 6), d7 = enumerate_sf(n = c(4), .did = 7), d8 = enumerate_sf(n = c(2), .did = 8), d9 = enumerate_sf(n = c(3), .did = 9) ) Cost metric function.
-
+cost_metrics \<- expand_grid( d1 = enumerate_sf(n = c(2), .did = 1), d2
+= enumerate_sf(n = c(4), .did = 2), d3 = enumerate_sf(n = c(3), .did =
+3), d4 = enumerate_sf(n = c(2), .did = 4), d5 = enumerate_sf(n = c(2),
+.did = 5), d6 = enumerate_sf(n = c(2), .did = 6), d7 = enumerate_sf(n =
+c(4), .did = 7), d8 = enumerate_sf(n = c(2), .did = 8), d9 =
+enumerate_sf(n = c(3), .did = 9) ) Cost metric function.
 
 ``` r
 get_cost <- function(d1,d2, d3,d4, d5, d6,d7,d8,d9) {
@@ -102,7 +113,6 @@ get_cost <- function(d1,d2, d3,d4, d5, d6,d7,d8,d9) {
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
   return(output)
 }
@@ -110,8 +120,8 @@ Execute the block and pay attention to the output it produces.
 
 ### Step 6 – Define `get_versatility()`
 
-Create the helper function `get_versatility()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_versatility()` so you can reuse it
+throughout the workshop.
 
 ``` r
 get_versatility <- function(d2, d3,d4,d6,d7) {
@@ -120,7 +130,6 @@ get_versatility <- function(d2, d3,d4,d6,d7) {
 ### Step 7 – Create `m2`
 
 Create the object `m2` so you can reuse it in later steps.
-
 
 ``` r
   m2 <- case_when(d2 == 0 ~ 2, d2 == 1 ~ 1,d2 == 2 ~ 3,d2 == 3 ~ 3)
@@ -134,7 +143,6 @@ Create the object `m2` so you can reuse it in later steps.
 
 V = V-D2 x V-D3 x V-D4 x V-D6 x V-D7.
 
-
 ``` r
   output = m2 *m3 *m4 *m6*m7
   return(output)
@@ -143,8 +151,8 @@ V = V-D2 x V-D3 x V-D4 x V-D6 x V-D7.
 
 ### Step 9 – Define `get_reliability()`
 
-Create the helper function `get_reliability()` so you can reuse it throughout the workshop.
-
+Create the helper function `get_reliability()` so you can reuse it
+throughout the workshop.
 
 ``` r
 get_reliability <- function(d2, d3,d5,d6,d8,d9) {
@@ -154,7 +162,6 @@ get_reliability <- function(d2, d3,d5,d6,d8,d9) {
 ### Step 10 – Create `m3`
 
 Create the object `m3` so you can reuse it in later steps.
-
 
 ``` r
   m3 <- case_when(d3 == 0 ~ 0.9, d3 == 1 ~ 0.98, d3 == 2 ~ 0.95)
@@ -166,7 +173,6 @@ Create the object `m3` so you can reuse it in later steps.
 ### Step 11 – Create `m9`
 
 Create the object `m9` so you can reuse it in later steps.
-
 
 ``` r
   m9 <- case_when(
@@ -188,7 +194,6 @@ Create the object `m9` so you can reuse it in later steps.
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 archs = archs %>% mutate(cost = get_cost(d1,d2,d3,d4, d5, d6,d7,d8,d9))
 archs = archs %>% mutate(versatility = get_versatility(d2, d3,d4,d6,d7))
@@ -198,7 +203,6 @@ archs = archs %>% mutate(Reliability = get_reliability(d2,d3,d5,d6,d8,d9))
 ### Step 13 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 archs2 = archs %>%
@@ -224,7 +228,6 @@ archs2 = archs %>%
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 archs2
 ```
@@ -232,7 +235,6 @@ archs2
 ### Step 15 – Load Packages
 
 Attach GA to make its functions available.
-
 
 ``` r
 library(GA)
@@ -247,7 +249,6 @@ library(rmoo)
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 archs2$d1 %>% unique()
 archs2$d2 %>% unique()
@@ -256,8 +257,8 @@ archs2$d3 %>% unique()
 
 ### Step 17 – Define `bit2int()`
 
-Create the helper function `bit2int()` so you can reuse it throughout the workshop.
-
+Create the helper function `bit2int()` so you can reuse it throughout
+the workshop.
 
 ``` r
 bit2int = function(x){
@@ -275,15 +276,14 @@ bit2int = function(x){
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 }
 ```
 
 ### Step 19 – Define `f1()`
 
-Create the helper function `f1()` so you can reuse it throughout the workshop.
-
+Create the helper function `f1()` so you can reuse it throughout the
+workshop.
 
 ``` r
 f1 = function(x, nobjs = 2, ...){
@@ -298,7 +298,6 @@ f1 = function(x, nobjs = 2, ...){
 
 Create the object `output` so you can reuse it in later steps.
 
-
 ``` r
   output = matrix(c(m1,m2), nrow = 1)
   return(output)
@@ -308,7 +307,6 @@ Create the object `output` so you can reuse it in later steps.
 ### Step 21 – Create `o`
 
 Create the object `o` so you can reuse it in later steps.
-
 
 ``` r
 o = rmoo(
@@ -325,7 +323,6 @@ o = rmoo(
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 summary(o)
 o@solution # multi-objective pareto front (in binary)
@@ -334,38 +331,51 @@ bit2int(o@solution) #
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** What role does the helper `get_cost()` defined in
+Step 4 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "44_optimization_exercise_equipment_case.R"))` from the Console or press the Source button while the script is active.
+It encapsulates the conditional cost schedule so you can reuse it
+whenever you mutate architecture rows.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** What role does the helper `get_versatility()`
+defined in Step 6 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** What role does the helper `get_reliability()`
+defined in Step 9 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 4.** What role does the helper `bit2int()` defined in
+Step 17 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+It packages reusable logic needed by later steps.
 
 </details>

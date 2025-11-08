@@ -1,36 +1,42 @@
----
-title: "[42] Binary encoding primer Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `42_optimization_binary_encoding.R` and unpacks the workshop on binary encoding primer. You will see how it advances the Optimization sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `42_optimization_binary_encoding.R` and
+unpacks the workshop on binary encoding primer. You will see how it
+advances the Optimization sequence while building confidence with base R
+and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `42_optimization_binary_encoding.R` within the Optimization module.
-- Connect the topic "Binary encoding primer" to systems architecting decisions.
+- Navigate the script `42_optimization_binary_encoding.R` within the
+  Optimization module.
+- Connect the topic “Binary encoding primer” to systems architecting
+  decisions.
 - Install any required packages highlighted with `install.packages()`.
-- Load packages with `library()` and verify they attach without warnings.
+- Load packages with `library()` and verify they attach without
+  warnings.
 - Define custom functions to package repeatable logic.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Create d1]
+    B[Create d1] --> C[Run the Code Block]
+    C[Run the Code Block] --> D[Define bit2int()]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
 Attach dplyr to make its functions available.
-
 
 ``` r
 library(dplyr)
@@ -42,8 +48,8 @@ library(rmoo)
 
 ### Step 2 – Run the Code Block
 
-[XX][X][X]. Execute the block and pay attention to the output it produces.
-
+\[XX\]\[X\]\[X\]. Execute the block and pay attention to the output it
+produces.
 
 ``` r
 c(0,1, 0, 0) # binary
@@ -52,7 +58,6 @@ c(0,1, 0, 0) # binary
 ### Step 3 – Run the Code Block
 
 Convert from binary into decimal.
-
 
 ``` r
 binary2decimal(x = c(0, 0) )
@@ -63,8 +68,8 @@ binary2decimal(x = c(1, 1) )
 
 ### Step 4 – Define `int2bit()`
 
-Create the helper function `int2bit()` so you can reuse it throughout the workshop.
-
+Create the helper function `int2bit()` so you can reuse it throughout
+the workshop.
 
 ``` r
 int2bit = function(xhat){
@@ -73,7 +78,6 @@ int2bit = function(xhat){
 ### Step 5 – Create `d1`
 
 Create the object `d1` so you can reuse it in later steps.
-
 
 ``` r
   d1 = xhat[1]
@@ -84,7 +88,6 @@ Create the object `d1` so you can reuse it in later steps.
 ### Step 6 – Run the Code Block
 
 D1 Resampler If d1 is NOT in this set of valid values.
-
 
 ``` r
   if(!d1 %in% c(0,1,2)){
@@ -101,8 +104,8 @@ D1 Resampler If d1 is NOT in this set of valid values.
 
 ### Step 7 – Run the Code Block
 
-D2 Resampler. Execute the block and pay attention to the output it produces.
-
+D2 Resampler. Execute the block and pay attention to the output it
+produces.
 
 ``` r
   if(!d2 %in% c(0,1)){ d2 = sample(size = 1, x = c(0,1)) }
@@ -111,7 +114,6 @@ D2 Resampler. Execute the block and pay attention to the output it produces.
 ### Step 8 – Create `x2`
 
 D2 Convert to Bits.
-
 
 ``` r
   x2 = case_when(
@@ -122,8 +124,8 @@ D2 Convert to Bits.
 
 ### Step 9 – Run the Code Block
 
-D3 Resampler. Execute the block and pay attention to the output it produces.
-
+D3 Resampler. Execute the block and pay attention to the output it
+produces.
 
 ``` r
   if(!d3 %in% c(0,1)){ d3 = sample(size = 1, x = c(0,1)) }
@@ -132,7 +134,6 @@ D3 Resampler. Execute the block and pay attention to the output it produces.
 ### Step 10 – Create `x3`
 
 D3 Convert to Bits.
-
 
 ``` r
   x3 = case_when(
@@ -145,7 +146,6 @@ D3 Convert to Bits.
 
 Goal: turn our integer vector into a vector of bits x.
 
-
 ``` r
   x = c(x1, x2, x3)
   return(x)
@@ -156,7 +156,6 @@ Goal: turn our integer vector into a vector of bits x.
 
 Test it. Execute the block and pay attention to the output it produces.
 
-
 ``` r
 int2bit(xhat = c(3, 1, 1))
 ```
@@ -165,36 +164,57 @@ int2bit(xhat = c(3, 1, 1))
 
 From binary to integer.
 
-
 ``` r
 bit2int = function(x){ }
 ```
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** Which packages do you install in Step 1, and what
+must you verify before moving on?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "42_optimization_binary_encoding.R"))` from the Console or press the Source button while the script is active.
+Step 1 installs GA and rmoo, so make sure each package finishes
+installing without errors before continuing.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** What role does the helper `int2bit()` defined in
+Step 4 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It packages reusable logic needed by later steps.
 
 </details>
 
-**Learning Check 3.** How can you build confidence that a newly defined function behaves as intended?
+**Learning Check 3.** What role does the helper `bit2int()` defined in
+Step 13 play in this workflow?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+It packages reusable logic needed by later steps.
+
+</details>
+
+**Learning Check 4.** After Step 5, what does `d1` capture?
+
+<details>
+<summary>
+Show answer
+</summary>
+
+It creates `d1`. Create the object `d1` so you can reuse it in later
+steps.
 
 </details>

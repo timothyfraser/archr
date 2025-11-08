@@ -1,36 +1,43 @@
----
-title: "[30] Probability practice exercises Guide"
-output:
-  md_document:
-    variant: gfm
-output_dir: ../workshops
-knitr:
-  opts_knit:
-    root.dir: ..
----
-
-This tutorial complements `30_evaluation_probability_practice.R` and unpacks the workshop on probability practice exercises. You will see how it advances the Evaluation sequence while building confidence with base R and tidyverse tooling.
+This tutorial complements `30_evaluation_probability_practice.R` and
+unpacks the workshop on probability practice exercises. You will see how
+it advances the Evaluation sequence while building confidence with base
+R and tidyverse tooling.
 
 ## Setup
 
-- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
-- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
-- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+- Ensure you have opened the `archr` project root (or set your working
+  directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines
+  interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from
+  earlier workshops.
 
 ## Skills
 
-- Navigate the script `30_evaluation_probability_practice.R` within the Evaluation module.
-- Connect the topic "Probability practice exercises" to systems architecting decisions.
-- Load packages with `library()` and verify they attach without warnings.
-- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Navigate the script `30_evaluation_probability_practice.R` within the
+  Evaluation module.
+- Connect the topic “Probability practice exercises” to systems
+  architecting decisions.
+- Load packages with `library()` and verify they attach without
+  warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or
+  architecture tables.
 - Iterate on visualisations built with `ggplot2`.
+
+## Process Overview
+
+``` mermaid
+flowchart LR
+    A[Load Packages] --> B[Practice the Pipe]
+    B[Practice the Pipe] --> C[Run the Code Block]
+    C[Run the Code Block] --> D[Practice the Pipe (Step 27)]
+```
 
 ## Application
 
 ### Step 1 – Load Packages
 
 Load required libraries. Attach dplyr to make its functions available.
-
 
 ``` r
 library(dplyr)
@@ -40,8 +47,7 @@ library(ggplot2)
 
 ### Step 2 – Create `cost`
 
-Import data! Cost distribution stats ($1000s) by subsystem.
-
+Import data! Cost distribution stats (\$1000s) by subsystem.
 
 ``` r
 cost = tribble(
@@ -58,7 +64,6 @@ cost = tribble(
 
 Time distribution stats (hours) by subsystem.
 
-
 ``` r
 time <- tribble(
   ~type, ~system, ~dist,        ~mu, ~sigma,
@@ -72,8 +77,9 @@ time <- tribble(
 
 ### Step 4 – Create `bench`
 
-pnorm, pexp, ppois, etc. - cumulative distribution rnorm, rexp, rpois, etc. - simulates times dnorm, dexp, dpois, etc - value of pdf Set parameters.
-
+pnorm, pexp, ppois, etc. - cumulative distribution rnorm, rexp, rpois,
+etc. - simulates times dnorm, dexp, dpois, etc - value of pdf Set
+parameters.
 
 ``` r
 bench <- 520 # suppose 520 hours is our firm deadline from funders
@@ -81,8 +87,8 @@ bench <- 520 # suppose 520 hours is our firm deadline from funders
 
 ### Step 5 – Clear Objects
 
-Eg. What % of cases would should we expect take > 520 hours? Assume a normal distribution.
-
+Eg. What % of cases would should we expect take \> 520 hours? Assume a
+normal distribution.
 
 ``` r
 1 - pnorm(bench, mean = 500, sd = 25)
@@ -90,8 +96,7 @@ Eg. What % of cases would should we expect take > 520 hours? Assume a normal dis
 
 ### Step 6 – Clear Objects
 
-100 random draws if normal.......
-
+100 random draws if normal…….
 
 ``` r
 rnorm(n = 100, mean = 500, sd = 25)
@@ -100,7 +105,6 @@ rnorm(n = 100, mean = 500, sd = 25)
 ### Step 7 – Create `o`
 
 Create the object `o` so you can reuse it in later steps.
-
 
 ``` r
 o <- tibble(
@@ -116,7 +120,6 @@ o <- tibble(
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 o %>%
   mutate(id = 1:n()) %>%
@@ -128,7 +131,6 @@ o %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 o %>%
   rowwise() %>%
@@ -139,7 +141,6 @@ o %>%
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 o %>%
   rowwise() %>%
@@ -149,7 +150,6 @@ o %>%
 ### Step 11 – Practice the Pipe
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
-
 
 ``` r
 o = o %>%
@@ -162,15 +162,14 @@ o = o %>%
 
 Execute the block and pay attention to the output it produces.
 
-
 ``` r
 o
 ```
 
 ### Step 13 – Practice the Pipe
 
-Get max. Use the `%>%` operator to pass each result to the next tidyverse verb.
-
+Get max. Use the `%>%` operator to pass each result to the next
+tidyverse verb.
 
 ``` r
 o = o %>% 
@@ -180,8 +179,8 @@ o = o %>%
 
 ### Step 14 – Practice the Pipe
 
-Get total. Use the `%>%` operator to pass each result to the next tidyverse verb.
-
+Get total. Use the `%>%` operator to pass each result to the next
+tidyverse verb.
 
 ``` r
 o = o %>% 
@@ -191,8 +190,8 @@ o = o %>%
 
 ### Step 15 – Start a ggplot
 
-2.3 Compute Quantities of Interest View the histogram / approximate the PDF!
-
+2.3 Compute Quantities of Interest View the histogram / approximate the
+PDF!
 
 ``` r
 ggplot(o, aes(x = sum)) +
@@ -204,7 +203,6 @@ ggplot(o, aes(x = sum)) +
 
 Initialize a ggplot so you can layer geoms and customise aesthetics.
 
-
 ``` r
 ggplot(o, aes(x = max)) +
   geom_histogram(binwidth = 100, fill = "purple", color = "black") +
@@ -213,8 +211,8 @@ ggplot(o, aes(x = max)) +
 
 ### Step 17 – Run the Code Block
 
-Compute the median, mean, and standard deviation of this distribution! "If simultaneously...
-
+Compute the median, mean, and standard deviation of this distribution!
+“If simultaneously…
 
 ``` r
 median(o$max)
@@ -224,8 +222,8 @@ sd(o$max)
 
 ### Step 18 – Run the Code Block
 
-"If sequentially... Execute the block and pay attention to the output it produces.
-
+“If sequentially… Execute the block and pay attention to the output it
+produces.
 
 ``` r
 median(o$sum)
@@ -235,8 +233,9 @@ sd(o$sum)
 
 ### Step 19 – Run the Code Block
 
-TASK 2: SIMULATE OVERALL SYSTEM Try your best to repeat this process, but this time, simulate the **TOTAL COST** of the system overall, using our table t above!
-
+TASK 2: SIMULATE OVERALL SYSTEM Try your best to repeat this process,
+but this time, simulate the **TOTAL COST** of the system overall, using
+our table t above!
 
 ``` r
 cost
@@ -245,7 +244,6 @@ cost
 ### Step 20 – Create `k`
 
 Create the object `k` so you can reuse it in later steps.
-
 
 ``` r
 k = tibble(
@@ -261,7 +259,6 @@ k = tibble(
 
 Use the `%>%` operator to pass each result to the next tidyverse verb.
 
-
 ``` r
 k %>% 
   rowwise() %>% 
@@ -271,7 +268,6 @@ k %>%
 ### Step 22 – Practice the Pipe
 
 If you need to do it without using specific values.
-
 
 ``` r
 cost %>%
@@ -287,8 +283,8 @@ cost %>%
 
 ### Step 23 – Create `p`
 
-EXAMPLE 3: SIMULATING DISCRETE DISTRIBUTIONS Let's say in the Donut Cannon Subsystem, every cannon has the same reliability (p = 95%).
-
+EXAMPLE 3: SIMULATING DISCRETE DISTRIBUTIONS Let’s say in the Donut
+Cannon Subsystem, every cannon has the same reliability (p = 95%).
 
 ``` r
 p <- 0.95
@@ -299,8 +295,7 @@ n <- 10
 
 ### Step 24 – Run the Code Block
 
-3.1 What's the probability that 9 out of 10 land successfully?
-
+3.1 What’s the probability that 9 out of 10 land successfully?
 
 ``` r
 dbinom(9, size = n, prob = p)
@@ -308,8 +303,7 @@ dbinom(9, size = n, prob = p)
 
 ### Step 25 – Run the Code Block
 
-3.2 What's the probability that at least 9 land successfully?
-
+3.2 What’s the probability that at least 9 land successfully?
 
 ``` r
 pbinom(9, size = n, prob = p)
@@ -317,8 +311,8 @@ pbinom(9, size = n, prob = p)
 
 ### Step 26 – Run the Code Block
 
-more than 9. Execute the block and pay attention to the output it produces.
-
+more than 9. Execute the block and pay attention to the output it
+produces.
 
 ``` r
 1 - pbinom(9, size = n, prob = p)
@@ -326,8 +320,8 @@ more than 9. Execute the block and pay attention to the output it produces.
 
 ### Step 27 – Practice the Pipe
 
-3.3 simulate 100 draws from a binomial distribution to determine the expected number of donuts.
-
+3.3 simulate 100 draws from a binomial distribution to determine the
+expected number of donuts.
 
 ``` r
 rbinom(100, n, p) %>% mean()
@@ -336,38 +330,52 @@ rbinom(100, n, p) %>% sd()
 
 ## Learning Checks
 
-**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+**Learning Check 1.** Which libraries does Step 1 attach, and why do you
+run that chunk before others?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Use `source(file.path("workshops", "30_evaluation_probability_practice.R"))` from the Console or press the Source button while the script is active.
+It attaches dplyr, readr and ggplot2, ensuring their functions are
+available before you execute the downstream code.
 
 </details>
 
-**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+**Learning Check 2.** After Step 2, what does `cost` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+It creates `cost` that builds a tibble of scenario data. Import data!
+Cost distribution stats (\$1000s) by subsystem.
 
 </details>
 
-**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+**Learning Check 3.** After Step 3, what does `time` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+It creates `time` that builds a tibble of scenario data. Time
+distribution stats (hours) by subsystem.
 
 </details>
 
-**Learning Check 4.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
+**Learning Check 4.** After Step 4, what does `bench` capture?
 
 <details>
-<summary>Show answer</summary>
+<summary>
+Show answer
+</summary>
 
-Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+It creates `bench`. pnorm, pexp, ppois, etc. - cumulative distribution
+rnorm, rexp, rpois, etc. - simulates times dnorm, dexp, dpois, etc -
+value of pdf Set parameters.
 
 </details>
