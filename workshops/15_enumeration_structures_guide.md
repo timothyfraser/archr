@@ -1,0 +1,562 @@
+---
+title: "[15] Enumeration of structures Guide"
+output:
+  md_document:
+    variant: gfm
+output_dir: ../workshops
+knitr:
+  opts_knit:
+    root.dir: ..
+---
+
+This tutorial complements `15_enumeration_structures.R` and unpacks the workshop on enumeration of structures. You will see how it advances the Enumeration sequence while building confidence with base R and tidyverse tooling.
+
+## Setup
+
+- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+
+## Skills
+
+- Navigate the script `15_enumeration_structures.R` within the Enumeration module.
+- Connect the topic "Enumeration of structures" to systems architecting decisions.
+- Install any required packages highlighted with `install.packages()`.
+- Load packages with `library()` and verify they attach without warnings.
+- Import data files with `readr` helpers and inspect the resulting objects.
+- Export results to disk so you can reuse them across workshops.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+
+## Application
+
+### Step 1 – Load Packages
+
+Attach archr to make its functions available.
+
+
+``` r
+library(archr) # get enumerate_ functions
+library(dplyr) # get pipeline
+library(tidyr) # expand_grid()
+```
+
+### Step 2 – Run the Code Block
+
+which instruments. Execute the block and pay attention to the output it produces.
+
+
+``` r
+enumerate_ds(n = 3, k = 3, .did = 1)
+```
+
+### Step 3 – Run the Code Block
+
+packaging. Execute the block and pay attention to the output it produces.
+
+
+``` r
+enumerate_sf(n = c(5), .did = 2)
+```
+
+### Step 4 – Run the Code Block
+
+scheduling. Execute the block and pay attention to the output it produces.
+
+
+``` r
+enumerate_sf(n = c(2), .did = 3)
+```
+
+### Step 5 – Run the Code Block
+
+If no constraints... Execute the block and pay attention to the output it produces.
+
+
+``` r
+expand_grid(
+  # which instruments
+  enumerate_ds(n = 3, k = 3, .did = 1),
+  # packaging
+  enumerate_sf(n = c(5), .did = 2),
+  # scheduling
+  enumerate_sf(n = c(2), .did = 3)
+)
+```
+
+### Step 6 – Create `parta`
+
+which instruments. Create the object `parta` so you can reuse it in later steps.
+
+
+``` r
+parta = expand_grid(
+  enumerate_ds(n = 3, k = 3, .did = 1) %>%
+    filter(d1_1 == 1),
+  enumerate_sf(n = c(5), .did = 2) %>%
+    filter(d2 != 4)
+)
+```
+
+### Step 7 – Create `partb`
+
+Create the object `partb` so you can reuse it in later steps.
+
+
+``` r
+partb = expand_grid(
+  enumerate_ds(n = 3, k = 3, .did = 1) %>%
+    filter(d1_1 != 1),
+  enumerate_sf(n = c(5), .did = 2)
+)
+```
+
+### Step 8 – Create `constrained`
+
+constrained architecture. Create the object `constrained` so you can reuse it in later steps.
+
+
+``` r
+constrained = bind_rows(parta, partb)
+```
+
+### Step 9 – Create `final`
+
+Create the object `final` so you can reuse it in later steps.
+
+
+``` r
+final = expand_grid(
+  constrained,
+  # scheduling
+  enumerate_sf(n = c(2), .did = 3)
+)
+```
+
+### Step 10 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+final
+remove(final)
+```
+
+### Step 11 – Load Packages
+
+load packages ############################# install.packages("workshops/archr_1.0.tar.gz", type = "source").
+
+
+``` r
+library(archr) # enumerate_....
+library(dplyr) # summarize() filter() select()
+library(readr) # read_csv() and write_csv()
+library(ggplot2) # visuals
+library(tidyr) # expand_grid()
+# tidyverse suite of packages
+# dplyr, readr, tidyr, purrr, ggplot2
+```
+
+### Step 12 – Run the Code Block
+
+binary ###################### binary tree.
+
+
+``` r
+enumerate_binary(n = 2)
+enumerate_binary(n = 2, .id = TRUE)
+```
+
+### Step 13 – Run the Code Block
+
+standard form ###################### trees!
+
+
+``` r
+enumerate_sf(n = c(2,2))
+enumerate_binary(n = 2)
+# Very helpful with many decisions 
+# each with a different number of alternatives
+enumerate_sf(n = c(2,3,8))
+```
+
+### Step 14 – Run the Code Block
+
+downselecting ################################## Pick up to 4 out of 8 donuts.
+
+
+``` r
+enumerate_ds(n = 8, k = 4)
+```
+
+### Step 15 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+
+``` r
+enumerate_ds(n = 8, k = 4) %>%
+  filter( !(d1_1 == 0 & d1_2 == 0 & d1_3 == 0 & d1_4 == 0 &
+         d1_5 == 0 & d1_6 == 0 & d1_7 == 0 & d1_8 == 0)  )
+```
+
+### Step 16 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+
+``` r
+enumerate_ds(n = 8, k = 4) %>%
+  # Make a 'counter' column
+  mutate(count = d1_1 + d1_2 + d1_3 + d1_4 +
+           d1_5 + d1_6 + d1_7 + d1_8) %>%
+  # Cut any rows where count is 0
+  filter(count >= 1) %>%
+  # remove the count column
+  select(-count)
+```
+
+### Step 17 – Practice the Pipe
+
+make a k-min and a k-max.
+
+
+``` r
+enumerate_ds(n = 8, k = 8) %>%
+  # Make a 'counter' column
+  mutate(count = d1_1 + d1_2 + d1_3 + d1_4 +
+           d1_5 + d1_6 + d1_7 + d1_8) %>%
+  # Cut any rows where count is 0
+  filter(count >= 1 & count <= 2) %>%
+  # remove the count column
+  select(-count)
+```
+
+### Step 18 – Practice the Pipe
+
+Can we do this with group_by?
+
+
+``` r
+enumerate_ds(n = 8, k = 8, .id = TRUE)  %>%
+  group_by(id) %>%
+  mutate(count = sum(c(d1_1, d1_2, d1_3, d1_4, d1_5, d1_6, d1_7, d1_8) ))
+```
+
+### Step 19 – Run the Code Block
+
+assignment #####################################. Execute the block and pay attention to the output it produces.
+
+
+``` r
+?archr::enumerate_assignment
+?enumerate_assignment
+?dplyr::mutate
+?mutate
+```
+
+### Step 20 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+enumerate_assignment(n = 4, m = 4, k = 1)
+enumerate_assignment(n = 4, m = 4, k = 2)
+enumerate_assignment(n = 4, m = 4, k = 4)
+enumerate_assignment(n = 4, m = 4, k = 5)
+```
+
+### Step 21 – Create `arch`
+
+Create the object `arch` so you can reuse it in later steps.
+
+
+``` r
+arch = enumerate_assignment(n = 4, m = 5, k = 2)
+```
+
+### Step 22 – Create `mylist`
+
+Create the object `mylist` so you can reuse it in later steps.
+
+
+``` r
+mylist = archr::arch_to_assignment(arch = arch)
+```
+
+### Step 23 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+mylist$`1`
+mylist$`2`
+mylist$`3`
+mylist$`4`
+```
+
+### Step 24 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+arch
+```
+
+### Step 25 – Remove Objects
+
+Delete specific objects so you can redefine them cleanly.
+
+
+``` r
+remove(arch, mylist)
+```
+
+### Step 26 – Run the Code Block
+
+Change decision number. Execute the block and pay attention to the output it produces.
+
+
+``` r
+enumerate_assignment(n = 4, m = 5, k = 2, .did = 3)
+```
+
+### Step 27 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+enumerate_permutation(n = 4, k = 3)
+enumerate_permutation(n = 4, k = 3, .did = 2)
+```
+
+### Step 28 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+enumerate_partition(n = 4, k = 2)
+enumerate_partition(n = 4, k = 2, 
+                    min_times = c(1,1),
+                    max_times = c(3, 3))
+```
+
+### Step 29 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+enumerate_adjacency(n = 4, k = 1)
+enumerate_adjacency(n = 4, k = 4*4)
+```
+
+### Step 30 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+
+``` r
+enumerate_adjacency(n = 4, k = 4*4) %>% tail(1)
+```
+
+### Step 31 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+enumerate_adjacency(n = 4, k = 1, diag = FALSE)
+enumerate_adjacency(n = 4, k = 1, diag = TRUE)
+```
+
+### Step 32 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+enumerate_adjacency(n = 4, k = 1, .did = 3)
+```
+
+### Step 33 – Practice the Pipe
+
+using filter() #####################################. Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+
+``` r
+enumerate_ds(n = 8, k = 4) %>%
+  filter( !(d1_1 == 0 & d1_2 == 0 & d1_3 == 0 & d1_4 == 0 &
+              d1_5 == 0 & d1_6 == 0 & d1_7 == 0 & d1_8 == 0)  )
+```
+
+### Step 34 – Practice the Pipe
+
+using mutate() and filter() ############ make a k-min and a k-max.
+
+
+``` r
+enumerate_ds(n = 8, k = 8) %>%
+  # Make a 'counter' column
+  mutate(count = d1_1 + d1_2 + d1_3 + d1_4 +
+           d1_5 + d1_6 + d1_7 + d1_8) %>%
+  # Cut any rows where count is 0
+  filter(count >= 1 & count <= 2) %>%
+  # remove the count column
+  select(-count)
+```
+
+### Step 35 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+
+``` r
+enumerate_sf(n = c(2,3,3))  %>%
+  # Make a keep variable
+  mutate(keep = case_when(
+    # If this condition, then FALSE 
+    d1 == 1 & d3 == 0 ~ FALSE,
+    # if otherwise, then TRUE
+    TRUE ~ TRUE
+  )) %>%
+  # 
+  filter(keep == TRUE)  %>%
+  select(-keep)
+```
+
+### Step 36 – Create `arch`
+
+Suggestion - do it step by step.
+
+
+``` r
+arch = enumerate_sf(n = c(2,3,3)) 
+arch
+arch = arch %>%   mutate(keep = case_when(d1 == 1 & d3 == 0 ~ FALSE, TRUE ~ TRUE))
+arch
+arch = arch %>% filter(keep == TRUE)
+arch
+arch = arch %>% select(-keep)
+arch
+```
+
+### Step 37 – Create `a1`
+
+Create the object `a1` so you can reuse it in later steps.
+
+
+``` r
+a1 = enumerate_sf(n = c(3))
+# 3 graphs, pick at least 2, max 3
+a2 = enumerate_ds(n = 3, k = 3, .did = 2) %>%
+  mutate(count = d2_1 + d2_2 + d2_3 ) %>%
+  filter(count >= 2 & count <= 3) %>%
+  select(-count)
+# order of 3 graphs, using up to 3
+a3 = enumerate_permutation(n = 3, k = 3, .did = 3)
+```
+
+### Step 38 – Create `arch`
+
+Get a grid of all combos of d1 and d2.
+
+
+``` r
+arch = expand_grid(a1, a2, a3)
+# For each architecture, now add on...
+```
+
+### Step 39 – Practice the Pipe
+
+gotta constrain here, because if in decision 2 you picked just 1 graph, in d3 max k is 1 if in decision 2 you picked just 2 graphs, in d3 max k is 2 if in decision 3 you picked 3 graphs, in d3 max k is 3.
+
+
+``` r
+arch %>%
+  mutate(countd2 = d2_1 + d2_2 + d2_3) %>%
+  mutate(keep = case_when(
+    countd2 == 1 & d.......
+  ))
+```
+
+### Step 40 – Create `a1`
+
+Create the object `a1` so you can reuse it in later steps.
+
+
+``` r
+a1 = enumerate_sf(n = c(3), .did = 1)
+```
+
+### Step 41 – Create `a2`
+
+Create the object `a2` so you can reuse it in later steps.
+
+
+``` r
+a2 = enumerate_adjacency(n = 3, k = 2, .did = 2, diag = TRUE) # but constrain later
+```
+
+### Step 42 – Create `a3`
+
+Create the object `a3` so you can reuse it in later steps.
+
+
+``` r
+a3 = enumerate_partition(n = 4, k = 3, .did = 3)
+```
+
+### Step 43 – Create `arch`
+
+Create the object `arch` so you can reuse it in later steps.
+
+
+``` r
+arch = expand_grid(
+  a1, a2, a3  
+)
+```
+
+## Learning Checks
+
+**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+<details>
+<summary>Show answer</summary>
+
+Use `source(file.path("workshops", "15_enumeration_structures.R"))` from the Console or press the Source button while the script is active.
+
+</details>
+
+**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+
+<details>
+<summary>Show answer</summary>
+
+Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+
+</details>
+
+**Learning Check 3.** When you import data in this workshop, what should you inspect right after the read call?
+
+<details>
+<summary>Show answer</summary>
+
+Check the tibble in the Environment pane (or print it) to confirm column names and types look correct.
+
+</details>
+
+**Learning Check 4.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+
+<details>
+<summary>Show answer</summary>
+
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+
+</details>

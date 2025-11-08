@@ -1,0 +1,71 @@
+---
+title: "[36] Tradespace visualization techniques Guide"
+output:
+  md_document:
+    variant: gfm
+output_dir: ../workshops
+knitr:
+  opts_knit:
+    root.dir: ..
+---
+
+This tutorial complements `36_evaluation_tradespace_visuals.R` and unpacks the workshop on tradespace visualization techniques. You will see how it advances the Evaluation sequence while building confidence with base R and tidyverse tooling.
+
+## Setup
+
+- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+
+## Skills
+
+- Navigate the script `36_evaluation_tradespace_visuals.R` within the Evaluation module.
+- Connect the topic "Tradespace visualization techniques" to systems architecting decisions.
+- Document observations from running each code block in your lab notebook.
+
+## Application
+
+### Step 1 – Review the Script
+
+Read through the script and experiment with each line in the console.
+
+
+``` r
+# Script: 36_evaluation_tradespace_visuals.R
+# Original: tutorial_tradespace_2.R
+# Topic: Tradespace visualization techniques
+# Section: Evaluation
+# Developed by: Timothy Fraser, PhD
+# tutorial_tradespace_2.R
+# Yup! We skipped the number 2! 
+# Don't worry - you didn't miss any content!
+```
+
+## Learning Checks
+
+**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+<details>
+<summary>Show answer</summary>
+
+Use `source(file.path("workshops", "36_evaluation_tradespace_visuals.R"))` from the Console or press the Source button while the script is active.
+
+</details>
+
+**Learning Check 2.** In your own words, what key idea does the topic "Tradespace visualization techniques" reinforce?
+
+<details>
+<summary>Show answer</summary>
+
+It highlights how tradespace visualization techniques supports the overall systems architecting process in this course.
+
+</details>
+
+**Learning Check 3.** Where should you look if you need to reset your setup before re-running the script?
+
+<details>
+<summary>Show answer</summary>
+
+Return to the Setup section to confirm your working directory, packages, and clean R session.
+
+</details>

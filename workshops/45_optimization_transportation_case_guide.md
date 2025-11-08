@@ -1,0 +1,275 @@
+---
+title: "[45] Transportation optimization case Guide"
+output:
+  md_document:
+    variant: gfm
+output_dir: ../workshops
+knitr:
+  opts_knit:
+    root.dir: ..
+---
+
+This tutorial complements `45_optimization_transportation_case.R` and unpacks the workshop on transportation optimization case. You will see how it advances the Optimization sequence while building confidence with base R and tidyverse tooling.
+
+## Setup
+
+- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+
+## Skills
+
+- Navigate the script `45_optimization_transportation_case.R` within the Optimization module.
+- Connect the topic "Transportation optimization case" to systems architecting decisions.
+- Load packages with `library()` and verify they attach without warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Define custom functions to package repeatable logic.
+- Iterate on visualisations built with `ggplot2`.
+
+## Application
+
+### Step 1 – Load Packages
+
+Attach dplyr to make its functions available.
+
+
+``` r
+library(dplyr)
+library(GA)
+library(rmoo)
+```
+
+### Step 2 – Define `get_emissions()`
+
+300,000 tons of CO2e in Tompkins county.
+
+
+``` r
+get_emissions = function(d1,d2,d3){
+  # If I enact a congestion toll
+  m1 = case_when(d1 == 1 ~ 100000, TRUE ~ 0)
+  # If I buy more buses
+  m2 = case_when(d2 == 1 ~ 30000, TRUE ~ 0)
+  # If I invest in jetpacks,
+  m3 = case_when(d3 == 1 ~ 5000, TRUE ~ 0)
+  # Get remaining emissions
+  output = 300000 - (m1+m2+m3)
+```
+
+### Step 3 – Create `max`
+
+What is our highest possible emissions level?
+
+
+``` r
+  max = 300000
+  # What is our lowest possible emissions level?
+  min = 300000 - 100000 - 30000 - 5000
+```
+
+### Step 4 – Create `rescaled`
+
+Let's rescale this so that... 1 = most emissions; 0 = least emissions.
+
+
+``` r
+  rescaled = (output - min) / (max - min)
+```
+
+### Step 5 – Create `output`
+
+Let's rescale this so that high means 'better' 1 = least emissions; 0 = most emissions.
+
+
+``` r
+  output = 1 - rescaled
+```
+
+### Step 6 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+  return(output)
+}
+```
+
+### Step 7 – Define `get_riders()`
+
+Create the helper function `get_riders()` so you can reuse it throughout the workshop.
+
+
+``` r
+get_riders = function(d1,d2){
+  # riders = 10,000 people
+  # If congestion toll
+  m1 = case_when(d1 == 1 ~ 5000, TRUE ~ 0)
+  # If I buy more buses
+  m2 = case_when(d2 == 1 ~ 10000, TRUE ~ 0)
+  # Get resulting total # of bus riders
+  output =10000 + (m1 + m2)
+```
+
+### Step 8 – Create `max`
+
+Highest possible # of riders.
+
+
+``` r
+  max = 10000 + 5000 + 10000
+  # Lowest possible # of riders
+  min = 10000
+```
+
+### Step 9 – Create `rescaled`
+
+Let's rescale this so that... 1 = most riders; 0 = least riders.
+
+
+``` r
+  rescaled = (output - min) / (max - min)
+```
+
+### Step 10 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+  return(rescaled)
+```
+
+### Step 11 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+}
+```
+
+### Step 12 – Define `bit2int()`
+
+Create the helper function `bit2int()` so you can reuse it throughout the workshop.
+
+
+``` r
+bit2int = function(x){
+  xhat1 = binary2decimal(x == x[1])
+  xhat2 = binary2decimal(x == x[2])
+  xhat3 = binary2decimal(x == x[3])
+  output = c(xhat1,xhat2,xhat3)
+  return(output)
+}
+```
+
+### Step 13 – Define `f1()`
+
+Create the helper function `f1()` so you can reuse it throughout the workshop.
+
+
+``` r
+f1 = function(x, nobj = 2, ...){
+  # Get our bits vector x
+  # turn it into integer vector xhat
+  xhat = bit2int(x)
+  # Get our metrics
+  m1 = get_emissions(d1 = xhat[1], d2 = xhat[2], d3 = xhat[3])
+```
+
+### Step 14 – Create `m2`
+
+Create the object `m2` so you can reuse it in later steps.
+
+
+``` r
+  m2 = get_riders(d1 = xhat[1], d2 = xhat[2])
+  # Format as a matrix
+  output = matrix(c(m1,m2), nrow = 1)
+  return(output)
+}
+```
+
+### Step 15 – Create `o`
+
+Create the object `o` so you can reuse it in later steps.
+
+
+``` r
+o = rmoo(
+  fitness = f1, type = "binary", algorithm = "NSGA-III",
+  lower = c(0,0,0), upper = c(1,1,1), monitor = TRUE, summary = TRUE,
+  nObj = 2, nBits = 3, popSize = 50, maxiter = 100
+)
+```
+
+### Step 16 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+
+``` r
+data = o@solution %>%
+  as_tibble() %>%
+  select(d1 = x1, d2 = x2, d3 = x3) %>%
+  mutate(emissions = get_emissions(d1 = d1, d2 = d2, d3 = d3),
+         riders = get_riders(d1 = d1, d2 = d2))
+```
+
+### Step 17 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+
+``` r
+ggplot() +
+  geom_point(data = data, mapping = aes(x = riders, y = emissions))
+```
+
+## Learning Checks
+
+**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+<details>
+<summary>Show answer</summary>
+
+Use `source(file.path("workshops", "45_optimization_transportation_case.R"))` from the Console or press the Source button while the script is active.
+
+</details>
+
+**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+
+<details>
+<summary>Show answer</summary>
+
+Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+
+</details>
+
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+
+<details>
+<summary>Show answer</summary>
+
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+
+</details>
+
+**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+
+<details>
+<summary>Show answer</summary>
+
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+
+</details>
+
+**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
+
+<details>
+<summary>Show answer</summary>
+
+Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+
+</details>

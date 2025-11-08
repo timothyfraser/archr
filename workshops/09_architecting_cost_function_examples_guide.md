@@ -1,0 +1,222 @@
+---
+title: "[09] Cost function modeling examples Guide"
+output:
+  md_document:
+    variant: gfm
+output_dir: ../workshops
+knitr:
+  opts_knit:
+    root.dir: ..
+---
+
+This tutorial complements `09_architecting_cost_function_examples.R` and unpacks the workshop on cost function modeling examples. You will see how it advances the Architecting Systems sequence while building confidence with base R and tidyverse tooling.
+
+## Setup
+
+- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+
+## Skills
+
+- Navigate the script `09_architecting_cost_function_examples.R` within the Architecting Systems module.
+- Connect the topic "Cost function modeling examples" to systems architecting decisions.
+- Load packages with `library()` and verify they attach without warnings.
+- Chain tidyverse verbs with `%>%` to explore stakeholder or architecture tables.
+- Define custom functions to package repeatable logic.
+- Iterate on visualisations built with `ggplot2`.
+
+## Application
+
+### Step 1 – Load Packages
+
+Setup #####################################################. Attach dplyr to make its functions available.
+
+
+``` r
+library(dplyr)
+library(ggplot2)
+```
+
+### Step 2 – Create `data`
+
+smartboards. Create the object `data` so you can reuse it in later steps.
+
+
+``` r
+data = tribble(
+  ~unit, ~cost,
+  1,     2000,
+  10,    16000,
+  50,    90000,
+  100,   140000,
+)
+```
+
+### Step 3 – Start a ggplot
+
+Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+
+``` r
+ggplot() +
+  geom_point(data = data, mapping = aes(x = unit, y = cost))
+```
+
+### Step 4 – Practice the Pipe
+
+Estimate a linear model of cost.
+
+
+``` r
+m = data %>% lm(formula = cost ~ unit)
+# Cost = $4,920 + $1,418 * unit
+```
+
+### Step 5 – Define `get_cost()`
+
+Equivalently stated as a function:.
+
+
+``` r
+get_cost = function(unit){ 4920 + 1418 * unit }
+```
+
+### Step 6 – Create `data2`
+
+Calculate it. Create the object `data2` so you can reuse it in later steps.
+
+
+``` r
+data2 = tibble(
+  unit = 150,
+  # pred = get_cost(unit), # this is equivalent
+  pred = predict(m, newdata = tibble(unit))
+)
+```
+
+### Step 7 – Create `data3`
+
+Create the object `data3` so you can reuse it in later steps.
+
+
+``` r
+data3 = tibble(
+  unit = 1:150,
+  pred = predict(m, newdata = tibble(unit))
+)
+```
+
+### Step 8 – Run the Code Block
+
+Execute the block and pay attention to the output it produces.
+
+
+``` r
+data3
+```
+
+### Step 9 – Start a ggplot
+
+Let's visualize them. Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+
+``` r
+ggplot() +
+  geom_point(data = data, mapping = aes(x = unit, y = cost)) +
+  geom_line(data = data3, mapping = aes(x = unit, y = pred)) +
+  geom_point(data = data2, mapping = aes(x = unit, y = pred), color = "red")
+```
+
+### Step 10 – Practice the Pipe
+
+Use the `%>%` operator to pass each result to the next tidyverse verb.
+
+
+``` r
+m2 = data %>% lm(formula = log(cost) ~ unit)
+m2
+```
+
+### Step 11 – Create `data4`
+
+ln(cost) = 8.63484 ln$ + 0.03726 ln$ * unit.
+
+
+``` r
+data4 = tibble(
+  unit = 1:150,
+  pred = predict(m2, newdata = tibble(unit))
+) %>%
+  # remember to exponentiate the prediction!
+  mutate(pred = exp(pred))
+```
+
+### Step 12 – Start a ggplot
+
+And visualize. Initialize a ggplot so you can layer geoms and customise aesthetics.
+
+
+``` r
+ggplot() +
+  geom_point(data = data, mapping = aes(x = unit, y = cost)) +
+  geom_line(data = data3, mapping = aes(x = unit, y = pred), color = "blue") +
+  geom_line(data = data4, mapping = aes(x = unit, y = pred), color = "red") +
+  geom_point(data = data2, mapping = aes(x = unit, y = pred), color = "blue")
+```
+
+### Step 13 – Clear Objects
+
+Cleanup. Remove objects from the environment to prevent name clashes.
+
+
+``` r
+rm(list = ls())
+```
+
+## Learning Checks
+
+**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+<details>
+<summary>Show answer</summary>
+
+Use `source(file.path("workshops", "09_architecting_cost_function_examples.R"))` from the Console or press the Source button while the script is active.
+
+</details>
+
+**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+
+<details>
+<summary>Show answer</summary>
+
+Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+
+</details>
+
+**Learning Check 3.** How does the `%>%` pipeline help you reason about multi-step transformations in this script?
+
+<details>
+<summary>Show answer</summary>
+
+It keeps each operation in sequence without creating temporary variables, so you can narrate the data story line by line.
+
+</details>
+
+**Learning Check 4.** How can you build confidence that a newly defined function behaves as intended?
+
+<details>
+<summary>Show answer</summary>
+
+Call it with the sample input from the script, examine the output, then try a new input to see how the behaviour changes.
+
+</details>
+
+**Learning Check 5.** What experiment can you run on the `ggplot` layers to understand how aesthetics map to data?
+
+<details>
+<summary>Show answer</summary>
+
+Switch one aesthetic (for example `color` to `fill` or tweak the geometry) and re-run the chunk to observe the difference.
+
+</details>
