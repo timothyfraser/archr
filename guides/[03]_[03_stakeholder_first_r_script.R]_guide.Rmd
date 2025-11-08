@@ -1,0 +1,60 @@
+---
+title: "[03] First R script practice Guide"
+output:
+  md_document:
+    variant: gfm
+output_dir: ../workshops
+knitr:
+  opts_knit:
+    root.dir: ..
+---
+
+This tutorial complements `03_stakeholder_first_r_script.R` and unpacks the workshop on first r script practice. You will see how it advances the Stakeholder Analysis sequence while building confidence with base R and tidyverse tooling.
+
+## Setup
+
+- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+
+## Skills
+
+- Navigate the script `03_stakeholder_first_r_script.R` within the Stakeholder Analysis module.
+- Connect the topic "First R script practice" to systems architecting decisions.
+- Document observations from running each code block in your lab notebook.
+
+## Application
+
+1. Open `workshops/03_stakeholder_first_r_script.R` in the Source pane and skim the header comments for context.
+2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
+3. When you are comfortable, run `source(file.path("workshops", "03_stakeholder_first_r_script.R"))` or click Source to execute the full workshop.
+4. Record key takeaways and questions in the Learning Checks section below.
+
+## Learning Checks
+
+**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+<details>
+<summary>Show answer</summary>
+
+Use `source(file.path("workshops", "03_stakeholder_first_r_script.R"))` from the Console or press the Source button while the script is active.
+
+</details>
+
+**Learning Check 2.** In your own words, what key idea does the topic "First R script practice" reinforce?
+
+<details>
+<summary>Show answer</summary>
+
+It emphasizes how first r script practice supports the overall systems architecting process in this course.
+
+</details>
+
+**Learning Check 3.** Where in the guide should you revisit if you need to recall prerequisite steps before re-running the code?
+
+<details>
+<summary>Show answer</summary>
+
+Return to the Setup section to confirm the working directory, required packages, and project context before executing the scripts again.
+
+</details>

@@ -1,0 +1,61 @@
+---
+title: "[00] Pareto ranking helpers Guide"
+output:
+  md_document:
+    variant: gfm
+output_dir: ../workshops
+knitr:
+  opts_knit:
+    root.dir: ..
+---
+
+This tutorial complements `00_pareto_rank_utilities.R` and unpacks the workshop on pareto ranking helpers. You will see how it advances the Evaluation sequence while building confidence with base R and tidyverse tooling.
+
+## Setup
+
+- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+
+## Skills
+
+- Navigate the script `00_pareto_rank_utilities.R` within the Evaluation module.
+- Connect the topic "Pareto ranking helpers" to systems architecting decisions.
+- Define and call custom functions to encapsulate reusable logic.
+
+## Application
+
+1. Open `workshops/00_pareto_rank_utilities.R` in the Source pane and skim the header comments for context.
+2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
+3. Re-run the custom functions with your own arguments to observe how the outputs change.
+4. When you are comfortable, run `source(file.path("workshops", "00_pareto_rank_utilities.R"))` or click Source to execute the full workshop.
+5. Record key takeaways and questions in the Learning Checks section below.
+
+## Learning Checks
+
+**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+<details>
+<summary>Show answer</summary>
+
+Use `source(file.path("workshops", "00_pareto_rank_utilities.R"))` from the Console or press the Source button while the script is active.
+
+</details>
+
+**Learning Check 2.** How can you verify that a custom function defined in the script behaves the way you expect?
+
+<details>
+<summary>Show answer</summary>
+
+Call the function with a simple input (for example the one used in the script) and print or view the returned value, then try a new input to see how the output changes.
+
+</details>
+
+**Learning Check 3.** In your own words, what key idea does the topic "Pareto ranking helpers" reinforce?
+
+<details>
+<summary>Show answer</summary>
+
+It emphasizes how pareto ranking helpers supports the overall systems architecting process in this course.
+
+</details>

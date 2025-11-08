@@ -1,0 +1,61 @@
+---
+title: "[40] Entropy and tradespace insights Guide"
+output:
+  md_document:
+    variant: gfm
+output_dir: ../workshops
+knitr:
+  opts_knit:
+    root.dir: ..
+---
+
+This tutorial complements `40_evaluation_entropy_insights.R` and unpacks the workshop on entropy and tradespace insights. You will see how it advances the Evaluation sequence while building confidence with base R and tidyverse tooling.
+
+## Setup
+
+- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+
+## Skills
+
+- Navigate the script `40_evaluation_entropy_insights.R` within the Evaluation module.
+- Connect the topic "Entropy and tradespace insights" to systems architecting decisions.
+- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
+
+## Application
+
+1. Open `workshops/40_evaluation_entropy_insights.R` in the Source pane and skim the header comments for context.
+2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
+3. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
+4. When you are comfortable, run `source(file.path("workshops", "40_evaluation_entropy_insights.R"))` or click Source to execute the full workshop.
+5. Record key takeaways and questions in the Learning Checks section below.
+
+## Learning Checks
+
+**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+<details>
+<summary>Show answer</summary>
+
+Use `source(file.path("workshops", "40_evaluation_entropy_insights.R"))` from the Console or press the Source button while the script is active.
+
+</details>
+
+**Learning Check 2.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+
+<details>
+<summary>Show answer</summary>
+
+It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+
+</details>
+
+**Learning Check 3.** In your own words, what key idea does the topic "Entropy and tradespace insights" reinforce?
+
+<details>
+<summary>Show answer</summary>
+
+It emphasizes how entropy and tradespace insights supports the overall systems architecting process in this course.
+
+</details>

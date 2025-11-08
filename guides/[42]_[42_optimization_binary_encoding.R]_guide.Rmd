@@ -1,0 +1,65 @@
+---
+title: "[42] Binary encoding primer Guide"
+output:
+  md_document:
+    variant: gfm
+output_dir: ../workshops
+knitr:
+  opts_knit:
+    root.dir: ..
+---
+
+This tutorial complements `42_optimization_binary_encoding.R` and unpacks the workshop on binary encoding primer. You will see how it advances the Optimization sequence while building confidence with base R and tidyverse tooling.
+
+## Setup
+
+- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+
+## Skills
+
+- Navigate the script `42_optimization_binary_encoding.R` within the Optimization module.
+- Connect the topic "Binary encoding primer" to systems architecting decisions.
+- Install any required packages highlighted with `install.packages()`.
+- Load packages with `library()` and verify they attach without warnings.
+- Define and call custom functions to encapsulate reusable logic.
+
+## Application
+
+1. Open `workshops/42_optimization_binary_encoding.R` in the Source pane and skim the header comments for context.
+2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
+3. Run any `install.packages()` lines once to make sure the dependencies exist on your machine.
+4. Load the libraries listed near the top of the script and confirm they attach without errors.
+5. Re-run the custom functions with your own arguments to observe how the outputs change.
+6. When you are comfortable, run `source(file.path("workshops", "42_optimization_binary_encoding.R"))` or click Source to execute the full workshop.
+7. Record key takeaways and questions in the Learning Checks section below.
+
+## Learning Checks
+
+**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+<details>
+<summary>Show answer</summary>
+
+Use `source(file.path("workshops", "42_optimization_binary_encoding.R"))` from the Console or press the Source button while the script is active.
+
+</details>
+
+**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+
+<details>
+<summary>Show answer</summary>
+
+Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+
+</details>
+
+**Learning Check 3.** How can you verify that a custom function defined in the script behaves the way you expect?
+
+<details>
+<summary>Show answer</summary>
+
+Call the function with a simple input (for example the one used in the script) and print or view the returned value, then try a new input to see how the output changes.
+
+</details>

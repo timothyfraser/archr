@@ -1,0 +1,87 @@
+---
+title: "[04] Workshop 1 R fundamentals Guide"
+output:
+  md_document:
+    variant: gfm
+output_dir: ../workshops
+knitr:
+  opts_knit:
+    root.dir: ..
+---
+
+This tutorial complements `04_stakeholder_r_basics_workshop.R` and unpacks the workshop on workshop 1 r fundamentals. You will see how it advances the Stakeholder Analysis sequence while building confidence with base R and tidyverse tooling.
+
+## Setup
+
+- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+
+## Skills
+
+- Navigate the script `04_stakeholder_r_basics_workshop.R` within the Stakeholder Analysis module.
+- Connect the topic "Workshop 1 R fundamentals" to systems architecting decisions.
+- Install any required packages highlighted with `install.packages()`.
+- Load packages with `library()` and verify they attach without warnings.
+- Import and export data files using `readr` helpers and inspect the results.
+- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
+- Define and call custom functions to encapsulate reusable logic.
+
+## Application
+
+1. Open `workshops/04_stakeholder_r_basics_workshop.R` in the Source pane and skim the header comments for context.
+2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
+3. Run any `install.packages()` lines once to make sure the dependencies exist on your machine.
+4. Load the libraries listed near the top of the script and confirm they attach without errors.
+5. Walk through the data import and export chunks, using the Environment pane to inspect the created objects.
+6. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
+7. Re-run the custom functions with your own arguments to observe how the outputs change.
+8. When you are comfortable, run `source(file.path("workshops", "04_stakeholder_r_basics_workshop.R"))` or click Source to execute the full workshop.
+9. Record key takeaways and questions in the Learning Checks section below.
+
+## Learning Checks
+
+**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+<details>
+<summary>Show answer</summary>
+
+Use `source(file.path("workshops", "04_stakeholder_r_basics_workshop.R"))` from the Console or press the Source button while the script is active.
+
+</details>
+
+**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+
+<details>
+<summary>Show answer</summary>
+
+Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+
+</details>
+
+**Learning Check 3.** Which helper do you use in this workshop to bring external data into R, and what should you check right after calling it?
+
+<details>
+<summary>Show answer</summary>
+
+Use the `readr` functions shown (such as `read_csv()` or `read_rds()`) and immediately inspect the resulting tibble in the Environment pane to confirm the columns loaded as expected.
+
+</details>
+
+**Learning Check 4.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+
+<details>
+<summary>Show answer</summary>
+
+It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+
+</details>
+
+**Learning Check 5.** How can you verify that a custom function defined in the script behaves the way you expect?
+
+<details>
+<summary>Show answer</summary>
+
+Call the function with a simple input (for example the one used in the script) and print or view the returned value, then try a new input to see how the output changes.
+
+</details>

@@ -1,0 +1,74 @@
+---
+title: "[07] Conditional logic examples Guide"
+output:
+  md_document:
+    variant: gfm
+output_dir: ../workshops
+knitr:
+  opts_knit:
+    root.dir: ..
+---
+
+This tutorial complements `07_architecting_conditional_logic_examples.R` and unpacks the workshop on conditional logic examples. You will see how it advances the Architecting Systems sequence while building confidence with base R and tidyverse tooling.
+
+## Setup
+
+- Ensure you have opened the `archr` project root (or set your working directory there) before running any code.
+- Open the workshop script in RStudio so you can execute lines interactively with `Ctrl+Enter` or `Cmd+Enter`.
+- Create a fresh R session to avoid conflicts with leftover objects from earlier workshops.
+
+## Skills
+
+- Navigate the script `07_architecting_conditional_logic_examples.R` within the Architecting Systems module.
+- Connect the topic "Conditional logic examples" to systems architecting decisions.
+- Load packages with `library()` and verify they attach without warnings.
+- Practice tidyverse pipelines (`%>%`) to transform stakeholder or architecture tables.
+- Define and call custom functions to encapsulate reusable logic.
+
+## Application
+
+1. Open `workshops/07_architecting_conditional_logic_examples.R` in the Source pane and skim the header comments for context.
+2. Set your working directory to the project root so relative paths such as `workshops/` resolve correctly.
+3. Load the libraries listed near the top of the script and confirm they attach without errors.
+4. Execute each tidyverse pipeline slowly, pausing to read the intermediate tibbles that appear in the Console.
+5. Re-run the custom functions with your own arguments to observe how the outputs change.
+6. When you are comfortable, run `source(file.path("workshops", "07_architecting_conditional_logic_examples.R"))` or click Source to execute the full workshop.
+7. Record key takeaways and questions in the Learning Checks section below.
+
+## Learning Checks
+
+**Learning Check 1.** How do you run the entire workshop script after you have stepped through each section interactively?
+
+<details>
+<summary>Show answer</summary>
+
+Use `source(file.path("workshops", "07_architecting_conditional_logic_examples.R"))` from the Console or press the Source button while the script is active.
+
+</details>
+
+**Learning Check 2.** Why does the script begin by installing or loading packages before exploring the exercises?
+
+<details>
+<summary>Show answer</summary>
+
+Those commands make sure the required libraries are available so every subsequent code chunk runs without missing-function errors.
+
+</details>
+
+**Learning Check 3.** What does the `%>%` pipeline operator help you accomplish in the worked examples?
+
+<details>
+<summary>Show answer</summary>
+
+It passes the intermediate tibble from one tidyverse verb to the next so you can express multi-step transformations clearly and avoid temporary variables.
+
+</details>
+
+**Learning Check 4.** How can you verify that a custom function defined in the script behaves the way you expect?
+
+<details>
+<summary>Show answer</summary>
+
+Call the function with a simple input (for example the one used in the script) and print or view the returned value, then try a new input to see how the output changes.
+
+</details>
